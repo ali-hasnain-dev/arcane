@@ -1,0 +1,34 @@
+{
+    "name": "@arcane/support",
+    "version": "0.1.0",
+    "description": "Arcane support \u2014 shared utilities, types, UI primitives (Card, Breadcrumb), and theme tokens used across all Arcane packages",
+    "main": "dist/index.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts",
+    "type": "module",
+    "exports": {
+        ".": {
+            "import": "./dist/index.esm.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./themes": "./dist/themes.esm.js"
+    },
+    "scripts": {
+        "dev": "vite build --watch",
+        "build": "tsc && vite build",
+        "typecheck": "tsc --noEmit"
+    },
+    "peerDependencies": {
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0"
+    },
+    "devDependencies": {
+        "@types/react": "^19.0.0",
+        "@types/react-dom": "^19.0.0",
+        "typescript": "^5.4.0",
+        "vite": "^8.0.0"
+    },
+    "dependencies": {
+        "clsx": "^2.1.0"
+    }
+}

@@ -1,0 +1,35 @@
+{
+    "name": "arcane-monorepo",
+    "private": true,
+    "workspaces": [
+        "packages/support",
+        "packages/actions",
+        "packages/forms",
+        "packages/tables",
+        "packages/schemas",
+        "packages/infolists",
+        "packages/widgets",
+        "packages/notifications",
+        "packages/panels",
+        "packages/charts"
+    ],
+    "scripts": {
+        "dev": "npm run dev   --workspace=packages/panels",
+        "build": "npm run build --workspaces --if-present",
+        "build:support": "npm run build --workspace=packages/support",
+        "build:forms": "npm run build --workspace=packages/forms",
+        "build:tables": "npm run build --workspace=packages/tables",
+        "build:widgets": "npm run build --workspace=packages/widgets",
+        "build:notifications": "npm run build --workspace=packages/notifications",
+        "build:panels": "npm run build --workspace=packages/panels",
+        "build:charts": "npm run build --workspace=packages/charts",
+        "typecheck": "npm run typecheck --workspaces --if-present"
+    },
+    "devDependencies": {
+        "@types/react": "^19.2.16",
+        "@types/react-dom": "^19.2.3",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "typescript": "^5.9.3"
+    }
+}

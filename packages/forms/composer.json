@@ -1,0 +1,17 @@
+{
+    "name": "arcane/forms",
+    "description": "Arcane forms — field types, layout components, and form schema definitions.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "arcane/support": "@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Arcane\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

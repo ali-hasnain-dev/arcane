@@ -1,0 +1,17 @@
+{
+    "name": "arcane/support",
+    "description": "Arcane support — shared utilities, helpers, and base classes used across all Arcane packages.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^11.0|^12.0|^13.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Arcane\\Support\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

@@ -1,0 +1,17 @@
+{
+    "name": "arcane/widgets",
+    "description": "Arcane widgets — stats overview, chart widgets, and table widgets for dashboards.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "arcane/support": "@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Arcane\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

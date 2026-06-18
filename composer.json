@@ -1,0 +1,22 @@
+{
+    "name": "arcane/monorepo",
+    "description": "Arcane monorepo — React-powered admin panel for Laravel",
+    "type": "project",
+    "private": true,
+    "repositories": [
+        { "type": "path", "url": "./packages/support" },
+        { "type": "path", "url": "./packages/actions" },
+        { "type": "path", "url": "./packages/forms" },
+        { "type": "path", "url": "./packages/tables" },
+        { "type": "path", "url": "./packages/schemas" },
+        { "type": "path", "url": "./packages/infolists" },
+        { "type": "path", "url": "./packages/widgets" },
+        { "type": "path", "url": "./packages/panels" },
+        { "type": "path", "url": "./packages/arcane" }
+    ],
+    "require": {
+        "arcane/arcane": "@dev"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

@@ -1,0 +1,20 @@
+{
+    "name": "arcane/arcane",
+    "description": "Arcane — React-powered admin panel for Laravel. Install this single package to get everything.",
+    "type": "library",
+    "keywords": ["laravel", "react", "admin", "inertia", "crud", "panel"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Arcane",
+            "email": "hello@arcane.dev",
+            "homepage": "https://arcane.dev"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "arcane/panels": "*"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

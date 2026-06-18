@@ -1,0 +1,48 @@
+{
+    "name": "arcane/panels",
+    "description": "Arcane panels — admin panel, resources, pages, navigation, plugins, and theme management.",
+    "type": "library",
+    "keywords": ["laravel", "react", "admin", "inertia", "crud", "panel"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Arcane",
+            "email": "hello@arcane.dev",
+            "homepage": "https://arcane.dev"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^11.0|^12.0|^13.0",
+        "inertiajs/inertia-laravel": "^2.0",
+        "arcane/actions": "@dev",
+        "arcane/forms": "@dev",
+        "arcane/tables": "@dev",
+        "arcane/widgets": "@dev",
+        "arcane/schemas": "@dev",
+        "arcane/support": "@dev"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0",
+        "pestphp/pest": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Arcane\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Arcane\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Arcane\\ArcaneServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
