@@ -2,8 +2,15 @@
     "name": "arcane/monorepo",
     "description": "Arcane monorepo — React-powered admin panel for Laravel",
     "type": "project",
-    "private": true,
     "repositories": [
+        {
+            "packagist.org": false
+        },
+        {
+            "name": "private-packagist",
+            "type": "composer",
+            "url": "https://repo.packagist.com/ali/"
+        },
         { "type": "path", "url": "./packages/support" },
         { "type": "path", "url": "./packages/actions" },
         { "type": "path", "url": "./packages/forms" },
@@ -15,7 +22,7 @@
         { "type": "path", "url": "./packages/arcane" }
     ],
     "require": {
-        "arcane/arcane": "@dev"
+        "arcane/arcane": "*"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
