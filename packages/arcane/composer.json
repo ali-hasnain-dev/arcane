@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "arcane/panels": "*"
+        "arcane/panels": "^0.1"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
