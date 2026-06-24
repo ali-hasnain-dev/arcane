@@ -4,25 +4,44 @@
     "type": "project",
     "repositories": [
         {
-            "packagist.org": false
+            "type": "path",
+            "url": "./packages/support"
         },
         {
-            "name": "private-packagist",
-            "type": "composer",
-            "url": "https://repo.packagist.com/ali/"
+            "type": "path",
+            "url": "./packages/actions"
         },
-        { "type": "path", "url": "./packages/support" },
-        { "type": "path", "url": "./packages/actions" },
-        { "type": "path", "url": "./packages/forms" },
-        { "type": "path", "url": "./packages/tables" },
-        { "type": "path", "url": "./packages/schemas" },
-        { "type": "path", "url": "./packages/infolists" },
-        { "type": "path", "url": "./packages/widgets" },
-        { "type": "path", "url": "./packages/panels" },
-        { "type": "path", "url": "./packages/arcane" }
+        {
+            "type": "path",
+            "url": "./packages/forms"
+        },
+        {
+            "type": "path",
+            "url": "./packages/tables"
+        },
+        {
+            "type": "path",
+            "url": "./packages/schemas"
+        },
+        {
+            "type": "path",
+            "url": "./packages/infolists"
+        },
+        {
+            "type": "path",
+            "url": "./packages/widgets"
+        },
+        {
+            "type": "path",
+            "url": "./packages/panels"
+        },
+        {
+            "type": "path",
+            "url": "./packages/arcane"
+        }
     ],
     "require": {
-        "arcane/arcane": "*"
+        "arcanephp/arcane": "*"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

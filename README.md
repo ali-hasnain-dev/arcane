@@ -1,15 +1,15 @@
 # Arcane
 
-> A React-powered admin panel framework for Laravel — write PHP, get a fully interactive admin UI.
+> An Inertia-powered admin panel framework for Laravel — write PHP, get a fully interactive admin UI.
 
 ---
 
 ## What is Arcane?
 
-Arcane is a Laravel package that maps your Eloquent models to a fully interactive admin interface powered by React and Inertia.js v3. You write PHP resource classes; Arcane renders the forms, tables, navigation, dashboard widgets, and auth pages — no page publishing, no manual React wiring.
+Arcane is a Laravel package that maps your Eloquent models to a fully interactive admin interface powered by Inertia.js v3. You write PHP resource classes; Arcane renders the forms, tables, navigation, dashboard widgets, and auth pages — no page publishing, no manual React wiring.
 
 ```
-composer require arcane/panels
+composer require arcanephp/arcane
 php artisan arcane:install
 ```
 
@@ -25,7 +25,6 @@ php artisan arcane:install
 | [Enums](docs/enums.md) | `docs/enums.md` | First-class PHP 8.1 enum support across forms, tables, filters |
 | [Tables](docs/tables.md) | `docs/tables.md` | Filament-style table builder, columns, filters, bulk actions |
 | [Actions](docs/actions.md) | `docs/actions.md` | Per-row actions — inline, URL, and legacy ButtonAction |
-| [Authorization](docs/authorization.md) | `docs/authorization.md` | `canViewAny`, `canCreate`, `canEdit`, `canDelete` |
 | [Soft Deletes](docs/soft-deletes.md) | `docs/soft-deletes.md` | Trashed tab, restore, force-delete |
 | [Export & Import](docs/export-import.md) | `docs/export-import.md` | CSV export streaming and 3-step import wizard |
 | [Inline Editing](docs/inline-editing.md) | `docs/inline-editing.md` | Click-to-edit table cells |
@@ -47,7 +46,7 @@ php artisan arcane:install
 ### 1. Install
 
 ```bash
-composer require arcane/panels
+composer require arcanephp/arcane
 php artisan arcane:install
 ```
 
