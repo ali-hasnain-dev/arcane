@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Tables\Filters;
+namespace Larafusion\Tables\Filters;
 
 /**
  * A 3-state filter: blank (All) / true (Yes) / false (No).

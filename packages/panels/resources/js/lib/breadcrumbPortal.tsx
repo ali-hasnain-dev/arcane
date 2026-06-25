@@ -1,1 +1,1 @@
-export { BreadcrumbPortalProvider, useBreadcrumbPortal } from '@arcane/support';
+export { BreadcrumbPortalProvider, useBreadcrumbPortal } from '@larafusion/support';

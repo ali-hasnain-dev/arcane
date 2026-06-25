@@ -154,7 +154,7 @@ export default function BelongsToSelect({
                         'flex items-center gap-2 w-full px-3 py-2 rounded-lg border text-sm cursor-pointer transition-colors min-h-[38px]',
                         field.disabled && 'opacity-50 cursor-not-allowed',
                         open
-                            ? 'border-[var(--arcane-primary,#18181b)] ring-2 ring-[var(--arcane-primary,#18181b)]/20 bg-white dark:bg-zinc-800'
+                            ? 'border-[var(--larafusion-primary,#18181b)] ring-2 ring-[var(--larafusion-primary,#18181b)]/20 bg-white dark:bg-zinc-800'
                             : status === 'invalid'
                             ? 'border-red-400 bg-red-50 dark:bg-red-950/30 dark:border-red-800'
                             : 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600',
@@ -196,7 +196,7 @@ export default function BelongsToSelect({
                                         value={search}
                                         onChange={e => handleSearch(e.target.value)}
                                         placeholder={`Search ${field.label}…`}
-                                        className="w-full pl-8 pr-3 py-1.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 outline-none focus:border-[var(--arcane-primary,#18181b)] focus:ring-1 focus:ring-[var(--arcane-primary,#18181b)]/20"
+                                        className="w-full pl-8 pr-3 py-1.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 outline-none focus:border-[var(--larafusion-primary,#18181b)] focus:ring-1 focus:ring-[var(--larafusion-primary,#18181b)]/20"
                                     />
                                 </div>
                             </div>
@@ -222,13 +222,13 @@ export default function BelongsToSelect({
                                             className={cn(
                                                 'flex items-center justify-between w-full px-3 py-2 text-sm text-left transition-colors',
                                                 String(opt.value) === String(value)
-                                                    ? 'bg-[var(--arcane-primary,#18181b)]/5 text-[var(--arcane-primary,#18181b)] dark:bg-[var(--arcane-primary,#18181b)]/10 dark:text-white font-medium'
+                                                    ? 'bg-[var(--larafusion-primary,#18181b)]/5 text-[var(--larafusion-primary,#18181b)] dark:bg-[var(--larafusion-primary,#18181b)]/10 dark:text-white font-medium'
                                                     : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800',
                                             )}
                                         >
                                             <span>{opt.label}</span>
                                             {String(opt.value) === String(value) && (
-                                                <Check className="w-4 h-4 text-[var(--arcane-primary,#18181b)] shrink-0" />
+                                                <Check className="w-4 h-4 text-[var(--larafusion-primary,#18181b)] shrink-0" />
                                             )}
                                         </button>
                                     ))}

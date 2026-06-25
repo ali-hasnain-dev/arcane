@@ -1,13 +1,13 @@
 <?php
 
-namespace Arcane;
+namespace Larafusion;
 
 use Illuminate\Support\ServiceProvider;
 
 abstract class PanelProvider extends ServiceProvider
 {
     /**
-     * Configure and return the Arcane panel.
+     * Configure and return the Larafusion panel.
      * Override this method in your application's provider.
      */
     abstract public function panel(Panel $panel): Panel;
@@ -16,53 +16,53 @@ abstract class PanelProvider extends ServiceProvider
     {
         $panel = $this->panel(Panel::make());
 
-        ArcaneManager::registerPanel($panel);
+        LarafusionManager::registerPanel($panel);
 
         config([
             // Core routing
-            'arcane.prefix'      => $panel->getPath(),
-            'arcane.middleware'  => $panel->getMiddleware(),
-            'arcane.auth_middleware' => $panel->getAuthMiddleware(),
-            'arcane.domain'      => $panel->getDomain(),
-            'arcane.pagination'  => $panel->getPagination(),
+            'larafusion.prefix'      => $panel->getPath(),
+            'larafusion.middleware'  => $panel->getMiddleware(),
+            'larafusion.auth_middleware' => $panel->getAuthMiddleware(),
+            'larafusion.domain'      => $panel->getDomain(),
+            'larafusion.pagination'  => $panel->getPagination(),
 
             // Branding
-            'arcane.brand.name'             => $panel->getBrandName() ?: config('arcane.brand.name', config('app.name')),
-            'arcane.brand.logo'             => $panel->getBrandLogo(),
-            'arcane.brand.dark_logo'        => $panel->getDarkModeBrandLogo(),
-            'arcane.brand.logo_height'      => $panel->getBrandLogoHeight(),
-            'arcane.brand.favicon'          => $panel->getFavicon(),
+            'larafusion.brand.name'             => $panel->getBrandName() ?: config('larafusion.brand.name', config('app.name')),
+            'larafusion.brand.logo'             => $panel->getBrandLogo(),
+            'larafusion.brand.dark_logo'        => $panel->getDarkModeBrandLogo(),
+            'larafusion.brand.logo_height'      => $panel->getBrandLogoHeight(),
+            'larafusion.brand.favicon'          => $panel->getFavicon(),
 
             // Font
-            'arcane.font.family' => $panel->getFont(),
-            'arcane.font.weight' => $panel->getFontWeight(),
+            'larafusion.font.family' => $panel->getFont(),
+            'larafusion.font.weight' => $panel->getFontWeight(),
 
             // Theme
-            'arcane.theme.name'             => $panel->getTheme(),
-            'arcane.theme.dark_mode'        => $panel->getDarkMode(),
-            'arcane.theme.default_mode'     => $panel->getDefaultThemeMode(),
-            'arcane.theme.colors'           => $panel->getColors(),
+            'larafusion.theme.name'             => $panel->getTheme(),
+            'larafusion.theme.dark_mode'        => $panel->getDarkMode(),
+            'larafusion.theme.default_mode'     => $panel->getDefaultThemeMode(),
+            'larafusion.theme.colors'           => $panel->getColors(),
 
             // Layout
-            'arcane.layout.top_navigation'              => $panel->isTopNavigation(),
-            'arcane.layout.sidebar_collapsible'         => $panel->isSidebarCollapsibleOnDesktop(),
-            'arcane.layout.sidebar_width'               => $panel->getSidebarWidth(),
-            'arcane.layout.collapsed_sidebar_width'     => $panel->getCollapsedSidebarWidth(),
-            'arcane.layout.max_content_width'           => $panel->getMaxContentWidth(),
-            'arcane.layout.breadcrumbs'                 => $panel->hasBreadcrumbs(),
-            'arcane.layout.topbar'                      => $panel->hasTopbar(),
-            'arcane.layout.sub_navigation_position'     => $panel->getSubNavigationPosition(),
+            'larafusion.layout.top_navigation'              => $panel->isTopNavigation(),
+            'larafusion.layout.sidebar_collapsible'         => $panel->isSidebarCollapsibleOnDesktop(),
+            'larafusion.layout.sidebar_width'               => $panel->getSidebarWidth(),
+            'larafusion.layout.collapsed_sidebar_width'     => $panel->getCollapsedSidebarWidth(),
+            'larafusion.layout.max_content_width'           => $panel->getMaxContentWidth(),
+            'larafusion.layout.breadcrumbs'                 => $panel->hasBreadcrumbs(),
+            'larafusion.layout.topbar'                      => $panel->hasTopbar(),
+            'larafusion.layout.sub_navigation_position'     => $panel->getSubNavigationPosition(),
 
             // Behaviour
-            'arcane.unsaved_changes_alerts' => $panel->hasUnsavedChangesAlerts(),
-            'arcane.database_transactions'  => $panel->hasDatabaseTransactions(),
-            'arcane.strict_authorization'   => $panel->hasStrictAuthorization(),
+            'larafusion.unsaved_changes_alerts' => $panel->hasUnsavedChangesAlerts(),
+            'larafusion.database_transactions'  => $panel->hasDatabaseTransactions(),
+            'larafusion.strict_authorization'   => $panel->hasStrictAuthorization(),
         ]);
     }
 
     public function boot(): void
     {
-        $panel = ArcaneManager::getPanel();
+        $panel = LarafusionManager::getPanel();
 
         if ($panel && $boot = $panel->getBootUsing()) {
             $boot($panel);

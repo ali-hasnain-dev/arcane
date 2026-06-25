@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Fields;
+namespace Larafusion\Fields;
 
 /**
  * Base class for user-defined custom field types.
@@ -22,7 +22,7 @@ namespace Arcane\Fields;
  *
  * Usage (JS — register once, e.g. in app.tsx):
  *
- *   import { registerField } from '@arcane/forms';
+ *   import { registerField } from '@larafusion/forms';
  *   import StarRatingComponent from './StarRatingComponent';
  *   registerField('star_rating', StarRatingComponent);
  *

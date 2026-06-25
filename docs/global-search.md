@@ -1,6 +1,6 @@
 # Global Search
 
-Every Arcane panel can expose a global search bar (⌘/Ctrl+K). Enable it in your panel provider:
+Every Larafusion panel can expose a global search bar (⌘/Ctrl+K). Enable it in your panel provider:
 
 ```php
 ->globalSearch()

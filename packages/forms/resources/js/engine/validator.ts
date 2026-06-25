@@ -1,4 +1,4 @@
-import { ArcaneField, FormValues } from '@arcane/core';
+import { LarafusionField, FormValues } from '@larafusion/core';
 
 // ─── Rules that can be validated 100% client-side ─────────────────────────────
 const CLIENT_RULES = new Set([
@@ -52,7 +52,7 @@ export function classifyRules(rules: string[]): ClassifiedRules {
 // ─── Client-side validation runner ───────────────────────────────────────────
 
 export function runClientValidation(
-    field: ArcaneField,
+    field: LarafusionField,
     value: unknown,
     rules: string[],
     allValues: Record<string, unknown> = {},

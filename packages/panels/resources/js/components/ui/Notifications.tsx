@@ -1,2 +1,2 @@
-export { NotificationProvider, useNotify } from '@arcane/support';
-export type { Notification, NotificationType } from '@arcane/support';
+export { NotificationProvider, useNotify } from '@larafusion/support';
+export type { Notification, NotificationType } from '@larafusion/support';

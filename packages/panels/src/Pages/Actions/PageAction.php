@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Pages\Actions;
+namespace Larafusion\Pages\Actions;
 
 /**
  * Base class for page-level header actions.

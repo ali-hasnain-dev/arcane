@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Layout;
+namespace Larafusion\Layout;
 
 class Section
 {
@@ -74,7 +74,7 @@ class Section
             'columns'     => $this->columns,
             'collapsible' => $this->collapsible,
             'collapsed'   => $this->collapsed,
-            'fields'      => \Arcane\Schema\Serializer::fields($this->schema),
+            'fields'      => \Larafusion\Schema\Serializer::fields($this->schema),
         ];
     }
 }

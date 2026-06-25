@@ -1,1 +1,1 @@
-export { Breadcrumb as default } from '@arcane/support';
+export { Breadcrumb as default } from '@larafusion/support';

@@ -81,7 +81,7 @@ export default function CodeEditorField({ field, value = '', error, status = 'id
                 'rounded-lg border overflow-hidden font-mono text-sm',
                 error
                     ? 'border-red-400'
-                    : 'border-zinc-300 dark:border-zinc-700 focus-within:border-[var(--arcane-primary,#18181b)] focus-within:ring-2 focus-within:ring-[var(--arcane-primary,#18181b)]/20',
+                    : 'border-zinc-300 dark:border-zinc-700 focus-within:border-[var(--larafusion-primary,#18181b)] focus-within:ring-2 focus-within:ring-[var(--larafusion-primary,#18181b)]/20',
             )}>
                 {/* ── Toolbar ──────────────────────────────────────────── */}
                 <div className="flex items-center justify-between px-3 py-1.5 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900">

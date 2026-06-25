@@ -61,7 +61,7 @@ export default function Register({ revealablePasswords = true, loginSlug = 'logi
         'text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500',
         allErrors[field]
             ? 'border-red-400 bg-red-50 dark:bg-red-950/30 dark:border-red-800 focus:ring-2 focus:ring-red-300 dark:focus:ring-red-900'
-            : 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/20 focus:border-[var(--arcane-primary,#18181b)]',
+            : 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/20 focus:border-[var(--larafusion-primary,#18181b)]',
     ].join(' ');
 
     const clearClientError = (field: string) => {
@@ -159,7 +159,7 @@ export default function Register({ revealablePasswords = true, loginSlug = 'logi
                 <button
                     type="submit"
                     disabled={form.processing}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white transition-opacity disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-opacity disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]"
                 >
                     {form.processing && <Loader2 className="w-4 h-4 animate-spin" />}
                     Create account
@@ -169,7 +169,7 @@ export default function Register({ revealablePasswords = true, loginSlug = 'logi
                     Already have an account?{' '}
                     <Link
                         href={`${adminPath}/${loginSlug}`}
-                        className="font-medium text-[var(--arcane-primary,#18181b)] dark:text-zinc-300 hover:underline"
+                        className="font-medium text-[var(--larafusion-primary,#18181b)] dark:text-zinc-300 hover:underline"
                     >
                         Sign in
                     </Link>

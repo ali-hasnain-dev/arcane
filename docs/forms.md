@@ -29,7 +29,7 @@ Text::make('field_name')
 
 ### Validation
 
-Arcane provides fluent methods for every Laravel validation rule. Rules are automatically classified as **client-side** (instant feedback) or **server-side** (sent via Precognition) based on their nature.
+Larafusion provides fluent methods for every Laravel validation rule. Rules are automatically classified as **client-side** (instant feedback) or **server-side** (sent via Precognition) based on their nature.
 
 #### Presence
 
@@ -151,7 +151,7 @@ Text::make('email')
 
 ### Custom Fields
 
-Arcane supports user-defined field types. Since Arcane uses React + Inertia (not Blade + Livewire), the approach is:
+Larafusion supports user-defined field types. Since Larafusion uses React + Inertia (not Blade + Livewire), the approach is:
 
 1. **PHP class** — extends `CustomField`, defines `getType()` and any config methods
 2. **React component** — registered via `registerField()` and rendered by `FieldRenderer`
@@ -159,9 +159,9 @@ Arcane supports user-defined field types. Since Arcane uses React + Inertia (not
 #### Step 1 — PHP field class
 
 ```php
-// app/Arcane/Fields/StarRatingField.php
+// app/Larafusion/Fields/StarRatingField.php
 
-use Arcane\Fields\CustomField;
+use Larafusion\Fields\CustomField;
 
 class StarRatingField extends CustomField
 {
@@ -185,7 +185,7 @@ class StarRatingField extends CustomField
 Or use `CustomField::make()` directly without subclassing:
 
 ```php
-use Arcane\Fields\CustomField;
+use Larafusion\Fields\CustomField;
 
 CustomField::make('satisfaction', 'star_rating')
     ->componentData(['maxStars' => 5, 'color' => 'gold'])
@@ -198,7 +198,7 @@ CustomField::make('satisfaction', 'star_rating')
 Call `registerField()` **once** at app boot, before any forms are rendered (e.g. in `resources/js/app.tsx`):
 
 ```tsx
-import { registerField } from '@arcane/forms';
+import { registerField } from '@larafusion/forms';
 import StarRatingField from './components/StarRatingField';
 
 registerField('star_rating', StarRatingField);
@@ -260,8 +260,8 @@ export default function StarRatingField({ field, value, error, onChange }: Props
 #### Using the field in a form
 
 ```php
-use App\Arcane\Fields\StarRatingField;
-use Arcane\Fields\CustomField;
+use App\Larafusion\Fields\StarRatingField;
+use Larafusion\Fields\CustomField;
 
 class ReviewForm
 {
@@ -302,7 +302,7 @@ class ReviewForm
 The `Text` field is the primary single-line input. It mirrors Filament 5.x's `TextInput` with a rich set of modifiers.
 
 ```php
-use Arcane\Fields\Text;
+use Larafusion\Fields\Text;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 Text::make('title')
@@ -405,7 +405,7 @@ Text::make('slug')
 #### Email
 
 ```php
-use Arcane\Fields\Email;
+use Larafusion\Fields\Email;
 
 Email::make('email')->required()
 // Automatically adds the 'email' validation rule.
@@ -423,7 +423,7 @@ Email::make('email')
 #### Password
 
 ```php
-use Arcane\Fields\Password;
+use Larafusion\Fields\Password;
 
 Password::make('password')
     ->minLength(8)      // default: 8
@@ -441,7 +441,7 @@ Passwords are `bcrypt`-hashed by the controller automatically. An empty value on
 #### Textarea
 
 ```php
-use Arcane\Fields\Textarea;
+use Larafusion\Fields\Textarea;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 Textarea::make('bio')
@@ -490,7 +490,7 @@ Arcane's Select field mirrors Filament 5.x with two rendering modes and a rich A
 **Custom JS dropdown** — opt-in via `->native(false)`. Adds live search, chip-based multi-select, grouped options, clear button, disabled options, and custom messages.
 
 ```php
-use Arcane\Fields\Select;
+use Larafusion\Fields\Select;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 Select::make('status')
@@ -587,7 +587,7 @@ Select::make('author')
 #### Number
 
 ```php
-use Arcane\Fields\Number;
+use Larafusion\Fields\Number;
 
 Number::make('quantity')
     ->min(1)
@@ -600,7 +600,7 @@ Number::make('quantity')
 A single boolean checkbox. Use for opt-in fields like terms acceptance.
 
 ```php
-use Arcane\Fields\Checkbox;
+use Larafusion\Fields\Checkbox;
 
 // Inline mode (default) — label beside the checkbox
 Checkbox::make('terms')
@@ -628,7 +628,7 @@ Checkbox::make('no_bots')->declined()
 #### Toggle
 
 ```php
-use Arcane\Fields\Toggle;
+use Larafusion\Fields\Toggle;
 
 // Basic
 Toggle::make('is_active')
@@ -675,10 +675,10 @@ Toggle::make('spam')->declined()    // must be off
 
 #### DatePicker
 
-Arcane's `DatePicker` also supports time, affixes, week-start configuration, and disabled dates.
+Larafusion's `DatePicker` also supports time, affixes, week-start configuration, and disabled dates.
 
 ```php
-use Arcane\Fields\DatePicker;
+use Larafusion\Fields\DatePicker;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 DatePicker::make('published_at')
@@ -741,7 +741,7 @@ DatePicker::make('published_at')
 #### Hidden
 
 ```php
-use Arcane\Fields\Hidden;
+use Larafusion\Fields\Hidden;
 
 Hidden::make('tenant_id')->default(auth()->user()->tenant_id)
 // Renders nothing in the UI; value is submitted with the form.
@@ -755,7 +755,7 @@ Hidden::make('tenant_id')->default(auth()->user()->tenant_id)
 #### Radio
 
 ```php
-use Arcane\Fields\Radio;
+use Larafusion\Fields\Radio;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 Radio::make('role')
@@ -808,7 +808,7 @@ Radio::make('role')->options(UserRole::class)->grid()
 #### CheckboxList
 
 ```php
-use Arcane\Fields\CheckboxList;
+use Larafusion\Fields\CheckboxList;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 CheckboxList::make('permissions')
@@ -869,7 +869,7 @@ CheckboxList::make('roles')->options(UserRole::class)
 #### Slider
 
 ```php
-use Arcane\Fields\Slider;
+use Larafusion\Fields\Slider;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 Slider::make('rating')
@@ -925,7 +925,7 @@ Slider::make('price_range')
 A button-group alternative to Radio / CheckboxList — each option is a clickable pill button with optional icon and colour.
 
 ```php
-use Arcane\Fields\ToggleButtons;
+use Larafusion\Fields\ToggleButtons;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 ToggleButtons::make('status')
@@ -1005,7 +1005,7 @@ ToggleButtons::make('plan')
 A syntax-aware code editor with line numbers, tab-key support, and language badge. Built on a plain `<textarea>` — no external dependencies.
 
 ```php
-use Arcane\Fields\CodeEditor;
+use Larafusion\Fields\CodeEditor;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 CodeEditor::make('snippet')
@@ -1066,7 +1066,7 @@ CodeEditor::make('script')
 #### RichText
 
 ```php
-use Arcane\Fields\RichText;
+use Larafusion\Fields\RichText;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 RichText::make('content')
@@ -1090,7 +1090,7 @@ RichText::make('content')
 #### Markdown
 
 ```php
-use Arcane\Fields\Markdown;
+use Larafusion\Fields\Markdown;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 Markdown::make('description')
@@ -1111,7 +1111,7 @@ Markdown::make('notes')
 #### KeyValue
 
 ```php
-use Arcane\Fields\KeyValue;
+use Larafusion\Fields\KeyValue;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 KeyValue::make('meta')
@@ -1146,8 +1146,8 @@ KeyValue::make('headers')
 #### Builder
 
 ```php
-use Arcane\Fields\Builder;
-use Arcane\Fields\BuilderBlock;
+use Larafusion\Fields\Builder;
+use Larafusion\Fields\BuilderBlock;
 
 Builder::make('blocks')
     ->blocks([
@@ -1192,7 +1192,7 @@ Builder::make('blocks')
 #### Tags
 
 ```php
-use Arcane\Fields\Tags;
+use Larafusion\Fields\Tags;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 Tags::make('keywords')
@@ -1235,7 +1235,7 @@ Tags::make('prices')
 A full-featured colour picker with SV canvas, hue slider, RGB channel inputs, preset swatches, and optional alpha channel.
 
 ```php
-use Arcane\Fields\Color;
+use Larafusion\Fields\Color;
 
 // ── Default (hex storage) ─────────────────────────────────────────────────
 Color::make('brand_color')->default('#7c3aed')
@@ -1265,7 +1265,7 @@ Color::make('theme_color')
 #### Repeater
 
 ```php
-use Arcane\Fields\Repeater;
+use Larafusion\Fields\Repeater;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 Repeater::make('links')
@@ -1319,7 +1319,7 @@ Repeater::make('steps')
 #### BelongsTo
 
 ```php
-use Arcane\Fields\Relations\BelongsTo;
+use Larafusion\Fields\Relations\BelongsTo;
 
 BelongsTo::make('category_id')
     ->model(\App\Models\Category::class)
@@ -1332,7 +1332,7 @@ BelongsTo::make('category_id')
 #### BelongsToMany
 
 ```php
-use Arcane\Fields\Relations\BelongsToMany;
+use Larafusion\Fields\Relations\BelongsToMany;
 
 BelongsToMany::make('tags')
     ->model(\App\Models\Tag::class)
@@ -1344,7 +1344,7 @@ BelongsToMany::make('tags')
 #### HasMany
 
 ```php
-use Arcane\Fields\Relations\HasMany;
+use Larafusion\Fields\Relations\HasMany;
 
 HasMany::make('posts')
     ->model(\App\Models\Post::class)
@@ -1357,7 +1357,7 @@ HasMany::make('posts')
 #### MorphTo
 
 ```php
-use Arcane\Fields\Relations\MorphTo;
+use Larafusion\Fields\Relations\MorphTo;
 
 MorphTo::make('commentable')
     ->types([
@@ -1376,7 +1376,7 @@ MorphTo::make('commentable')
 #### FileUpload
 
 ```php
-use Arcane\Fields\FileUpload;
+use Larafusion\Fields\FileUpload;
 
 // ── Basic ─────────────────────────────────────────────────────────────────
 FileUpload::make('attachment')
@@ -1437,7 +1437,7 @@ FileUpload::make('file')->documents()       // PDF, Word, Excel
 #### ImageUpload
 
 ```php
-use Arcane\Fields\ImageUpload;
+use Larafusion\Fields\ImageUpload;
 
 ImageUpload::make('avatar')
     ->disk('public')
@@ -1458,7 +1458,7 @@ Wrap fields in layout primitives to build structured, multi-column forms.
 ### Section
 
 ```php
-use Arcane\Layout\Section;
+use Larafusion\Layout\Section;
 
 Section::make('Personal Information')
     ->description('Basic contact details.')
@@ -1476,8 +1476,8 @@ Section::make('Personal Information')
 ### Tabs
 
 ```php
-use Arcane\Layout\Tabs;
-use Arcane\Layout\Tab;
+use Larafusion\Layout\Tabs;
+use Larafusion\Layout\Tab;
 
 Tabs::make()
     ->default('General')
@@ -1501,7 +1501,7 @@ Tabs::make()
 ### Grid
 
 ```php
-use Arcane\Layout\Grid;
+use Larafusion\Layout\Grid;
 
 Grid::make()
     ->columns(3)

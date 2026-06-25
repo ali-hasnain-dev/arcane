@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { router } from '@inertiajs/react';
-import { ArcaneField, FormValues, FormErrors } from '@arcane/core';
+import { LarafusionField, FormValues, FormErrors } from '@larafusion/core';
 import { classifyRules, runClientValidation } from '../engine/validator';
 import {
     HybridFormHandle,
@@ -10,14 +10,14 @@ import {
 } from '../types';
 
 interface UseHybridFormOptions {
-    schema: ArcaneField[];
+    schema: LarafusionField[];
     initialValues?: FormValues;
     // Precognition endpoint — usually the submit URL
     precognitionUrl: string;
     precognitionMethod?: 'post' | 'put' | 'patch';
 }
 
-function buildInitialValues(schema: ArcaneField[], override: FormValues = {}): FormValues {
+function buildInitialValues(schema: LarafusionField[], override: FormValues = {}): FormValues {
     const out: FormValues = {};
     schema.forEach(field => {
         out[field.name] = field.name in override
@@ -27,7 +27,7 @@ function buildInitialValues(schema: ArcaneField[], override: FormValues = {}): F
     return out;
 }
 
-function buildInitialValidation(schema: ArcaneField[]): FormValidationState {
+function buildInitialValidation(schema: LarafusionField[]): FormValidationState {
     const state: FormValidationState = {};
     schema.forEach(f => {
         state[f.name] = { status: 'idle', error: undefined, touched: false };

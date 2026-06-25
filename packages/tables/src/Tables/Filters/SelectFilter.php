@@ -1,8 +1,8 @@
 <?php
 
-namespace Arcane\Tables\Filters;
+namespace Larafusion\Tables\Filters;
 
-use Arcane\Support\Enums\EnumOptions;
+use Larafusion\Support\Enums\EnumOptions;
 
 class SelectFilter extends Filter
 {

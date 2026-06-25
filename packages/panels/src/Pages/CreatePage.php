@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Pages;
+namespace Larafusion\Pages;
 
 abstract class CreatePage
 {

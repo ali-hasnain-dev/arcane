@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Layout;
+namespace Larafusion\Layout;
 
 class Tab
 {
@@ -48,7 +48,7 @@ class Tab
             'label'   => $this->label,
             'icon'    => $this->icon,
             'columns' => $this->columns,
-            'fields'  => \Arcane\Schema\Serializer::fields($this->schema),
+            'fields'  => \Larafusion\Schema\Serializer::fields($this->schema),
         ];
     }
 }

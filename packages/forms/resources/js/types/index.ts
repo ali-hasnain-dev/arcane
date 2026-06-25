@@ -1,5 +1,5 @@
-export type * from '@arcane/core';
-import type { BaseField, ArcaneField, FormValues, FormErrors } from '@arcane/core';
+export type * from '@larafusion/core';
+import type { BaseField, LarafusionField, FormValues, FormErrors } from '@larafusion/core';
 
 export type ValidationStatus = 'idle' | 'validating' | 'valid' | 'invalid';
 
@@ -24,7 +24,7 @@ export interface HybridFormState {
 export interface RepeaterRow { _key: string; [field: string]: unknown; }
 export interface RepeaterField extends BaseField {
     type:         'repeater';
-    subFields:    ArcaneField[];
+    subFields:    LarafusionField[];
     minRows?:     number | null;
     maxRows?:     number | null;
     addLabel?:    string;
@@ -143,7 +143,7 @@ export interface HasManyField extends BaseField {
 
 // ─── Extended union ───────────────────────────────────────────────────────────
 export type ExtendedField =
-    | ArcaneField
+    | LarafusionField
     | RepeaterField
     | TagsField
     | ColorField

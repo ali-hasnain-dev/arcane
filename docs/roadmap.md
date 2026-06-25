@@ -8,7 +8,7 @@
 
 - [x] Full CRUD — Index, Create, Edit, Show, Delete
 - [x] Filament-style resource folder structure
-- [x] Auto-discovery (recursive) — `app/Arcane/Resources/**/*Resource.php`
+- [x] Auto-discovery (recursive) — `app/Larafusion/Resources/**/*Resource.php`
 - [x] Soft deletes — Trashed tab, restore, force-delete, bulk restore
 - [x] Inline editing — click-to-edit cells, saved via PATCH
 - [x] Export CSV — streamed, chunked, no memory issues
@@ -103,7 +103,7 @@
 - [x] Global search — ⌘K palette, keyboard navigation, grouped results
 - [x] Navigation groups — collapsible sidebar sections
 - [x] Navigation badges — `getNavigationBadge()` count
-- [x] Custom pages — `Page` base class, `ArcaneManager::registerPages([])`
+- [x] Custom pages — `Page` base class, `LarafusionManager::registerPages([])`
 - [x] Dynamic page titles — `Page — Brand Name` in browser tab
 - [x] Breadcrumbs
 - [x] Flash toasts — success/error, auto-dismiss, `useNotify()` hook
@@ -122,7 +122,7 @@
 #### Infrastructure
 
 - [x] No page publishing — React components resolved directly from vendor via Vite plugin
-- [x] `@source '../../vendor/arcane/*/resources/js/**/*.{ts,tsx}'` — Tailwind scans vendor classes
+- [x] `@source '../../vendor/larafusion/*/resources/js/**/*.{ts,tsx}'` — Tailwind scans vendor classes
 - [x] Inertia v3: `once()`, `defer()`, `only:[]`, optimistic updates, `<Link prefetch>`
 - [x] Plugins — navigation items, layout slots, lifecycle hooks
 - [x] Widgets — StatsOverview, Chart (pure SVG), Table
@@ -135,8 +135,8 @@
 #### Developer Experience
 
 - [ ] Test suite — PHPUnit + Vitest coverage
-- [x] `arcane:user` command — create admin users from CLI
-- [x] IDE helper stubs — PHPDoc for fluent APIs (`php artisan arcane:ide-helpers`)
+- [x] `larafusion:user` command — create admin users from CLI
+- [x] IDE helper stubs — PHPDoc for fluent APIs (`php artisan larafusion:ide-helpers`)
 - [x] Changelog and upgrade guides between versions
 
 #### Security
@@ -148,11 +148,11 @@
 
 - [x] Multi-tenancy — per-tenant resource scoping (`->tenancy(fn($req) => ...)` on Panel; `scopeForTenant($query, $tenant)` on Resource)
 - [x] Realtime — WebSocket table updates (`->realtime()` on Panel; `RecordEvent` broadcast on every create/update/delete; compatible with Reverb/Pusher)
-- [x] REST API generator — JSON API from resource definition (`->api()` on Panel; `arcane:api` command; `ResourceApiController` with pagination, search, sort, filters)
+- [x] REST API generator — JSON API from resource definition (`->api()` on Panel; `larafusion:api` command; `ResourceApiController` with pagination, search, sort, filters)
 
 ### Future
 
-- [ ] Role-based access — per-resource, per-action permissions *(planned as a standalone `arcane-permissions` package)*
+- [ ] Role-based access — per-resource, per-action permissions *(planned as a standalone `larafusion-permissions` package)*
 - [ ] Activity log — audit trail for all CRUD events
 - [ ] IP allowlist
 - [ ] Revision history — view and restore previous record versions

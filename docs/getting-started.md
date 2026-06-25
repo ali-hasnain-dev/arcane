@@ -2,12 +2,12 @@
 
 ## How It Works
 
-Arcane is a Laravel package. You write PHP resource classes; Arcane renders a fully interactive React admin UI powered by Inertia.js v3. No page publishing required — React components are resolved directly from the vendor package via a Vite plugin.
+Larafusion is a Laravel package. You write PHP resource classes; Larafusion renders a fully interactive React admin UI powered by Inertia.js v3. No page publishing required — React components are resolved directly from the vendor package via a Vite plugin.
 
 ```
 your-app/
 ├── app/
-│   ├── Arcane/
+│   ├── Larafusion/
 │   │   ├── Pages/                        ← custom non-CRUD pages
 │   │   ├── Plugins/                      ← plugin classes
 │   │   └── Resources/
@@ -22,13 +22,13 @@ your-app/
 │   │           │   └── UsersTable.php    ← column + filter definitions
 │   │           └── UserResource.php      ← model, navigation, wires schema + table
 │   └── Providers/
-│       └── Arcane/
+│       └── Larafusion/
 │           └── AdminPanelProvider.php    ← panel configuration
 ├── resources/
 │   ├── css/app.css
 │   ├── views/app.blade.php               ← Inertia root template (auto-created)
 │   └── js/app.tsx                        ← Inertia entry point (auto-created)
-└── vite.config.js                        ← patched by arcane:install
+└── vite.config.js                        ← patched by larafusion:install
 ```
 
 ---
@@ -48,27 +48,27 @@ your-app/
 ### 1. Install the package
 
 ```bash
-composer require arcane/panels
+composer require larafusion/panels
 ```
 
 ### 2. Run the install command
 
 ```bash
-php artisan arcane:install
+php artisan larafusion:install
 ```
 
 The install command automatically:
 
-- Creates `app/Providers/Arcane/AdminPanelProvider.php` — your panel configuration hub
+- Creates `app/Providers/Larafusion/AdminPanelProvider.php` — your panel configuration hub
 - Creates `resources/views/app.blade.php` — Inertia v3 root template with an inline dark-mode FOUC prevention script in `<head>`
-- **Replaces `vite.config.js`** with a full Arcane-ready config — adds the `arcaneResolve` Vite plugin (resolves React components directly from `vendor/arcane/` without publishing) and `resolve.preserveSymlinks: true`
+- **Replaces `vite.config.js`** with a full Larafusion-ready config — adds the `larafusionResolve` Vite plugin (resolves React components directly from `vendor/larafusion/` without publishing) and `resolve.preserveSymlinks: true`
 - Creates `resources/js/app.tsx` — Inertia v3 entry point with vendor page resolver (no manual `resolve` callback needed)
 - Patches `bootstrap/app.php` — registers `\Inertia\Middleware` and redirects unauthenticated users to the panel login
 - Patches `.env` — appends `INERTIA_USE_SCRIPT_ELEMENT_FOR_INITIAL_PAGE=true`
-- Patches `resources/css/app.css` — adds `@custom-variant dark` for Tailwind v4 dark mode and `@source '../../vendor/arcane/*/resources/js/**/*.{ts,tsx}'` so Tailwind scans vendor component files
+- Patches `resources/css/app.css` — adds `@custom-variant dark` for Tailwind v4 dark mode and `@source '../../vendor/larafusion/*/resources/js/**/*.{ts,tsx}'` so Tailwind scans vendor component files
 - Installs npm packages — production: `@inertiajs/react`, `@vitejs/plugin-react`, `react`, `react-dom`, `lucide-react`, `clsx`; dev: `@types/react`, `@types/react-dom`
-- Scaffolds `app/Arcane/Resources/Users/` with all 6 resource files as a working example
-- Creates `app/Arcane/{Resources,Pages,Plugins}/` directory structure
+- Scaffolds `app/Larafusion/Resources/Users/` with all 6 resource files as a working example
+- Creates `app/Larafusion/{Resources,Pages,Plugins}/` directory structure
 
 ### 3. Register the provider
 
@@ -77,7 +77,7 @@ Add your panel provider to `bootstrap/providers.php`:
 ```php
 return [
     App\Providers\AppServiceProvider::class,
-    App\Providers\Arcane\AdminPanelProvider::class, // ← add this
+    App\Providers\Larafusion\AdminPanelProvider::class, // ← add this
 ];
 ```
 
@@ -93,21 +93,21 @@ npm run build
 http://your-app.test/admin
 ```
 
-Arcane redirects unauthenticated users to `/admin/login` automatically.
+Larafusion redirects unauthenticated users to `/admin/login` automatically.
 
 ---
 
 ## Folder Structure
 
-### `app/Providers/Arcane/AdminPanelProvider.php`
+### `app/Providers/Larafusion/AdminPanelProvider.php`
 
 Your panel configuration hub. All panel settings — branding, theme, layout, behaviour, prefetch, auth — live here.
 
 ```php
-namespace App\Providers\Arcane;
+namespace App\Providers\Larafusion;
 
-use Arcane\Panel;
-use Arcane\PanelProvider;
+use Larafusion\Panel;
+use Larafusion\PanelProvider;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -119,18 +119,18 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->brand('My App')
             ->theme('violet');
-        // Resources in app/Arcane/ are auto-discovered — no ->resources() call needed.
+        // Resources in app/Larafusion/ are auto-discovered — no ->resources() call needed.
     }
 }
 ```
 
-### `app/Arcane/Resources/{Model}/`
+### `app/Larafusion/Resources/{Model}/`
 
-Each resource lives in its own folder. The `arcane:resource` command scaffolds all files:
+Each resource lives in its own folder. The `larafusion:resource` command scaffolds all files:
 
 ```bash
-php artisan arcane:resource Post
-# Creates app/Arcane/Resources/Posts/
+php artisan larafusion:resource Post
+# Creates app/Larafusion/Resources/Posts/
 #   PostResource.php   ← model, navigation, wires form + table
 #   Schemas/PostForm.php
 #   Tables/PostsTable.php

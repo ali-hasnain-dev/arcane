@@ -29,7 +29,7 @@ export type {
     BuilderBlockSchema,
     BuilderField,
     MorphToField,
-    ArcaneField,
+    LarafusionField,
     StatData,
     StatsOverviewWidgetData,
     ChartDataset,
@@ -58,9 +58,9 @@ export type {
     UserMenuConfig,
     PanelConfig,
     PluginInfo,
-    ArcaneSharedProps,
-    ArcanePageProps,
+    LarafusionSharedProps,
+    LarafusionPageProps,
     IndexPageProps,
     FormValues,
     FormErrors,
-} from '@arcane/support';
+} from '@larafusion/support';

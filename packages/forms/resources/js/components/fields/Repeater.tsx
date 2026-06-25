@@ -6,7 +6,7 @@ import FieldWrapper from './FieldWrapper';
 import { cn } from '../../lib/utils';
 
 import { FieldRenderer } from '.';
-import { ArcaneField } from '@arcane/core';
+import { LarafusionField } from '@larafusion/core';
 
 interface RepeaterProps {
     field: RepeaterField;
@@ -20,7 +20,7 @@ function generateKey() {
     return Math.random().toString(36).slice(2, 9);
 }
 
-function buildEmptyRow(subFields: ArcaneField[]): RepeaterRow {
+function buildEmptyRow(subFields: LarafusionField[]): RepeaterRow {
     const row: RepeaterRow = { _key: generateKey() };
     subFields.forEach(f => {
         row[f.name] = f.default ?? (f.type === 'toggle' ? false : '');
@@ -154,7 +154,7 @@ export default function Repeater({ field, value = [], error, status = 'idle', on
                                         <button
                                             type="button"
                                             onClick={() => cloneRow(idx)}
-                                            className="p-1 rounded text-zinc-400 hover:text-[var(--arcane-primary,#18181b)] transition-colors"
+                                            className="p-1 rounded text-zinc-400 hover:text-[var(--larafusion-primary,#18181b)] transition-colors"
                                             title="Duplicate row"
                                         >
                                             <Copy className="w-4 h-4" />
@@ -202,7 +202,7 @@ export default function Repeater({ field, value = [], error, status = 'idle', on
                         onClick={addRow}
                         className={cn(
                             'flex items-center gap-2 w-full px-4 py-2.5 rounded-xl border-2 border-dashed text-sm font-medium transition-colors',
-                            'border-[var(--arcane-primary,#18181b)]/40 text-[var(--arcane-primary,#18181b)] hover:bg-[var(--arcane-primary,#18181b)]/5 hover:border-[var(--arcane-primary,#18181b)]/60',
+                            'border-[var(--larafusion-primary,#18181b)]/40 text-[var(--larafusion-primary,#18181b)] hover:bg-[var(--larafusion-primary,#18181b)]/5 hover:border-[var(--larafusion-primary,#18181b)]/60',
                         )}
                     >
                         <Plus className="w-4 h-4" />

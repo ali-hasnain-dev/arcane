@@ -1,7 +1,7 @@
 {
-    "name": "@arcane/notifications",
+    "name": "@larafusion/notifications",
     "version": "0.1.0",
-    "description": "Arcane notifications \u2014 flash notification components for admin panels",
+    "description": "Larafusion notifications \u2014 flash notification components for admin panels",
     "main": "dist/index.js",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts",
@@ -20,7 +20,7 @@
     "peerDependencies": {
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
-        "@arcane/support": "*"
+        "@larafusion/support": "*"
     },
     "devDependencies": {
         "@types/react": "^19.0.0",

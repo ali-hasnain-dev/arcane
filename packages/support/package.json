@@ -1,7 +1,7 @@
 {
-    "name": "@arcane/support",
+    "name": "@larafusion/support",
     "version": "0.1.0",
-    "description": "Arcane support \u2014 shared utilities, types, UI primitives (Card, Breadcrumb), and theme tokens used across all Arcane packages",
+    "description": "Larafusion support \u2014 shared utilities, types, UI primitives (Card, Breadcrumb), and theme tokens used across all Larafusion packages",
     "main": "dist/index.js",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts",

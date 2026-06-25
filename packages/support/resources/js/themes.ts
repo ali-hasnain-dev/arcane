@@ -75,12 +75,12 @@ export const themeNames = Object.keys(themes) as (keyof typeof themes)[];
  */
 export function tokensToCssVars(tokens: ThemeTokens): Record<string, string> {
     return {
-        '--arcane-primary':        tokens.primary,
-        '--arcane-primary-hover':  tokens.primaryHover,
-        '--arcane-primary-light':  tokens.primaryLight,
-        '--arcane-primary-ring':   tokens.primaryRing,
-        '--arcane-sidebar-bg':     tokens.sidebarBg,
-        '--arcane-sidebar-text':   tokens.sidebarText,
-        '--arcane-sidebar-active': tokens.sidebarActive,
+        '--larafusion-primary':        tokens.primary,
+        '--larafusion-primary-hover':  tokens.primaryHover,
+        '--larafusion-primary-light':  tokens.primaryLight,
+        '--larafusion-primary-ring':   tokens.primaryRing,
+        '--larafusion-sidebar-bg':     tokens.sidebarBg,
+        '--larafusion-sidebar-text':   tokens.sidebarText,
+        '--larafusion-sidebar-active': tokens.sidebarActive,
     };
 }

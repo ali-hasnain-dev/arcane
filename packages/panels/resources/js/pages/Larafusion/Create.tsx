@@ -4,9 +4,9 @@ import Breadcrumb from '../../components/ui/Breadcrumb';
 import PageHeaderActions from '../../components/ui/PageHeaderActions';
 import { Card, CardBody } from '../../components/ui/Card';
 import DynamicForm from '../../components/form/DynamicForm';
-import { ArcanePageProps, FormSchemaItem } from '../../types';
+import { LarafusionPageProps, FormSchemaItem } from '../../types';
 
-// @arcane/form is an optional add-on package; null = use built-in DynamicForm
+// @larafusion/form is an optional add-on package; null = use built-in DynamicForm
 const HybridForm: React.ComponentType<Record<string, unknown>> | null = null;
 
 /** Returns true when the schema has at least one layout wrapper (section/tabs/grid). */
@@ -17,7 +17,7 @@ function hasLayoutItems(schema: FormSchemaItem[]): boolean {
     });
 }
 
-export default function Create({ resource, schema, headerActions = [] }: ArcanePageProps) {
+export default function Create({ resource, schema, headerActions = [] }: LarafusionPageProps) {
     const submitUrl = `/admin/${resource.slug}`;
     const useCard = !hasLayoutItems(schema);
 

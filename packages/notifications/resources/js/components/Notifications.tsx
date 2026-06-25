@@ -2,12 +2,12 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { router } from '@inertiajs/react';
 import { CheckCircle, AlertCircle, AlertTriangle, Info, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { ArcaneSharedProps } from '../../types';
+import { LarafusionSharedProps } from '../../types';
 
 // Module-level flash buffer: populated by the Inertia navigate event (which fires
 // before the new component tree mounts) so it survives layout remounts. The
 // deferred-props XHR that Inertia fires after initial render would otherwise
-// overwrite arcane.flash to null before any useEffect has a chance to read it.
+// overwrite larafusion.flash to null before any useEffect has a chance to read it.
 const pendingFlash = { success: null as string | null, error: null as string | null };
 let flashUnsubscribe: (() => void) | null = null;
 
@@ -136,12 +136,12 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     // Convert Inertia flash messages to notifications.
     // We use a module-level buffer + router.on('navigate') instead of usePage() +
     // useEffect because Inertia::defer() triggers a second partial-reload XHR that
-    // overwrites arcane.flash to null before React effects can read it.
+    // overwrites larafusion.flash to null before React effects can read it.
     useEffect(() => {
         // Register the router listener once for the lifetime of the app.
         if (!flashUnsubscribe) {
             flashUnsubscribe = router.on('navigate', (event) => {
-                const flash = (event.detail.page.props as unknown as ArcaneSharedProps)?.arcane?.flash;
+                const flash = (event.detail.page.props as unknown as LarafusionSharedProps)?.larafusion?.flash;
                 if (flash?.success) pendingFlash.success = flash.success;
                 if (flash?.error)   pendingFlash.error   = flash.error;
             });

@@ -7,14 +7,14 @@ A **Resource** maps an Eloquent model to a full CRUD interface. It wires togethe
 ### Filament-Style Folder Structure
 
 ```php
-// app/Arcane/Resources/Users/UserResource.php
-namespace App\Arcane\Resources\Users;
+// app/Larafusion/Resources/Users/UserResource.php
+namespace App\Larafusion\Resources\Users;
 
 use App\Models\User;
-use Arcane\Resource;
-use Arcane\Tables\Table;
-use App\Arcane\Resources\Users\Schemas\UserForm;
-use App\Arcane\Resources\Users\Tables\UsersTable;
+use Larafusion\Resource;
+use Larafusion\Tables\Table;
+use App\Larafusion\Resources\Users\Schemas\UserForm;
+use App\Larafusion\Resources\Users\Tables\UsersTable;
 
 class UserResource extends Resource
 {
@@ -42,10 +42,10 @@ class UserResource extends Resource
 
 ### Resource Auto-Discovery
 
-Arcane **recursively** scans `app/Arcane/` for any class that extends `Arcane\Resource`. No explicit registration is required — create the file and it appears in the panel.
+Larafusion **recursively** scans `app/Larafusion/` for any class that extends `Larafusion\Resource`. No explicit registration is required — create the file and it appears in the panel.
 
 ```
-app/Arcane/
+app/Larafusion/
 └── Resources/
     ├── Users/UserResource.php     ← discovered automatically
     ├── Posts/PostResource.php     ← discovered automatically
@@ -56,8 +56,8 @@ To opt in to **explicit control** (skips auto-discovery):
 
 ```php
 ->resources([
-    \App\Arcane\Resources\Users\UserResource::class,
-    \App\Arcane\Resources\Posts\PostResource::class,
+    \App\Larafusion\Resources\Users\UserResource::class,
+    \App\Larafusion\Resources\Posts\PostResource::class,
 ])
 ```
 

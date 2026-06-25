@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -13,7 +13,7 @@ class UploadController extends Controller
      * Temp upload — stores file to temp location, returns a signed key.
      * The actual save to permanent location happens on form submit.
      *
-     * POST /arcane/upload
+     * POST /larafusion/upload
      * Body: multipart/form-data { file, disk, directory }
      */
     public function store(Request $request)
@@ -30,7 +30,7 @@ class UploadController extends Controller
 
         // Store to temp path
         $tempPath = $file->store(
-            "arcane-temp/{$directory}",
+            "larafusion-temp/{$directory}",
             $disk
         );
 
@@ -57,7 +57,7 @@ class UploadController extends Controller
 
     /**
      * Serve a private file securely.
-     * GET /arcane/files/{path}
+     * GET /larafusion/files/{path}
      */
     public function serve(Request $request, string $path)
     {
@@ -72,7 +72,7 @@ class UploadController extends Controller
 
     /**
      * Delete a temp file.
-     * DELETE /arcane/upload
+     * DELETE /larafusion/upload
      */
     public function destroy(Request $request)
     {
@@ -83,7 +83,7 @@ class UploadController extends Controller
             $data = decrypt($key);
 
             // Only allow deleting temp files
-            if (!str_starts_with($data['path'], 'arcane-temp/')) {
+            if (!str_starts_with($data['path'], 'larafusion-temp/')) {
                 return response()->json(['deleted' => false], 403);
             }
 

@@ -58,7 +58,7 @@ export default function HasManyTable({
                         {field.relatedResource && (
                             <Link
                                 href={`/admin/${field.relatedResource}/create`}
-                                className="inline-flex items-center gap-1 mt-2 text-[var(--arcane-primary,#18181b)] hover:opacity-80 hover:underline text-xs font-medium"
+                                className="inline-flex items-center gap-1 mt-2 text-[var(--larafusion-primary,#18181b)] hover:opacity-80 hover:underline text-xs font-medium"
                             >
                                 <Plus className="w-3.5 h-3.5" />
                                 Add {field.label}
@@ -95,7 +95,7 @@ export default function HasManyTable({
                                             <td className="px-4 py-2.5">
                                                 <Link
                                                     href={`/admin/${field.relatedResource}/${rec.id}`}
-                                                    className="p-1 rounded text-zinc-400 hover:text-[var(--arcane-primary,#18181b)] transition-colors"
+                                                    className="p-1 rounded text-zinc-400 hover:text-[var(--larafusion-primary,#18181b)] transition-colors"
                                                     title="View"
                                                 >
                                                     <ExternalLink className="w-3.5 h-3.5" />
@@ -115,7 +115,7 @@ export default function HasManyTable({
                                 </span>
                                 <Link
                                     href={`/admin/${field.relatedResource}`}
-                                    className="text-xs text-[var(--arcane-primary,#18181b)] hover:opacity-80 hover:underline font-medium"
+                                    className="text-xs text-[var(--larafusion-primary,#18181b)] hover:opacity-80 hover:underline font-medium"
                                 >
                                     View all →
                                 </Link>

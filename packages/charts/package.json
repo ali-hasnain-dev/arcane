@@ -1,7 +1,7 @@
 {
-    "name": "@arcane/charts",
+    "name": "@larafusion/charts",
     "version": "0.1.0",
-    "description": "Arcane charts \u2014 dashboard chart widgets and data visualizations powered by Recharts",
+    "description": "Larafusion charts \u2014 dashboard chart widgets and data visualizations powered by Recharts",
     "main": "dist/index.js",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts",
@@ -20,7 +20,7 @@
     "peerDependencies": {
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
-        "@arcane/support": "*",
+        "@larafusion/support": "*",
         "recharts": "^2.0.0"
     },
     "devDependencies": {

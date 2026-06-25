@@ -17,10 +17,10 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            // @arcane/core is a local barrel that re-exports FieldRenderer and
-            // ArcaneField from the published resources/js/ directory. Required
+            // @larafusion/core is a local barrel that re-exports FieldRenderer and
+            // LarafusionField from the published resources/js/ directory. Required
             // by the published form/field components.
-            '@arcane/core': fileURLToPath(new URL('resources/js/core.ts', import.meta.url)),
+            '@larafusion/core': fileURLToPath(new URL('resources/js/core.ts', import.meta.url)),
         },
     },
     server: {

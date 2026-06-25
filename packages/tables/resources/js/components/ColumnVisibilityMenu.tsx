@@ -52,7 +52,7 @@ export default function ColumnVisibilityMenu({ columns, visibleColumns, onToggle
                                 className="flex items-center justify-between w-full px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors"
                             >
                                 <span>{col.label}</span>
-                                {isVisible && <Check className="w-4 h-4 text-[var(--arcane-primary,#18181b)]" />}
+                                {isVisible && <Check className="w-4 h-4 text-[var(--larafusion-primary,#18181b)]" />}
                             </button>
                         );
                     })}

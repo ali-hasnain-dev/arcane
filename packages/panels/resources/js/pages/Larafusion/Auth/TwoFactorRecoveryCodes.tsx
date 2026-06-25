@@ -50,7 +50,7 @@ export default function TwoFactorRecoveryCodes({ codes }: Props) {
 
                 <Link
                     href={adminPath}
-                    className="block w-full text-center px-4 py-2.5 rounded-lg text-sm font-medium bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white transition-opacity"
+                    className="block w-full text-center px-4 py-2.5 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-opacity"
                 >
                     Done — go to dashboard
                 </Link>

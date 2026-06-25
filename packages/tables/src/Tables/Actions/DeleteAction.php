@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Tables\Actions;
+namespace Larafusion\Tables\Actions;
 
 class DeleteAction
 {

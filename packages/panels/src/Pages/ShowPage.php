@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Pages;
+namespace Larafusion\Pages;
 
 abstract class ShowPage
 {
@@ -17,8 +17,8 @@ abstract class ShowPage
      * Override to add actions such as EditAction, DeleteAction, etc.
      *
      * Example:
-     *   use Arcane\Pages\Actions\EditAction;
-     *   use Arcane\Pages\Actions\DeleteAction;
+     *   use Larafusion\Pages\Actions\EditAction;
+     *   use Larafusion\Pages\Actions\DeleteAction;
      *
      *   public static function getHeaderActions(): array
      *   {

@@ -4,10 +4,10 @@ import Breadcrumb from '../../components/ui/Breadcrumb';
 import PageHeaderActions from '../../components/ui/PageHeaderActions';
 import { Card, CardBody } from '../../components/ui/Card';
 import DynamicForm from '../../components/form/DynamicForm';
-import { ArcanePageProps, FormValues, ArcaneField, FormSchemaItem } from '../../types';
+import { LarafusionPageProps, FormValues, LarafusionField, FormSchemaItem } from '../../types';
 
-function flattenFields(items: FormSchemaItem[]): ArcaneField[] {
-    const out: ArcaneField[] = [];
+function flattenFields(items: FormSchemaItem[]): LarafusionField[] {
+    const out: LarafusionField[] = [];
     for (const item of items) {
         if (item.type === 'section') { flattenFields(item.fields).forEach(f => out.push(f)); }
         else if (item.type === 'tabs') { item.tabs.forEach(t => flattenFields(t.fields).forEach(f => out.push(f))); }
@@ -17,14 +17,14 @@ function flattenFields(items: FormSchemaItem[]): ArcaneField[] {
     return out;
 }
 
-// @arcane/form is an optional add-on package; null = use built-in DynamicForm
+// @larafusion/form is an optional add-on package; null = use built-in DynamicForm
 const HybridForm: React.ComponentType<Record<string, unknown>> | null = null;
 
 function hasLayoutItems(schema: FormSchemaItem[]): boolean {
     return schema.some(item => item.type === 'section' || item.type === 'tabs' || item.type === 'grid');
 }
 
-export default function Edit({ resource, schema, record, headerActions = [] }: ArcanePageProps) {
+export default function Edit({ resource, schema, record, headerActions = [] }: LarafusionPageProps) {
     const data = record as FormValues;
     const id   = data?.id as string | number;
 

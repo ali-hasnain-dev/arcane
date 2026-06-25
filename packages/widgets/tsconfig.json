@@ -20,7 +20,7 @@
             "../../../../arcane-test-v2/node_modules/@types"
         ],
         "paths": {
-            "@arcane/support": ["../support/resources/js/index.ts"]
+            "@larafusion/support": ["../support/resources/js/index.ts"]
         }
     },
     "include": ["resources/js/**/*"],

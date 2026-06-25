@@ -1,7 +1,7 @@
 {
-    "name": "@arcane/forms",
+    "name": "@larafusion/forms",
     "version": "0.1.0",
-    "description": "Arcane forms \u2014 field components, hybrid validation, repeater, tags, file uploads, and relation fields",
+    "description": "Larafusion forms \u2014 field components, hybrid validation, repeater, tags, file uploads, and relation fields",
     "main": "dist/index.js",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts",
@@ -21,7 +21,7 @@
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "@inertiajs/react": "^3.0.0",
-        "@arcane/support": "*",
+        "@larafusion/support": "*",
         "laravel-precognition-react-inertia": "^1.0.0"
     },
     "devDependencies": {

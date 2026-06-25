@@ -77,7 +77,7 @@ export default function FormModal({
             ref={overlayRef}
             className={cn(
                 'fixed inset-0 z-50 overflow-y-auto',
-                exiting ? 'animate-arcane-overlay-out' : 'animate-arcane-overlay-in',
+                exiting ? 'animate-larafusion-overlay-out' : 'animate-larafusion-overlay-in',
             )}
         >
             {/* Backdrop — click to close */}
@@ -88,7 +88,7 @@ export default function FormModal({
                 {/* Panel — no overflow clipping so dropdown panels are never cut off */}
                 <div className={cn(
                     'relative bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-2xl',
-                    exiting ? 'animate-arcane-modal-out' : 'animate-arcane-modal-in',
+                    exiting ? 'animate-larafusion-modal-out' : 'animate-larafusion-modal-in',
                 )}>
                     {/* Header */}
                     <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 rounded-t-2xl">

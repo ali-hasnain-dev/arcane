@@ -1,18 +1,18 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Inertia\Inertia;
-use Arcane\ArcaneManager;
+use Larafusion\LarafusionManager;
 
 class SettingsController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Arcane/Settings', [
-            'navigation' => ArcaneManager::getNavigation(),
+        return Inertia::render('Larafusion/Settings', [
+            'navigation' => LarafusionManager::getNavigation(),
         ]);
     }
 
@@ -24,14 +24,14 @@ class SettingsController extends Controller
     public function updateTheme(Request $request)
     {
         $request->validate([
-            'theme'     => ['required', 'string', 'in:' . implode(',', ArcaneManager::theme()->available())],
+            'theme'     => ['required', 'string', 'in:' . implode(',', LarafusionManager::theme()->available())],
             'dark_mode' => ['sometimes', 'boolean'],
         ]);
 
         // Store in session (override config for this session)
         session([
-            'arcane_theme'     => $request->get('theme'),
-            'arcane_dark_mode' => $request->boolean('dark_mode', false),
+            'larafusion_theme'     => $request->get('theme'),
+            'larafusion_dark_mode' => $request->boolean('dark_mode', false),
         ]);
 
         return back()->with('success', 'Theme updated.');

@@ -63,7 +63,7 @@ function FileRow({ file, deletable, downloadable, onRemove }: {
                     <div className="mt-1">
                         <div className="h-1 rounded-full bg-zinc-200 overflow-hidden">
                             <div
-                                className="h-full bg-[var(--arcane-primary,#18181b)] rounded-full transition-all duration-200"
+                                className="h-full bg-[var(--larafusion-primary,#18181b)] rounded-full transition-all duration-200"
                                 style={{ width: `${file.progress}%` }}
                             />
                         </div>
@@ -172,11 +172,11 @@ export default function FileUploadField({ field, value, error, status = 'idle', 
                     className={cn(
                         'border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors',
                         isDragOver
-                            ? 'border-[var(--arcane-primary,#18181b)] bg-zinc-100'
-                            : 'border-zinc-300 hover:border-[var(--arcane-primary,#18181b)] hover:bg-zinc-50',
+                            ? 'border-[var(--larafusion-primary,#18181b)] bg-zinc-100'
+                            : 'border-zinc-300 hover:border-[var(--larafusion-primary,#18181b)] hover:bg-zinc-50',
                     )}
                 >
-                    <Upload className={cn('w-8 h-8 mx-auto mb-2 transition-colors', isDragOver ? 'text-[var(--arcane-primary,#18181b)]' : 'text-zinc-400')} />
+                    <Upload className={cn('w-8 h-8 mx-auto mb-2 transition-colors', isDragOver ? 'text-[var(--larafusion-primary,#18181b)]' : 'text-zinc-400')} />
                     <p className="text-sm font-medium text-zinc-600">
                         {isDragOver ? 'Drop to upload' : 'Drag & drop or click to browse'}
                     </p>

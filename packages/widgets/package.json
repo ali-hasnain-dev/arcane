@@ -1,7 +1,7 @@
 {
-    "name": "@arcane/widgets",
+    "name": "@larafusion/widgets",
     "version": "0.1.0",
-    "description": "Arcane widgets \u2014 stats overview, chart widgets, table widgets, and widget grid for dashboards",
+    "description": "Larafusion widgets \u2014 stats overview, chart widgets, table widgets, and widget grid for dashboards",
     "main": "dist/index.js",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts",
@@ -20,7 +20,7 @@
     "peerDependencies": {
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
-        "@arcane/support": "*",
+        "@larafusion/support": "*",
         "recharts": "^2.0.0"
     },
     "devDependencies": {

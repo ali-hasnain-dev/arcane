@@ -2,7 +2,7 @@
 
 ## Actions
 
-Arcane has three action layers:
+Larafusion has three action layers:
 
 | Layer | Where defined | When to use |
 | ----- | ------------- | ----------- |
@@ -35,8 +35,8 @@ The full method set shared by `Action`, `ButtonAction`, and `LinkAction`:
 For backward compatibility, per-record custom actions can also be defined via `actions()` on the resource. These are rendered alongside any `recordActions()`.
 
 ```php
-use Arcane\Actions\ButtonAction;
-use Arcane\Actions\LinkAction;
+use Larafusion\Actions\ButtonAction;
+use Larafusion\Actions\LinkAction;
 
 public static function actions(): array
 {

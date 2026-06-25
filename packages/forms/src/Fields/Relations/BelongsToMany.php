@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Fields\Relations;
+namespace Larafusion\Fields\Relations;
 
 class BelongsToMany extends BelongsTo
 {

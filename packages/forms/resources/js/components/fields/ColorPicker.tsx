@@ -318,7 +318,7 @@ export default function ColorPicker({ field, value = '#3b82f6', error, status = 
                     className={cn(
                         'flex items-center gap-2.5 w-full px-3 py-2 rounded-lg border text-sm transition-colors bg-white dark:bg-zinc-800',
                         open
-                            ? 'border-[var(--arcane-primary,#18181b)] ring-2 ring-[var(--arcane-primary,#18181b)]/20'
+                            ? 'border-[var(--larafusion-primary,#18181b)] ring-2 ring-[var(--larafusion-primary,#18181b)]/20'
                             : error
                             ? 'border-red-400'
                             : 'border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600',
@@ -352,7 +352,7 @@ export default function ColorPicker({ field, value = '#3b82f6', error, status = 
                                 onChange={e => handleHexInput(e.target.value)}
                                 placeholder="#000000"
                                 maxLength={7}
-                                className="flex-1 px-2 py-1.5 text-xs font-mono rounded-lg border outline-none transition-colors bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/20 focus:border-[var(--arcane-primary,#18181b)]"
+                                className="flex-1 px-2 py-1.5 text-xs font-mono rounded-lg border outline-none transition-colors bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/20 focus:border-[var(--larafusion-primary,#18181b)]"
                             />
                         </div>
 
@@ -375,7 +375,7 @@ export default function ColorPicker({ field, value = '#3b82f6', error, status = 
                                         min={0} max={255}
                                         value={rgb[i]}
                                         onChange={e => handleRgb(i as 0|1|2, e.target.value)}
-                                        className="w-full px-1 py-1 text-xs text-center rounded-md border outline-none transition-colors bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-zinc-900 dark:text-zinc-100 focus:ring-1 focus:ring-[var(--arcane-primary,#18181b)]/20 focus:border-[var(--arcane-primary,#18181b)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                        className="w-full px-1 py-1 text-xs text-center rounded-md border outline-none transition-colors bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-zinc-900 dark:text-zinc-100 focus:ring-1 focus:ring-[var(--larafusion-primary,#18181b)]/20 focus:border-[var(--larafusion-primary,#18181b)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     />
                                     <span className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5 block">{ch}</span>
                                 </div>
@@ -423,7 +423,7 @@ export default function ColorPicker({ field, value = '#3b82f6', error, status = 
                                         className={cn(
                                             'w-8 h-8 rounded-lg border-2 transition-transform hover:scale-110',
                                             hexInput === presetHex
-                                                ? 'border-[var(--arcane-primary,#18181b)] scale-110'
+                                                ? 'border-[var(--larafusion-primary,#18181b)] scale-110'
                                                 : preset === '#ffffff'
                                                 ? 'border-zinc-300 dark:border-zinc-600'
                                                 : preset === '#000000'

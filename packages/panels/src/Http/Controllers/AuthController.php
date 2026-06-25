@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -10,15 +10,15 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
-use Arcane\Contracts\ArcaneUser;
+use Larafusion\Contracts\LarafusionUser;
 
 class AuthController extends Controller
 {
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    protected function panel(): \Arcane\Panel
+    protected function panel(): \Larafusion\Panel
     {
-        return app('arcane')->getPanel();
+        return app('larafusion')->getPanel();
     }
 
     protected function guard(): \Illuminate\Contracts\Auth\Guard
@@ -65,7 +65,7 @@ class AuthController extends Controller
             return redirect('/' . $panel->getPath());
         }
 
-        return Inertia::render('Arcane/Auth/Login', [
+        return Inertia::render('Larafusion/Auth/Login', [
             'hasRegistration'      => $panel->hasRegistration(),
             'hasForgotPassword'    => $panel->hasForgotPassword(),
             'revealablePasswords'  => $panel->hasRevealablePasswords(),
@@ -101,8 +101,8 @@ class AuthController extends Controller
 
         $user = $this->guard()->user();
 
-        // Check canAccessPanel() if the model implements ArcaneUser
-        if ($user instanceof ArcaneUser && !$user->canAccessPanel($panel)) {
+        // Check canAccessPanel() if the model implements LarafusionUser
+        if ($user instanceof LarafusionUser && !$user->canAccessPanel($panel)) {
             $this->guard()->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
@@ -121,10 +121,10 @@ class AuthController extends Controller
         // ── Two-Factor Auth gate ──────────────────────────────────────────────
         if ($panel->hasTwoFactor() && $this->userHasTwoFactor($user)) {
             // Park the user in session but require 2FA confirmation
-            $request->session()->put('arcane.2fa.user', $user->getKey());
+            $request->session()->put('larafusion.2fa.user', $user->getKey());
             $this->guard()->logout();
 
-            return redirect()->route('arcane.two-factor.challenge');
+            return redirect()->route('larafusion.two-factor.challenge');
         }
 
         return redirect()->intended('/' . $panel->getPath());
@@ -151,7 +151,7 @@ class AuthController extends Controller
         abort_unless($panel->hasRegistration(), 404);
         if ($this->guard()->check()) return redirect('/' . $panel->getPath());
 
-        return Inertia::render('Arcane/Auth/Register', [
+        return Inertia::render('Larafusion/Auth/Register', [
             'revealablePasswords' => $panel->hasRevealablePasswords(),
             'loginSlug'           => $panel->getLoginSlug(),
         ]);
@@ -188,7 +188,7 @@ class AuthController extends Controller
         abort_unless($panel->hasForgotPassword(), 404);
         if ($this->guard()->check()) return redirect('/' . $panel->getPath());
 
-        return Inertia::render('Arcane/Auth/ForgotPassword', [
+        return Inertia::render('Larafusion/Auth/ForgotPassword', [
             'status'              => session('status'),
             'revealablePasswords' => $panel->hasRevealablePasswords(),
             'loginSlug'           => $panel->getLoginSlug(),
@@ -212,7 +212,7 @@ class AuthController extends Controller
     {
         abort_unless($this->panel()->hasForgotPassword(), 404);
 
-        return Inertia::render('Arcane/Auth/ResetPassword', [
+        return Inertia::render('Larafusion/Auth/ResetPassword', [
             'token'               => $token,
             'email'               => $request->query('email', ''),
             'revealablePasswords' => $this->panel()->hasRevealablePasswords(),

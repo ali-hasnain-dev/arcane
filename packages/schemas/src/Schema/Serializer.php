@@ -1,11 +1,11 @@
 <?php
 
-namespace Arcane\Schema;
+namespace Larafusion\Schema;
 
-use Arcane\Fields\Field;
-use Arcane\Layout\Section;
-use Arcane\Layout\Tabs;
-use Arcane\Layout\Grid;
+use Larafusion\Fields\Field;
+use Larafusion\Layout\Section;
+use Larafusion\Layout\Tabs;
+use Larafusion\Layout\Grid;
 
 class Serializer
 {

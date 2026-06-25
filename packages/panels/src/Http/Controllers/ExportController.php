@@ -1,17 +1,17 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Arcane\ArcaneManager;
+use Larafusion\LarafusionManager;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportController extends Controller
 {
     public function export(Request $request, string $resource): StreamedResponse
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canViewAny(), 403);
         abort_unless($resourceClass::exportable(), 403, 'Export is not enabled for this resource.');
 

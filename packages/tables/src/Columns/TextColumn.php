@@ -1,8 +1,8 @@
 <?php
 
-namespace Arcane\Columns;
+namespace Larafusion\Columns;
 
-use Arcane\Support\Enums\EnumOptions;
+use Larafusion\Support\Enums\EnumOptions;
 
 class TextColumn extends Column
 {

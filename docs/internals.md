@@ -41,7 +41,7 @@ All routes are prefixed with `/admin` (configurable via `->path()`).
 
 ## Inertia v3 Data Flow
 
-Arcane uses all Inertia v3 features to minimise round-trips and payload size.
+Larafusion uses all Inertia v3 features to minimise round-trips and payload size.
 
 ### Prop strategies
 
@@ -50,7 +50,7 @@ Arcane uses all Inertia v3 features to minimise round-trips and payload size.
 | `Inertia::once($value)` | `schema`, `columns`, `tableConfig`, `resource`, `actions`, `page`   | **No** — sent once on initial visit    |
 | `Inertia::defer(fn)`    | `widgets`, `stats`                                                  | Only when explicitly requested         |
 | Regular prop            | `records`, `record`                                                 | Yes — refreshed via `only:['records']` |
-| `Inertia::share()`      | `arcane.navigation`, `arcane.flash`, `arcane.theme`, `arcane.panel` | Every response                         |
+| `Inertia::share()`      | `larafusion.navigation`, `larafusion.flash`, `larafusion.theme`, `larafusion.panel` | Every response                         |
 
 ### Index table data flow
 
@@ -80,6 +80,6 @@ The row vanishes instantly before the server responds.
 
 ### Link prefetching
 
-When `->prefetch()` is enabled in the panel provider, Arcane spreads the configured `prefetch` and `cacheFor` props onto all internal `<Link>` components (nav, row actions, Create/Edit buttons). The exact strategy and cache duration are controlled entirely via the provider — no React changes required.
+When `->prefetch()` is enabled in the panel provider, Larafusion spreads the configured `prefetch` and `cacheFor` props onto all internal `<Link>` components (nav, row actions, Create/Edit buttons). The exact strategy and cache duration are controlled entirely via the provider — no React changes required.
 
 ---

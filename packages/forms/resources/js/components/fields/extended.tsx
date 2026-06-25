@@ -8,10 +8,10 @@ import { Plus, Trash2, GripVertical, Eye, EyeOff, Bold, Italic, Underline,
          ChevronDown, Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import type {
-    ArcaneField, RadioField, CheckboxListField, SliderField,
+    LarafusionField, RadioField, CheckboxListField, SliderField,
     ToggleButtonsField, RichTextField, MarkdownField,
     KeyValueField, BuilderField, BuilderBlockSchema, MorphToField,
-} from '@arcane/core';
+} from '@larafusion/core';
 import { FieldRenderer } from './index';
 
 // ─── Shared helpers (duplicated here to avoid circular import) ────────────────
@@ -34,7 +34,7 @@ function inputCls(error?: string, extra?: string) {
         'text-zinc-900 dark:text-zinc-100',
         error
             ? 'border-red-400 bg-red-50 dark:bg-red-950/30 dark:border-red-800 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-900'
-            : 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 focus:border-[var(--arcane-primary,#18181b)]',
+            : 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 focus:border-[var(--larafusion-primary,#18181b)]',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         extra,
     );
@@ -42,7 +42,7 @@ function inputCls(error?: string, extra?: string) {
 
 // ─── 1. Hidden ────────────────────────────────────────────────────────────────
 export function HiddenFieldComponent({ field, value, onChange }: {
-    field: ArcaneField; value: unknown; onChange: (v: unknown) => void;
+    field: LarafusionField; value: unknown; onChange: (v: unknown) => void;
 }) {
     // Sync default on mount
     useEffect(() => { if (value === '' && field.default !== null) onChange(field.default); }, []);
@@ -74,7 +74,7 @@ export function RadioFieldComponent({ field, value, error, onChange }: {
                             'flex items-start gap-2.5 cursor-pointer',
                             field.layout === 'grid' && 'px-3 py-2 rounded-lg border transition-colors',
                             field.layout === 'grid' && (isChecked
-                                ? 'border-[var(--arcane-primary,#18181b)] bg-[var(--arcane-primary,#18181b)]/5'
+                                ? 'border-[var(--larafusion-primary,#18181b)] bg-[var(--larafusion-primary,#18181b)]/5'
                                 : 'border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600'),
                             isDisabled && 'opacity-50 cursor-not-allowed',
                         )}>
@@ -85,7 +85,7 @@ export function RadioFieldComponent({ field, value, error, onChange }: {
                                 checked={isChecked}
                                 onChange={() => !isDisabled && onChange(k)}
                                 disabled={isDisabled}
-                                className="mt-0.5 w-4 h-4 shrink-0 text-[var(--arcane-primary,#18181b)] border-zinc-300 dark:border-zinc-600 focus:ring-[var(--arcane-primary,#18181b)]"
+                                className="mt-0.5 w-4 h-4 shrink-0 text-[var(--larafusion-primary,#18181b)] border-zinc-300 dark:border-zinc-600 focus:ring-[var(--larafusion-primary,#18181b)]"
                             />
                             <span className="flex flex-col">
                                 <span className="text-sm text-zinc-700 dark:text-zinc-300">{label}</span>
@@ -134,12 +134,12 @@ export function CheckboxListFieldComponent({ field, value, error, onChange }: {
             {field.bulkToggleable && (
                 <div className="flex gap-3 mb-2">
                     <button type="button" onClick={selectAll}
-                        className="text-xs text-[var(--arcane-primary,#18181b)] hover:underline">
+                        className="text-xs text-[var(--larafusion-primary,#18181b)] hover:underline">
                         Select all
                     </button>
                     <span className="text-xs text-zinc-300 dark:text-zinc-600">·</span>
                     <button type="button" onClick={deselectAll}
-                        className="text-xs text-[var(--arcane-primary,#18181b)] hover:underline">
+                        className="text-xs text-[var(--larafusion-primary,#18181b)] hover:underline">
                         Deselect all
                     </button>
                 </div>
@@ -152,7 +152,7 @@ export function CheckboxListFieldComponent({ field, value, error, onChange }: {
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                     placeholder={field.searchPrompt ?? 'Search options…'}
-                    className="w-full mb-2 px-3 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 focus:border-[var(--arcane-primary,#18181b)]"
+                    className="w-full mb-2 px-3 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 focus:border-[var(--larafusion-primary,#18181b)]"
                 />
             )}
 
@@ -170,7 +170,7 @@ export function CheckboxListFieldComponent({ field, value, error, onChange }: {
                             <label key={k} className={cn(
                                 'flex items-start gap-2.5 px-3 py-2 rounded-lg border cursor-pointer transition-colors',
                                 isSelected
-                                    ? 'border-[var(--arcane-primary,#18181b)] bg-[var(--arcane-primary,#18181b)]/5'
+                                    ? 'border-[var(--larafusion-primary,#18181b)] bg-[var(--larafusion-primary,#18181b)]/5'
                                     : 'border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600',
                                 isDisabled && 'opacity-50 cursor-not-allowed',
                             )}>
@@ -179,7 +179,7 @@ export function CheckboxListFieldComponent({ field, value, error, onChange }: {
                                     checked={isSelected}
                                     onChange={() => toggle(k)}
                                     disabled={isDisabled}
-                                    className="mt-0.5 w-4 h-4 shrink-0 rounded text-[var(--arcane-primary,#18181b)] border-zinc-300 dark:border-zinc-600 focus:ring-[var(--arcane-primary,#18181b)]"
+                                    className="mt-0.5 w-4 h-4 shrink-0 rounded text-[var(--larafusion-primary,#18181b)] border-zinc-300 dark:border-zinc-600 focus:ring-[var(--larafusion-primary,#18181b)]"
                                 />
                                 <span className="flex flex-col">
                                     <span className="text-sm text-zinc-700 dark:text-zinc-300">{label}</span>
@@ -218,7 +218,7 @@ export function SliderFieldComponent({ field, value, error, onChange }: {
     const fmt  = (v: number) => `${field.prefix ?? ''}${v.toFixed(dp)}${field.suffix ?? ''}`;
     const pct  = (v: number) => ((v - field.min) / (field.max - field.min)) * 100;
 
-    const trackCls = cn('rounded-full accent-[var(--arcane-primary,#18181b)] disabled:opacity-50',
+    const trackCls = cn('rounded-full accent-[var(--larafusion-primary,#18181b)] disabled:opacity-50',
         isVertical ? 'h-24 w-2 cursor-ns-resize writing-mode-vertical' : 'flex-1 h-2');
 
     const renderSingle = () => (
@@ -232,7 +232,7 @@ export function SliderFieldComponent({ field, value, error, onChange }: {
                     onMouseLeave={() => setTip(null)}
                     disabled={field.disabled}
                     style={doFill ? {
-                        background: `linear-gradient(to right, var(--arcane-primary,#18181b) ${pct(numVal as number)}%, #e4e4e7 ${pct(numVal as number)}%)`
+                        background: `linear-gradient(to right, var(--larafusion-primary,#18181b) ${pct(numVal as number)}%, #e4e4e7 ${pct(numVal as number)}%)`
                     } : undefined}
                     className={trackCls}
                 />
@@ -267,7 +267,7 @@ export function SliderFieldComponent({ field, value, error, onChange }: {
                     }}
                     disabled={field.disabled}
                     style={doFill ? {
-                        background: `linear-gradient(to right, #e4e4e7 ${pct((numVal as [number,number])[0])}%, var(--arcane-primary,#18181b) ${pct((numVal as [number,number])[0])}%, var(--arcane-primary,#18181b) ${pct((numVal as [number,number])[1])}%, #e4e4e7 ${pct((numVal as [number,number])[1])}%)`
+                        background: `linear-gradient(to right, #e4e4e7 ${pct((numVal as [number,number])[0])}%, var(--larafusion-primary,#18181b) ${pct((numVal as [number,number])[0])}%, var(--larafusion-primary,#18181b) ${pct((numVal as [number,number])[1])}%, #e4e4e7 ${pct((numVal as [number,number])[1])}%)`
                     } : undefined}
                     className={cn(trackCls, 'absolute')} />
                 <input type="range" min={field.min} max={field.max} step={field.step}
@@ -321,7 +321,7 @@ function toggleBtnColor(colorName?: string): { active: string; base: string } {
         case 'danger':  return { active: 'bg-red-500    border-red-500    text-white', base: 'border-red-300    text-red-700    dark:text-red-400    hover:bg-red-50    dark:hover:bg-red-950/30' };
         case 'info':    return { active: 'bg-blue-500   border-blue-500   text-white', base: 'border-blue-300   text-blue-700   dark:text-blue-400   hover:bg-blue-50   dark:hover:bg-blue-950/30' };
         case 'gray':    return { active: 'bg-zinc-500   border-zinc-500   text-white', base: 'border-zinc-300   text-zinc-700   dark:text-zinc-400   hover:bg-zinc-50   dark:hover:bg-zinc-950/30' };
-        default:        return { active: 'bg-[var(--arcane-primary,#18181b)] border-[var(--arcane-primary,#18181b)] text-white', base: 'border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800' };
+        default:        return { active: 'bg-[var(--larafusion-primary,#18181b)] border-[var(--larafusion-primary,#18181b)] text-white', base: 'border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800' };
     }
 }
 
@@ -359,7 +359,7 @@ export function ToggleButtonsFieldComponent({ field, value, error, onChange }: {
         'relative inline-flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium border transition-colors',
         isGrouped ? 'first:rounded-l-lg last:rounded-r-lg -ml-px first:ml-0' : 'rounded-lg',
         'disabled:opacity-40 disabled:cursor-not-allowed',
-        'focus:outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/40',
+        'focus:outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/40',
     );
 
     return (
@@ -441,7 +441,7 @@ export function RichTextFieldComponent({ field, value, error, onChange }: {
     return (
         <div>
             <Label text={field.label} required={field.required} />
-            <div className={cn('rounded-lg border overflow-hidden', error ? 'border-red-400' : 'border-zinc-300', 'focus-within:ring-2 focus-within:ring-[var(--arcane-primary,#18181b)]/30 focus-within:border-[var(--arcane-primary,#18181b)]')}>
+            <div className={cn('rounded-lg border overflow-hidden', error ? 'border-red-400' : 'border-zinc-300', 'focus-within:ring-2 focus-within:ring-[var(--larafusion-primary,#18181b)]/30 focus-within:border-[var(--larafusion-primary,#18181b)]')}>
                 {/* Toolbar */}
                 <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-zinc-100 bg-zinc-50">
                     {toolbar.map(key => {
@@ -485,7 +485,7 @@ function renderMarkdown(md: string): string {
         .replace(/^> (.+)$/gm,     '<blockquote class="border-l-4 border-zinc-300 pl-3 text-zinc-500 italic">$1</blockquote>')
         .replace(/^- (.+)$/gm,     '<li class="ml-4 list-disc">$1</li>')
         .replace(/^\d+\. (.+)$/gm, '<li class="ml-4 list-decimal">$1</li>')
-        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="text-[var(--arcane-primary,#18181b)] underline">$1</a>')
+        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="text-[var(--larafusion-primary,#18181b)] underline">$1</a>')
         .replace(/\n\n/g, '</p><p class="mb-2">')
         .replace(/^(?!<[h|b|l|p])(.+)$/gm, '<p class="mb-2">$1</p>');
 }
@@ -528,7 +528,7 @@ export function MarkdownFieldComponent({ field, value, error, onChange }: {
     return (
         <div>
             <Label text={field.label} required={field.required} />
-            <div className={cn('rounded-lg border overflow-hidden', error ? 'border-red-400' : 'border-zinc-300', 'focus-within:ring-2 focus-within:ring-[var(--arcane-primary,#18181b)]/30 focus-within:border-[var(--arcane-primary,#18181b)]')}>
+            <div className={cn('rounded-lg border overflow-hidden', error ? 'border-red-400' : 'border-zinc-300', 'focus-within:ring-2 focus-within:ring-[var(--larafusion-primary,#18181b)]/30 focus-within:border-[var(--larafusion-primary,#18181b)]')}>
                 {/* Toolbar */}
                 <div className="flex items-center gap-1 px-2 py-1.5 border-b border-zinc-100 bg-zinc-50">
                     {!preview && MD_SHORTCUTS.map(s => (
@@ -605,7 +605,7 @@ export function KeyValueFieldComponent({ field, value, error, onChange }: {
     const update = (id: string, patch: Partial<KVPair>) => emit(rows.map(r => r.id === id ? { ...r, ...patch } : r));
 
     const colCount = isDeletable ? '[1fr_1fr_2rem]' : '[1fr_1fr]';
-    const base = 'px-2.5 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 focus:border-[var(--arcane-primary,#18181b)] bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 disabled:opacity-60 disabled:cursor-not-allowed read-only:bg-zinc-50 dark:read-only:bg-zinc-900/50';
+    const base = 'px-2.5 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-md outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 focus:border-[var(--larafusion-primary,#18181b)] bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 disabled:opacity-60 disabled:cursor-not-allowed read-only:bg-zinc-50 dark:read-only:bg-zinc-900/50';
 
     return (
         <div>
@@ -649,7 +649,7 @@ export function KeyValueFieldComponent({ field, value, error, onChange }: {
                 {isAddable && (
                     <div className={cn('px-3 py-2 bg-zinc-50 dark:bg-zinc-800 rounded-b-lg', rows.length > 0 && 'border-t border-zinc-100 dark:border-zinc-800')}>
                         <button type="button" onClick={add} disabled={field.disabled}
-                            className="inline-flex items-center gap-1.5 text-xs text-[var(--arcane-primary,#18181b)] hover:underline font-medium disabled:opacity-50">
+                            className="inline-flex items-center gap-1.5 text-xs text-[var(--larafusion-primary,#18181b)] hover:underline font-medium disabled:opacity-50">
                             <Plus className="w-3.5 h-3.5" /> {field.addActionLabel ?? 'Add row'}
                         </button>
                     </div>
@@ -680,7 +680,7 @@ export function BuilderFieldComponent({ field, value, error, onChange }: {
         if (field.maxItems && items.length >= field.maxItems) return;
         const id = Math.random().toString(36).slice(2);
         const defaults: Record<string, unknown> = {};
-        (block.fields as ArcaneField[]).forEach(f => { defaults[f.name] = f.default ?? ''; });
+        (block.fields as LarafusionField[]).forEach(f => { defaults[f.name] = f.default ?? ''; });
         emit([...items, { _type: blockKey, _id: id, ...defaults }]);
         setPickerOpen(false);
     };
@@ -730,7 +730,7 @@ export function BuilderFieldComponent({ field, value, error, onChange }: {
                             {/* Block fields */}
                             {!isCollapsed && (
                                 <div className="p-4 grid grid-cols-1 gap-4">
-                                    {(blockDef.fields as ArcaneField[]).map(f => (
+                                    {(blockDef.fields as LarafusionField[]).map(f => (
                                         <FieldRenderer
                                             key={f.name}
                                             field={f}
@@ -748,7 +748,7 @@ export function BuilderFieldComponent({ field, value, error, onChange }: {
                 {(!field.maxItems || items.length < field.maxItems) && (
                     <div className="relative">
                         <button type="button" onClick={() => setPickerOpen(o => !o)}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 border-dashed border-zinc-200 text-sm text-zinc-500 hover:border-[var(--arcane-primary,#18181b)] hover:text-[var(--arcane-primary,#18181b)] transition-colors">
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 border-dashed border-zinc-200 text-sm text-zinc-500 hover:border-[var(--larafusion-primary,#18181b)] hover:text-[var(--larafusion-primary,#18181b)] transition-colors">
                             <Plus className="w-4 h-4" /> {field.addLabel ?? 'Add Block'}
                         </button>
                         {pickerOpen && (
@@ -842,7 +842,7 @@ export function MorphToFieldComponent({ field, value, error, onChange, resourceS
                                     <button key={opt.id} type="button"
                                         onClick={() => { onChange({ type: current.type, id: opt.id }); setQ(String(opt.label)); setOptions([]); }}
                                         className={cn('w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 transition-colors',
-                                            String(current.id) === String(opt.id) && 'bg-[var(--arcane-primary,#18181b)]/5 font-medium')}>
+                                            String(current.id) === String(opt.id) && 'bg-[var(--larafusion-primary,#18181b)]/5 font-medium')}>
                                         {opt.label}
                                     </button>
                                 ))}

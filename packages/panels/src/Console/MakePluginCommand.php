@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Console;
+namespace Larafusion\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -8,13 +8,13 @@ use Illuminate\Support\Str;
 
 class MakePluginCommand extends Command
 {
-    protected $signature   = 'arcane:plugin {name : The plugin name e.g. Analytics}';
-    protected $description = 'Create a new Arcane plugin class';
+    protected $signature   = 'larafusion:plugin {name : The plugin name e.g. Analytics}';
+    protected $description = 'Create a new Larafusion plugin class';
 
     public function handle(): int
     {
         $name = Str::studly($this->argument('name'));
-        $dir  = app_path('Arcane/Plugins');
+        $dir  = app_path('Larafusion/Plugins');
         $path = "{$dir}/{$name}Plugin.php";
 
         File::ensureDirectoryExists($dir);
@@ -26,10 +26,10 @@ class MakePluginCommand extends Command
 
         File::put($path, $this->buildStub($name));
 
-        $this->info("✅ Plugin created: <comment>app/Arcane/Plugins/{$name}Plugin.php</comment>");
+        $this->info("✅ Plugin created: <comment>app/Larafusion/Plugins/{$name}Plugin.php</comment>");
         $this->newLine();
         $this->line("Next steps:");
-        $this->line("  1. Add <comment>App\\Arcane\\Plugins\\{$name}Plugin::class</comment> to <comment>config/arcane.php</comment> plugins array");
+        $this->line("  1. Add <comment>App\\Larafusion\\Plugins\\{$name}Plugin::class</comment> to <comment>config/larafusion.php</comment> plugins array");
         $this->line("  2. Implement <comment>navigationItems()</comment>, <comment>hooks()</comment>, <comment>components()</comment> as needed");
 
         return self::SUCCESS;
@@ -43,11 +43,11 @@ class MakePluginCommand extends Command
         return <<<PHP
 <?php
 
-namespace App\Arcane\Plugins;
+namespace App\Larafusion\Plugins;
 
-use Arcane\Plugins\ArcanePlugin;
+use Larafusion\Plugins\LarafusionPlugin;
 
-class {$name}Plugin extends ArcanePlugin
+class {$name}Plugin extends LarafusionPlugin
 {
     public static function id(): string          { return '{$id}'; }
     public static function name(): string        { return '{$label}'; }
@@ -64,7 +64,7 @@ class {$name}Plugin extends ArcanePlugin
     }
 
     /**
-     * Navigation items injected into the Arcane sidebar.
+     * Navigation items injected into the Larafusion sidebar.
      * Return an empty array to add no items.
      */
     public function navigationItems(): array

@@ -30,7 +30,7 @@ export default function ThemeSwitcher() {
     const switchTheme = (name: string) => {
         // POST to a theme-switch endpoint (or store in localStorage as preference)
         // For now update via localStorage + page reload
-        localStorage.setItem('arcane_theme', name);
+        localStorage.setItem('larafusion_theme', name);
 
         // Apply CSS var immediately for instant feedback
         const root = document.documentElement;
@@ -84,7 +84,7 @@ export default function ThemeSwitcher() {
                             />
                             <span className="capitalize flex-1 text-left">{name}</span>
                             {name === theme.name && (
-                                <Check className="w-4 h-4 text-[var(--arcane-primary,#18181b)] dark:text-white shrink-0" />
+                                <Check className="w-4 h-4 text-[var(--larafusion-primary,#18181b)] dark:text-white shrink-0" />
                             )}
                         </button>
                     ))}

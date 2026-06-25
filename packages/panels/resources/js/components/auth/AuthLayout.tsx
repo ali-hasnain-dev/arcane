@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
-import { ArcaneSharedProps } from '../../types';
+import { LarafusionSharedProps } from '../../types';
 import { injectGoogleFont } from '../layout/AdminLayout';
 
 export default function AuthLayout({ children, title, subtitle }: {
@@ -8,12 +8,12 @@ export default function AuthLayout({ children, title, subtitle }: {
     title: string;
     subtitle?: string;
 }) {
-    const page      = usePage<ArcaneSharedProps>();
-    const theme     = page.props?.arcane?.theme;
-    const panel     = page.props?.arcane?.panel;
+    const page      = usePage<LarafusionSharedProps>();
+    const theme     = page.props?.larafusion?.theme;
+    const panel     = page.props?.larafusion?.panel;
     const brand     = theme?.brand;
 
-    const brandName  = brand?.name || 'Arcane';
+    const brandName  = brand?.name || 'Larafusion';
     const logoSrc    = brand?.logo ?? null;
     const logoHeight = panel?.brandLogoHeight ?? brand?.logoHeight ?? '2rem';
 
@@ -31,7 +31,7 @@ export default function AuthLayout({ children, title, subtitle }: {
         const root = document.documentElement;
         Object.entries(theme.cssVars).forEach(([k, v]) => root.style.setProperty(k, v as string));
         const storedMode = (typeof localStorage !== 'undefined'
-            ? localStorage.getItem('arcane_theme_mode')
+            ? localStorage.getItem('larafusion_theme_mode')
             : null) as 'light' | 'dark' | 'system' | null;
         const defaultMode = storedMode ?? panel?.defaultThemeMode ?? 'light';
         let isDark = theme.darkMode ?? false;

@@ -16,8 +16,8 @@ import { cn } from '../lib/utils';
 function SortIcon({ field, current, dir }: { field: string; current: string; dir: string }) {
     if (field !== current) return <ChevronsUpDown className="w-3.5 h-3.5 text-zinc-300" />;
     return dir === 'asc'
-        ? <ChevronUp   className="w-3.5 h-3.5 text-[var(--arcane-primary,#18181b)]" />
-        : <ChevronDown className="w-3.5 h-3.5 text-[var(--arcane-primary,#18181b)]" />;
+        ? <ChevronUp   className="w-3.5 h-3.5 text-[var(--larafusion-primary,#18181b)]" />
+        : <ChevronDown className="w-3.5 h-3.5 text-[var(--larafusion-primary,#18181b)]" />;
 }
 
 // ─── Default cell renderer ────────────────────────────────────────────────────
@@ -129,7 +129,7 @@ export default function AdvancedTable({
                         value={state.search}
                         onChange={e => search(e.target.value)}
                         placeholder={`Search ${resourceLabel.toLowerCase()}…`}
-                        className="w-full pl-9 pr-4 py-2 text-sm border border-zinc-300 rounded-lg focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/20 focus:border-[var(--arcane-primary,#18181b)] outline-none"
+                        className="w-full pl-9 pr-4 py-2 text-sm border border-zinc-300 rounded-lg focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/20 focus:border-[var(--larafusion-primary,#18181b)] outline-none"
                     />
                 </div>
 
@@ -140,14 +140,14 @@ export default function AdvancedTable({
                         className={cn(
                             'inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border transition-colors',
                             showFilters || activeFilterCount > 0
-                                ? 'bg-[var(--arcane-primary,#18181b)]/5 border-[var(--arcane-primary,#18181b)]/30 text-[var(--arcane-primary,#18181b)]'
+                                ? 'bg-[var(--larafusion-primary,#18181b)]/5 border-[var(--larafusion-primary,#18181b)]/30 text-[var(--larafusion-primary,#18181b)]'
                                 : 'bg-white border-zinc-300 text-zinc-600 hover:bg-zinc-50'
                         )}
                     >
                         <Filter className="w-4 h-4" />
                         <span className="hidden sm:inline">Filters</span>
                         {activeFilterCount > 0 && (
-                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[var(--arcane-primary,#18181b)] text-white text-xs font-bold">
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[var(--larafusion-primary,#18181b)] text-white text-xs font-bold">
                                 {activeFilterCount}
                             </span>
                         )}
@@ -181,7 +181,7 @@ export default function AdvancedTable({
                     <Link
                         href={createUrl}
                         prefetch
-                        className="ml-auto inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white transition-colors"
+                        className="ml-auto inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors"
                     >
                         <Plus className="w-4 h-4" />
                         <span>New {resourceLabel}</span>
@@ -221,7 +221,7 @@ export default function AdvancedTable({
                                             type="checkbox"
                                             checked={isAllSelected}
                                             onChange={() => selectAll(records.data as Record<string, unknown>[])}
-                                            className="rounded border-zinc-300 accent-[var(--arcane-primary,#18181b)] focus:ring-[var(--arcane-primary,#18181b)]/20 cursor-pointer"
+                                            className="rounded border-zinc-300 accent-[var(--larafusion-primary,#18181b)] focus:ring-[var(--larafusion-primary,#18181b)]/20 cursor-pointer"
                                         />
                                     </th>
                                 )}
@@ -263,7 +263,7 @@ export default function AdvancedTable({
                                         {activeFilterCount > 0 && (
                                             <button
                                                 onClick={clearFilters}
-                                                className="text-sm text-[var(--arcane-primary,#18181b)] hover:underline mt-1"
+                                                className="text-sm text-[var(--larafusion-primary,#18181b)] hover:underline mt-1"
                                             >
                                                 Clear filters
                                             </button>
@@ -281,7 +281,7 @@ export default function AdvancedTable({
                                             key={id}
                                             className={cn(
                                                 'transition-colors group',
-                                                isSelected ? 'bg-[var(--arcane-primary,#18181b)]/5' : 'hover:bg-zinc-50/70'
+                                                isSelected ? 'bg-[var(--larafusion-primary,#18181b)]/5' : 'hover:bg-zinc-50/70'
                                             )}
                                         >
                                             {selectable && (
@@ -290,7 +290,7 @@ export default function AdvancedTable({
                                                         type="checkbox"
                                                         checked={isSelected}
                                                         onChange={() => toggleSelect(id)}
-                                                        className="rounded border-zinc-300 accent-[var(--arcane-primary,#18181b)] focus:ring-[var(--arcane-primary,#18181b)]/20 cursor-pointer"
+                                                        className="rounded border-zinc-300 accent-[var(--larafusion-primary,#18181b)] focus:ring-[var(--larafusion-primary,#18181b)]/20 cursor-pointer"
                                                     />
                                                 </td>
                                             )}
@@ -320,7 +320,7 @@ export default function AdvancedTable({
                                                     <Link
                                                         href={`/admin/${resourceSlug}/${id}/edit`}
                                                         prefetch
-                                                        className="p-1.5 rounded-md text-zinc-400 hover:text-[var(--arcane-primary,#18181b)] hover:bg-[var(--arcane-primary,#18181b)]/5 transition-colors"
+                                                        className="p-1.5 rounded-md text-zinc-400 hover:text-[var(--larafusion-primary,#18181b)] hover:bg-[var(--larafusion-primary,#18181b)]/5 transition-colors"
                                                         title="Edit"
                                                     >
                                                         <Pencil className="w-4 h-4" />

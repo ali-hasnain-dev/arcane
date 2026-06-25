@@ -1,21 +1,21 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use Arcane\ArcaneManager;
-use Arcane\TwoFactor\TwoFactorManager;
+use Larafusion\LarafusionManager;
+use Larafusion\TwoFactor\TwoFactorManager;
 
 class TwoFactorController extends Controller
 {
     public function __construct(protected TwoFactorManager $totp) {}
 
-    protected function panel(): \Arcane\Panel
+    protected function panel(): \Larafusion\Panel
     {
-        return app('arcane')->getPanel();
+        return app('larafusion')->getPanel();
     }
 
     protected function guard(): \Illuminate\Contracts\Auth\Guard
@@ -30,11 +30,11 @@ class TwoFactorController extends Controller
         abort_unless($this->panel()->hasTwoFactor(), 404);
 
         // Must have a pending user in session
-        if (!$request->session()->has('arcane.2fa.user')) {
-            return redirect()->route('arcane.login');
+        if (!$request->session()->has('larafusion.2fa.user')) {
+            return redirect()->route('larafusion.login');
         }
 
-        return Inertia::render('Arcane/Auth/TwoFactorChallenge', [
+        return Inertia::render('Larafusion/Auth/TwoFactorChallenge', [
             'loginSlug' => $this->panel()->getLoginSlug(),
         ]);
     }
@@ -43,9 +43,9 @@ class TwoFactorController extends Controller
     {
         abort_unless($this->panel()->hasTwoFactor(), 404);
 
-        $userId = $request->session()->get('arcane.2fa.user');
+        $userId = $request->session()->get('larafusion.2fa.user');
         if (!$userId) {
-            return redirect()->route('arcane.login');
+            return redirect()->route('larafusion.login');
         }
 
         $request->validate(['code' => ['required', 'string']]);
@@ -55,8 +55,8 @@ class TwoFactorController extends Controller
         $user      = $userModel::find($userId);
 
         if (!$user) {
-            $request->session()->forget('arcane.2fa.user');
-            return redirect()->route('arcane.login');
+            $request->session()->forget('larafusion.2fa.user');
+            return redirect()->route('larafusion.login');
         }
 
         $code = str_replace('-', '', trim($request->input('code')));
@@ -79,7 +79,7 @@ class TwoFactorController extends Controller
             return back()->withErrors(['code' => 'The provided two-factor code is invalid.']);
         }
 
-        $request->session()->forget('arcane.2fa.user');
+        $request->session()->forget('larafusion.2fa.user');
         $this->guard()->login($user);
         $request->session()->regenerate();
 
@@ -94,7 +94,7 @@ class TwoFactorController extends Controller
         $user = $this->guard()->user();
 
         if (!empty($user->two_factor_confirmed_at)) {
-            return redirect()->route('arcane.two-factor.manage');
+            return redirect()->route('larafusion.two-factor.manage');
         }
 
         // Generate a new secret if not set
@@ -103,13 +103,13 @@ class TwoFactorController extends Controller
             $user->forceFill(['two_factor_secret' => $secret])->save();
         }
 
-        $issuer = config('app.name', 'Arcane');
+        $issuer = config('app.name', 'Larafusion');
         $uri    = $this->totp->getProvisioningUri($user->two_factor_secret, $user->email, $issuer);
 
-        return Inertia::render('Arcane/Auth/TwoFactorSetup', [
+        return Inertia::render('Larafusion/Auth/TwoFactorSetup', [
             'qrUri'        => $uri,
             'secret'       => $user->two_factor_secret,
-            'manageRoute'  => route('arcane.two-factor.manage'),
+            'manageRoute'  => route('larafusion.two-factor.manage'),
         ]);
     }
 
@@ -129,7 +129,7 @@ class TwoFactorController extends Controller
             'two_factor_recovery_codes' => json_encode($codes),
         ])->save();
 
-        return Inertia::render('Arcane/Auth/TwoFactorRecoveryCodes', [
+        return Inertia::render('Larafusion/Auth/TwoFactorRecoveryCodes', [
             'codes' => $codes,
         ]);
     }
@@ -141,9 +141,9 @@ class TwoFactorController extends Controller
         abort_unless($this->panel()->hasTwoFactor(), 404);
         $user = $this->guard()->user();
 
-        return Inertia::render('Arcane/Auth/TwoFactorManage', [
+        return Inertia::render('Larafusion/Auth/TwoFactorManage', [
             'enabled'  => !empty($user->two_factor_confirmed_at),
-            'setupUrl' => route('arcane.two-factor.setup'),
+            'setupUrl' => route('larafusion.two-factor.setup'),
         ]);
     }
 
@@ -172,7 +172,7 @@ class TwoFactorController extends Controller
         $codes = $this->totp->generateRecoveryCodes();
         $user->forceFill(['two_factor_recovery_codes' => json_encode($codes)])->save();
 
-        return Inertia::render('Arcane/Auth/TwoFactorRecoveryCodes', [
+        return Inertia::render('Larafusion/Auth/TwoFactorRecoveryCodes', [
             'codes' => $codes,
         ]);
     }

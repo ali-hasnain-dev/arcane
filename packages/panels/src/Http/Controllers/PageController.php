@@ -1,15 +1,15 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Routing\Controller;
-use Arcane\ArcaneManager;
+use Larafusion\LarafusionManager;
 
 class PageController extends Controller
 {
     public function show(string $page)
     {
-        $pageClass = ArcaneManager::resolvePage($page);
+        $pageClass = LarafusionManager::resolvePage($page);
         return $pageClass::render();
     }
 }

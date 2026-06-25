@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Layout;
+namespace Larafusion\Layout;
 
 class Tabs
 {

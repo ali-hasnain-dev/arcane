@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Arcane;
+namespace App\Larafusion;
 
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Post;
 use App\Models\Team;
-use Arcane\Resource;
-use Arcane\Fields\Text;
-use Arcane\Fields\Email;
-use Arcane\Fields\Password;
-use Arcane\Fields\Select;
-use Arcane\Fields\Toggle;
-use Arcane\Fields\Textarea;
-use Arcane\Fields\Tags;
-use Arcane\Fields\Color;
-use Arcane\Fields\Repeater;
-use Arcane\Fields\ImageUpload;
-use Arcane\Fields\FileUpload;
-use Arcane\Fields\Relations\BelongsTo;
-use Arcane\Fields\Relations\BelongsToMany;
-use Arcane\Fields\Relations\HasMany;
-use Arcane\Columns\Column;
+use Larafusion\Resource;
+use Larafusion\Fields\Text;
+use Larafusion\Fields\Email;
+use Larafusion\Fields\Password;
+use Larafusion\Fields\Select;
+use Larafusion\Fields\Toggle;
+use Larafusion\Fields\Textarea;
+use Larafusion\Fields\Tags;
+use Larafusion\Fields\Color;
+use Larafusion\Fields\Repeater;
+use Larafusion\Fields\ImageUpload;
+use Larafusion\Fields\FileUpload;
+use Larafusion\Fields\Relations\BelongsTo;
+use Larafusion\Fields\Relations\BelongsToMany;
+use Larafusion\Fields\Relations\HasMany;
+use Larafusion\Columns\Column;
 
 class UserResource extends Resource
 {

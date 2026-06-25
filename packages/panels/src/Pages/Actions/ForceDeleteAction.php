@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Pages\Actions;
+namespace Larafusion\Pages\Actions;
 
 /**
  * Page header action that permanently deletes a soft-deleted record.

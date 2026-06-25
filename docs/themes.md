@@ -20,7 +20,7 @@
 
 ### Dark Mode
 
-Dark mode is applied via Tailwind's `dark:` variant. When the user selects Dark or System in the avatar dropdown, `.dark` is toggled on `<html>`. The `arcane:install` command adds the required variant definition to `resources/css/app.css`:
+Dark mode is applied via Tailwind's `dark:` variant. When the user selects Dark or System in the avatar dropdown, `.dark` is toggled on `<html>`. The `larafusion:install` command adds the required variant definition to `resources/css/app.css`:
 
 ```css
 @import "tailwindcss";
@@ -29,11 +29,11 @@ Dark mode is applied via Tailwind's `dark:` variant. When the user selects Dark 
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Scan vendor package component files for Tailwind classes */
-@source '../../vendor/arcane/*/resources/js/**/*.{ts,tsx}';
+@source '../../vendor/larafusion/*/resources/js/**/*.{ts,tsx}';
 ```
 
 ### FOUC Prevention
 
-The `app.blade.php` created by `arcane:install` includes an inline `<script>` in `<head>` that reads the user's preference from `localStorage` and applies `.dark` before the browser paints the first frame. This eliminates the light-mode flash on page reload when dark mode is active.
+The `app.blade.php` created by `larafusion:install` includes an inline `<script>` in `<head>` that reads the user's preference from `localStorage` and applies `.dark` before the browser paints the first frame. This eliminates the light-mode flash on page reload when dark mode is active.
 
 ---

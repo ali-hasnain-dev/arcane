@@ -48,13 +48,13 @@ export default function BulkActionBar({
 
     return (
         <>
-            <div className="flex items-center gap-3 px-6 py-3 bg-[var(--arcane-primary,#18181b)]/5 border-b border-[var(--arcane-primary,#18181b)]/20 animate-in slide-in-from-top-1">
+            <div className="flex items-center gap-3 px-6 py-3 bg-[var(--larafusion-primary,#18181b)]/5 border-b border-[var(--larafusion-primary,#18181b)]/20 animate-in slide-in-from-top-1">
                 {/* Selection count */}
-                <span className="text-sm font-semibold text-[var(--arcane-primary,#18181b)]">
+                <span className="text-sm font-semibold text-[var(--larafusion-primary,#18181b)]">
                     {selectedCount} of {totalCount} selected
                 </span>
 
-                <div className="w-px h-4 bg-[var(--arcane-primary,#18181b)]/20" />
+                <div className="w-px h-4 bg-[var(--larafusion-primary,#18181b)]/20" />
 
                 {/* Action buttons */}
                 {actions.map(action => {
@@ -68,7 +68,7 @@ export default function BulkActionBar({
                                 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors',
                                 action.variant === 'danger'
                                     ? 'bg-red-100 hover:bg-red-200 text-red-700 border border-red-200'
-                                    : 'bg-white hover:bg-[var(--arcane-primary,#18181b)]/5 text-[var(--arcane-primary,#18181b)] border border-[var(--arcane-primary,#18181b)]/20'
+                                    : 'bg-white hover:bg-[var(--larafusion-primary,#18181b)]/5 text-[var(--larafusion-primary,#18181b)] border border-[var(--larafusion-primary,#18181b)]/20'
                             )}
                         >
                             {Icon && <Icon className="w-3.5 h-3.5" />}
@@ -81,7 +81,7 @@ export default function BulkActionBar({
                 <button
                     type="button"
                     onClick={onClearSelection}
-                    className="ml-auto p-1.5 rounded-md text-zinc-400 hover:text-[var(--arcane-primary,#18181b)] hover:bg-[var(--arcane-primary,#18181b)]/5 transition-colors"
+                    className="ml-auto p-1.5 rounded-md text-zinc-400 hover:text-[var(--larafusion-primary,#18181b)] hover:bg-[var(--larafusion-primary,#18181b)]/5 transition-colors"
                     title="Clear selection"
                 >
                     <X className="w-4 h-4" />

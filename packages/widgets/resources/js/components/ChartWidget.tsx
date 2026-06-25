@@ -6,10 +6,10 @@ import { cn } from '../lib/utils';
 
 const PALETTE = ['#18181b', '#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#ec4899', '#0ea5e9', '#84cc16'];
 
-/** Read --arcane-primary from CSS vars at runtime so it tracks the active theme. */
+/** Read --larafusion-primary from CSS vars at runtime so it tracks the active theme. */
 function getPrimaryColor(): string {
     if (typeof document !== 'undefined') {
-        const v = getComputedStyle(document.documentElement).getPropertyValue('--arcane-primary').trim();
+        const v = getComputedStyle(document.documentElement).getPropertyValue('--larafusion-primary').trim();
         if (v) return v;
     }
     return '#292524';
@@ -423,7 +423,7 @@ function FilterSelect({
                 <select
                     value={deferred ? (pending ?? '') : (value ?? '')}
                     onChange={e => handleChange(e.target.value)}
-                    className="appearance-none text-xs border border-zinc-200 dark:border-zinc-700 rounded-md pl-2.5 pr-7 py-1.5 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-1 focus:ring-[var(--arcane-primary,#292524)]"
+                    className="appearance-none text-xs border border-zinc-200 dark:border-zinc-700 rounded-md pl-2.5 pr-7 py-1.5 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-1 focus:ring-[var(--larafusion-primary,#292524)]"
                 >
                     {Object.entries(options).map(([k, label]) => (
                         <option key={k} value={k}>{label}</option>
@@ -434,7 +434,7 @@ function FilterSelect({
             {deferred && (
                 <button
                     onClick={() => { onChange(pending ?? ''); onApply?.(); }}
-                    className="text-xs px-2.5 py-1.5 bg-[var(--arcane-primary,#292524)] text-white rounded-md hover:opacity-90 transition-opacity"
+                    className="text-xs px-2.5 py-1.5 bg-[var(--larafusion-primary,#292524)] text-white rounded-md hover:opacity-90 transition-opacity"
                 >
                     Apply
                 </button>

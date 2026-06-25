@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Actions;
+namespace Larafusion\Actions;
 
 use Illuminate\Database\Eloquent\Model;
 

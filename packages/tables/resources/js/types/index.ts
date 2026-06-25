@@ -1,4 +1,4 @@
-export type { Column } from '@arcane/support';
+export type { Column } from '@larafusion/support';
 
 // ─── Filter types ─────────────────────────────────────────────────────────────
 

@@ -7,7 +7,7 @@ import WidgetGrid from '../../components/widgets/WidgetGrid';
 import FormModal from '../../components/form/FormModal';
 import { IndexPageProps } from '../../types';
 
-// @arcane/table is an optional add-on package; null = use built-in BasicTable
+// @larafusion/table is an optional add-on package; null = use built-in BasicTable
 const AdvancedTableComponent: React.ComponentType<Record<string, unknown>> | null = null;
 
 import BasicTable from '../../components/table/BasicTable';
@@ -72,7 +72,7 @@ export default function Index(props: IndexPageProps) {
             {resource.useModalForms
                 ? createActions.map((action, i) => (
                     <button key={i} type="button" onClick={openCreate}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white transition-colors shadow-sm">
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors shadow-sm">
                         {action.label}
                     </button>
                 ))
@@ -105,7 +105,7 @@ export default function Index(props: IndexPageProps) {
             </Deferred>
 
             {AdvancedTableComponent ? (
-                // Phase 3: @arcane/table installed — full featured table
+                // Phase 3: @larafusion/table installed — full featured table
                 <AdvancedTableComponent
                     resourceSlug={resource.slug}
                     resourceLabel={resource.label}

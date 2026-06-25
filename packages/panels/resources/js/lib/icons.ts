@@ -1,1 +1,1 @@
-export { ICON_MAP, resolveIcon } from '@arcane/support';
+export { ICON_MAP, resolveIcon } from '@larafusion/support';

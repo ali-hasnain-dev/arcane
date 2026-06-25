@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Arcane are documented here.
+All notable changes to Larafusion are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) conventions.
 
 ---
@@ -16,7 +16,7 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) conventions
   - Panel default is `false` (numbered pagination). Set it globally via `->simplePagination()` on the panel, then override per-table as needed.
 
   ```php
-  // app/Providers/Arcane/AdminPanelProvider.php
+  // app/Providers/Larafusion/AdminPanelProvider.php
   ->simplePagination()          // Prev/Next globally
 
   // Per-table override
@@ -40,25 +40,25 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) conventions
 
 #### Dark Mode — View vs Edit Button Indistinguishable
 - The **Edit** action link in table rows used `dark:text-zinc-300` — the same shade as the **View** link — making them visually identical in dark mode.
-- Edit now uses `dark:text-[var(--arcane-primary-ring,#a78bfa)]` (the primary ring/accent colour), making it clearly distinct from the neutral-grey View link.
+- Edit now uses `dark:text-[var(--larafusion-primary-ring,#a78bfa)]` (the primary ring/accent colour), making it clearly distinct from the neutral-grey View link.
 
 
 
 #### Developer Experience
-- **`arcane:user` command** — create admin users from the CLI:
+- **`larafusion:user` command** — create admin users from the CLI:
   ```bash
-  php artisan arcane:user
-  php artisan arcane:user --name="Ali" --email="ali@example.com" --password="secret123"
+  php artisan larafusion:user
+  php artisan larafusion:user --name="Ali" --email="ali@example.com" --password="secret123"
   # Use a custom model:
-  php artisan arcane:user --model="App\\Models\\Admin"
+  php artisan larafusion:user --model="App\\Models\\Admin"
   ```
-- **`arcane:ide-helpers` command** — generate `_ide_helper_arcane.php` with full PHPDoc stubs for all fluent APIs (`Panel`, `Resource`, `Field`, `Table`, `Column`, etc.)
+- **`larafusion:ide-helpers` command** — generate `_ide_helper_larafusion.php` with full PHPDoc stubs for all fluent APIs (`Panel`, `Resource`, `Field`, `Table`, `Column`, etc.)
 - **`CHANGELOG.md`** and `docs/upgrade.md` — version history and upgrade guides
 
 #### Security — Login Rate Limiting
 - `->loginRateLimiting(int $maxAttempts = 5, int $decayMinutes = 1)` on `Panel`
 - Pass `false` to disable: `->loginRateLimiting(false)`
-- Named `arcane-login` RateLimiter registered automatically — no manual setup required
+- Named `larafusion-login` RateLimiter registered automatically — no manual setup required
 - Error messages use Laravel's `auth.throttle` translation key
 
 
@@ -90,7 +90,7 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) conventions
 #### Advanced — REST API Generator
 - `->api(bool $enabled = true, string $prefix = 'api', array $middleware = ['api', 'auth:sanctum'])` on `Panel`
 - When enabled, registers JSON REST endpoints for all resources automatically
-- `arcane:api` command generates `routes/arcane-api.php` for manual inclusion
+- `larafusion:api` command generates `routes/larafusion-api.php` for manual inclusion
 - Endpoints per resource:
 
   | Method | URI | Action |
@@ -107,18 +107,18 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) conventions
 - Query params: `?search=`, `?sort=field&direction=asc`, `?filter[field]=value`, `?per_page=25`
 
 #### Advanced — Realtime WebSocket Updates
-- `->realtime(bool $enabled = true, string $channel = 'arcane')` on `Panel`
+- `->realtime(bool $enabled = true, string $channel = 'larafusion')` on `Panel`
 - `RecordEvent` broadcast event fired after every create / update / delete in `ResourceController`
 - Compatible with **Laravel Reverb**, **Pusher**, and any Echo-compatible driver
-- Channel: `{channel}.{resource}` (e.g. `arcane.posts`)
-- Event name: `arcane.record.created` / `arcane.record.updated` / `arcane.record.deleted`
+- Channel: `{channel}.{resource}` (e.g. `larafusion.posts`)
+- Event name: `larafusion.record.created` / `larafusion.record.updated` / `larafusion.record.deleted`
 - Broadcast silently fails if no driver is configured (safe for existing apps)
 - Frontend wiring: listen via Laravel Echo:
   ```ts
-  Echo.channel('arcane.posts')
-      .listen('.arcane.record.created', (e) => { /* refresh table */ })
-      .listen('.arcane.record.updated', (e) => { /* update row */ })
-      .listen('.arcane.record.deleted', (e) => { /* remove row */ });
+  Echo.channel('larafusion.posts')
+      .listen('.larafusion.record.created', (e) => { /* refresh table */ })
+      .listen('.larafusion.record.updated', (e) => { /* update row */ })
+      .listen('.larafusion.record.deleted', (e) => { /* remove row */ });
   ```
 
 ---

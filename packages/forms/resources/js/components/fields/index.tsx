@@ -5,7 +5,7 @@ import { resolveIcon } from '../../lib/icons';
 
 // ─── Custom field registry ────────────────────────────────────────────────────
 type CustomFieldComponent = React.ComponentType<{
-    field: ArcaneField;
+    field: LarafusionField;
     value: unknown;
     error?: string;
     onChange: (v: unknown) => void;
@@ -17,7 +17,7 @@ const _customFieldRegistry = new Map<string, CustomFieldComponent>();
  *
  * Call once at app boot (e.g. in app.tsx) before any forms are rendered:
  *
- *   import { registerField } from '@arcane/forms';
+ *   import { registerField } from '@larafusion/forms';
  *   import StarRating from './components/StarRating';
  *   registerField('star_rating', StarRating);
  *
@@ -32,7 +32,7 @@ export function getRegisteredField(type: string): CustomFieldComponent | undefin
     return _customFieldRegistry.get(type);
 }
 import {
-    ArcaneField, TextField, EmailField, PasswordField,
+    LarafusionField, TextField, EmailField, PasswordField,
     TextareaField, SelectField, NumberField, CheckboxField, ToggleField, DateField,
     HiddenField, RadioField, CheckboxListField, SliderField,
     ToggleButtonsField, CodeEditorField,
@@ -84,7 +84,7 @@ function inputCls(error?: string, extra?: string) {
         'text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500',
         error
             ? 'border-red-400 bg-red-50 dark:bg-red-950/30 dark:border-red-800 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-900 focus:border-red-400'
-            : 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/20 focus:border-[var(--arcane-primary,#18181b)]',
+            : 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/20 focus:border-[var(--larafusion-primary,#18181b)]',
         'disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-zinc-50 dark:disabled:bg-zinc-900',
         'read-only:bg-zinc-50 dark:read-only:bg-zinc-900/50 read-only:cursor-default',
         extra,
@@ -109,7 +109,7 @@ function hasAffixes(field: AffixProps): boolean {
 
 function iconColorCls(color?: string | null): string {
     switch (color) {
-        case 'primary':  return 'text-[var(--arcane-primary,#18181b)]';
+        case 'primary':  return 'text-[var(--larafusion-primary,#18181b)]';
         case 'success':  return 'text-green-500';
         case 'warning':  return 'text-amber-500';
         case 'danger':   return 'text-red-500';
@@ -183,7 +183,7 @@ function AffixedInput({ field, children, copyable, copyMessage }: {
 
     // ── Separated mode (default): icon in its own bordered cell ──
     return (
-        <div className="flex rounded-lg border border-zinc-300 dark:border-zinc-700 overflow-hidden focus-within:ring-2 focus-within:ring-[var(--arcane-primary,#18181b)]/20 focus-within:border-[var(--arcane-primary,#18181b)]">
+        <div className="flex rounded-lg border border-zinc-300 dark:border-zinc-700 overflow-hidden focus-within:ring-2 focus-within:ring-[var(--larafusion-primary,#18181b)]/20 focus-within:border-[var(--larafusion-primary,#18181b)]">
             {/* Left affix */}
             {hasLeft && (
                 <span className="flex items-center gap-1.5 px-3 bg-zinc-50 dark:bg-zinc-800/70 border-r border-zinc-300 dark:border-zinc-700 text-sm text-zinc-500 dark:text-zinc-400 shrink-0">
@@ -450,8 +450,8 @@ export function CheckboxFieldComponent({ field, value, error, onChange }: {
             <span className={cn(
                 'w-4 h-4 shrink-0 rounded border-2 flex items-center justify-center transition-colors',
                 checked
-                    ? 'bg-[var(--arcane-primary,#18181b)] border-[var(--arcane-primary,#18181b)]'
-                    : 'border-zinc-400 dark:border-zinc-600 bg-white dark:bg-zinc-800 group-hover:border-[var(--arcane-primary,#18181b)]',
+                    ? 'bg-[var(--larafusion-primary,#18181b)] border-[var(--larafusion-primary,#18181b)]'
+                    : 'border-zinc-400 dark:border-zinc-600 bg-white dark:bg-zinc-800 group-hover:border-[var(--larafusion-primary,#18181b)]',
                 error && !checked && 'border-red-400',
             )}>
                 {checked && (
@@ -499,7 +499,7 @@ function toggleTrackColor(on: boolean, onColor?: string | null, offColor?: strin
         case 'danger':  return on ? 'bg-red-500'    : 'bg-red-400';
         case 'info':    return on ? 'bg-blue-500'   : 'bg-blue-400';
         case 'gray':    return on ? 'bg-zinc-500'   : 'bg-zinc-400';
-        default:        return on ? 'bg-[var(--arcane-primary,#18181b)]' : 'bg-zinc-300 dark:bg-zinc-600';
+        default:        return on ? 'bg-[var(--larafusion-primary,#18181b)]' : 'bg-zinc-300 dark:bg-zinc-600';
     }
 }
 
@@ -520,7 +520,7 @@ export function ToggleFieldComponent({ field, value, error, onChange }: {
             onClick={() => onChange(!on)}
             className={cn(
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
-                'focus:outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)] focus:ring-offset-1',
+                'focus:outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)] focus:ring-offset-1',
                 'disabled:opacity-50 disabled:cursor-not-allowed',
                 toggleTrackColor(on, field.onColor, field.offColor),
             )}
@@ -663,7 +663,7 @@ function CustomDatePicker({ value, onChange, minDate, maxDate, disabled, readOnl
                     'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100',
                     error
                         ? 'border-red-400 focus:ring-red-400'
-                        : 'border-zinc-300 dark:border-zinc-700 focus:ring-[var(--arcane-primary,#18181b)] focus:border-[var(--arcane-primary,#18181b)]',
+                        : 'border-zinc-300 dark:border-zinc-700 focus:ring-[var(--larafusion-primary,#18181b)] focus:border-[var(--larafusion-primary,#18181b)]',
                     'focus:outline-none focus:ring-2 focus:ring-offset-0',
                     (disabled || readOnly) && 'opacity-60 cursor-default bg-zinc-50 dark:bg-zinc-900/50',
                 )}
@@ -716,8 +716,8 @@ function CustomDatePicker({ value, onChange, minDate, maxDate, disabled, readOnl
                                         'text-center text-xs py-1.5 rounded-lg transition-colors font-medium',
                                         !current && 'text-zinc-300 dark:text-zinc-600',
                                         current && !isSelected && !isToday && !isDisabled && 'text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700',
-                                        isToday && !isSelected && 'bg-zinc-100 dark:bg-zinc-700 text-[var(--arcane-primary,#18181b)] dark:text-white font-bold',
-                                        isSelected && 'bg-[var(--arcane-primary,#18181b)] text-white rounded-lg',
+                                        isToday && !isSelected && 'bg-zinc-100 dark:bg-zinc-700 text-[var(--larafusion-primary,#18181b)] dark:text-white font-bold',
+                                        isSelected && 'bg-[var(--larafusion-primary,#18181b)] text-white rounded-lg',
                                         isDisabled && 'opacity-40 cursor-not-allowed',
                                     )}
                                 >
@@ -812,7 +812,7 @@ export function DateFieldComponent({ field, value, error, onChange }: {
 
 // ─── Field Renderer ───────────────────────────────────────────────────────────
 export function FieldRenderer({ field, value, error, onChange }: {
-    field: ArcaneField; value: unknown; error?: string; onChange: (v: unknown) => void;
+    field: LarafusionField; value: unknown; error?: string; onChange: (v: unknown) => void;
 }) {
     if (field.hidden) return null;
     const p = { error, onChange: onChange as (v: unknown) => void };
@@ -843,7 +843,7 @@ export function FieldRenderer({ field, value, error, onChange }: {
             const CustomComponent = getRegisteredField(field.type);
             if (CustomComponent) return <CustomComponent field={field} value={value} error={error} onChange={onChange} />;
             if (import.meta.env.DEV) {
-                console.warn(`[Arcane] Unknown field type "${field.type}". Register it with registerField('${field.type}', YourComponent).`);
+                console.warn(`[Larafusion] Unknown field type "${field.type}". Register it with registerField('${field.type}', YourComponent).`);
             }
             return null;
         }

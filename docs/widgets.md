@@ -2,7 +2,7 @@
 
 ## Widgets
 
-Widgets appear on the **Dashboard** (registered globally via the panel provider or `ArcaneManager`) or above a **resource index table** (returned by `widgets()` on the resource).
+Widgets appear on the **Dashboard** (registered globally via the panel provider or `LarafusionManager`) or above a **resource index table** (returned by `widgets()` on the resource).
 
 ---
 
@@ -11,13 +11,13 @@ Widgets appear on the **Dashboard** (registered globally via the panel provider 
 Use the artisan generator to scaffold a new widget:
 
 ```bash
-php artisan arcane:widget MyWidget              # blank/custom widget
-php artisan arcane:widget StatsOverview --type=stats
-php artisan arcane:widget RevenueChart --type=chart
-php artisan arcane:widget RecentOrders --type=table
+php artisan larafusion:widget MyWidget              # blank/custom widget
+php artisan larafusion:widget StatsOverview --type=stats
+php artisan larafusion:widget RevenueChart --type=chart
+php artisan larafusion:widget RecentOrders --type=table
 ```
 
-Generated files are placed in `app/Arcane/Widgets/`. Register them as shown in the [Registering Widgets](#registering-widgets) section.
+Generated files are placed in `app/Larafusion/Widgets/`. Register them as shown in the [Registering Widgets](#registering-widgets) section.
 
 ---
 
@@ -28,8 +28,8 @@ Display a row of metric cards, each with a value, trend indicator, sparkline, an
 **Fluent API (inline):**
 
 ```php
-use Arcane\Widgets\StatsOverviewWidget;
-use Arcane\Widgets\Stat;
+use Larafusion\Widgets\StatsOverviewWidget;
+use Larafusion\Widgets\Stat;
 
 StatsOverviewWidget::make()
     ->heading('Dashboard Overview')
@@ -61,9 +61,9 @@ StatsOverviewWidget::make()
 **Class-based (recommended for complex widgets):**
 
 ```php
-// app/Arcane/Widgets/DashboardStatsWidget.php
-use Arcane\Widgets\StatsOverviewWidget;
-use Arcane\Widgets\Stat;
+// app/Larafusion/Widgets/DashboardStatsWidget.php
+use Larafusion\Widgets\StatsOverviewWidget;
+use Larafusion\Widgets\Stat;
 
 class DashboardStatsWidget extends StatsOverviewWidget
 {
@@ -109,7 +109,7 @@ Renders interactive charts as pure SVG — no external JavaScript dependencies.
 **Fluent API (inline):**
 
 ```php
-use Arcane\Widgets\ChartWidget;
+use Larafusion\Widgets\ChartWidget;
 
 ChartWidget::make()
     ->heading('Monthly Signups')
@@ -197,7 +197,7 @@ class PostsChartWidget extends ChartWidget
 Render a compact data table inside a widget card.
 
 ```php
-use Arcane\Widgets\TableWidget;
+use Larafusion\Widgets\TableWidget;
 
 TableWidget::make()
     ->heading('Recent Users')
@@ -240,7 +240,7 @@ class RecentPostsWidget extends TableWidget
 **Via the panel provider** (recommended):
 
 ```php
-// app/Providers/Arcane/AdminPanelProvider.php
+// app/Providers/Larafusion/AdminPanelProvider.php
 ->widgets([
     DashboardStatsWidget::make()->sort(1),
     PostsChartWidget::make()->columnSpan(2)->sort(2),
@@ -249,12 +249,12 @@ class RecentPostsWidget extends TableWidget
 ])
 ```
 
-**Via ArcaneManager** (from any service provider):
+**Via LarafusionManager** (from any service provider):
 
 ```php
-use Arcane\ArcaneManager;
+use Larafusion\LarafusionManager;
 
-ArcaneManager::registerWidgets([
+LarafusionManager::registerWidgets([
     StatsOverviewWidget::make()->stats([...]),
     ChartWidget::make()->heading('Signups')->chartType('bar')->labels([...])->datasets([...]),
 ]);

@@ -1,15 +1,15 @@
 {
-    "name": "arcane/infolists",
-    "description": "Arcane infolists — read-only display entries for showing model data in panels.",
+    "name": "larafusion/infolists",
+    "description": "Larafusion infolists — read-only display entries for showing model data in panels.",
     "type": "library",
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "arcane/support": "@dev"
+        "larafusion/support": "@dev"
     },
     "autoload": {
         "psr-4": {
-            "Arcane\\Infolists\\": "src/"
+            "Larafusion\\Infolists\\": "src/"
         }
     },
     "minimum-stability": "stable",

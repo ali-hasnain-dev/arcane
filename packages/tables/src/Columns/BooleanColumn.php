@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Columns;
+namespace Larafusion\Columns;
 
 class BooleanColumn extends Column
 {

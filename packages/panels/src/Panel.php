@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane;
+namespace Larafusion;
 
 class Panel
 {
@@ -56,7 +56,7 @@ class Panel
 
     // ── Realtime ──────────────────────────────────────────────────────────────
     protected bool   $realtime          = false;
-    protected string $realtimeChannel   = 'arcane';
+    protected string $realtimeChannel   = 'larafusion';
 
     // ── REST API ──────────────────────────────────────────────────────────────
     protected bool    $apiEnabled    = false;
@@ -108,7 +108,7 @@ class Panel
      * Keys 'profile' and 'logout' override the built-in items.
      * All other items are appended after the profile item.
      *
-     * @var array<string|int, \Arcane\Navigation\UserMenuItem|\Closure>
+     * @var array<string|int, \Larafusion\Navigation\UserMenuItem|\Closure>
      */
     protected array $userMenuItems = [];
 
@@ -201,7 +201,7 @@ class Panel
      * Enable WebSocket-based realtime table updates via Laravel Broadcasting.
      * Requires Reverb, Pusher, or a compatible driver configured in your app.
      */
-    public function realtime(bool $enabled = true, string $channel = 'arcane'): static
+    public function realtime(bool $enabled = true, string $channel = 'larafusion'): static
     {
         $this->realtime        = $enabled;
         $this->realtimeChannel = $channel;
@@ -300,7 +300,7 @@ class Panel
 
     /**
      * Set the Google Font family name (e.g. 'Inter', 'Nunito', 'DM Sans').
-     * Arcane will inject the Google Fonts stylesheet automatically.
+     * Larafusion will inject the Google Fonts stylesheet automatically.
      */
     public function font(string $family, ?string $weight = null): static
     {
@@ -580,7 +580,7 @@ class Panel
      *       UserMenuItem::make('settings')->label('Settings')->url('/admin/settings')->icon('settings'),
      *   ])
      *
-     * @param  array<string|int, \Arcane\Navigation\UserMenuItem>  $items
+     * @param  array<string|int, \Larafusion\Navigation\UserMenuItem>  $items
      */
     public function userMenuItems(array $items): static
     {
@@ -609,7 +609,7 @@ class Panel
     }
 
     /**
-     * When enabled, Arcane will throw an AuthorizationException instead of
+     * When enabled, Larafusion will throw an AuthorizationException instead of
      * silently hiding items the user cannot access.
      */
     public function strictAuthorization(bool $enabled = true): static
@@ -793,7 +793,7 @@ class Panel
         $logout   = null;
 
         foreach ($this->userMenuItems as $key => $item) {
-            if (!($item instanceof \Arcane\Navigation\UserMenuItem)) continue;
+            if (!($item instanceof \Larafusion\Navigation\UserMenuItem)) continue;
             if (!$item->isVisible()) continue;
 
             if ($key === 'profile') {

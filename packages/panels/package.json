@@ -1,7 +1,7 @@
 {
-    "name": "@arcane/panels",
+    "name": "@larafusion/panels",
     "version": "0.1.0",
-    "description": "Arcane panels \u2014 admin layout, pages, auth, plugin registry, and theme provider",
+    "description": "Larafusion panels \u2014 admin layout, pages, auth, plugin registry, and theme provider",
     "main": "dist/index.js",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts",
@@ -25,10 +25,10 @@
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "@inertiajs/react": "^3.0.0",
-        "@arcane/support": "*",
-        "@arcane/forms": "*",
-        "@arcane/tables": "*",
-        "@arcane/widgets": "*"
+        "@larafusion/support": "*",
+        "@larafusion/forms": "*",
+        "@larafusion/tables": "*",
+        "@larafusion/widgets": "*"
     },
     "devDependencies": {
         "@types/react": "^19.0.0",

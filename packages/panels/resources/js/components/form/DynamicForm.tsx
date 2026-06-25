@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { router, Link } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
-import { HybridFieldRenderer, runClientValidation } from '@arcane/forms';
+import { HybridFieldRenderer, runClientValidation } from '@larafusion/forms';
 import { cn } from '../../lib/utils';
-import type { FormSchemaItem, ArcaneField, FormValues, FormErrors, SectionSchemaType, TabsSchemaType, GridSchemaType } from '../../types';
+import type { FormSchemaItem, LarafusionField, FormValues, FormErrors, SectionSchemaType, TabsSchemaType, GridSchemaType } from '../../types';
 
 interface DynamicFormProps {
     schema: FormSchemaItem[];
@@ -20,8 +20,8 @@ interface DynamicFormProps {
     onSuccess?: () => void;
 }
 
-function flattenFields(items: FormSchemaItem[]): ArcaneField[] {
-    const out: ArcaneField[] = [];
+function flattenFields(items: FormSchemaItem[]): LarafusionField[] {
+    const out: LarafusionField[] = [];
     for (const item of items) {
         if ((item as SectionSchemaType).type === 'section') {
             flattenFields((item as SectionSchemaType).fields).forEach(f => out.push(f));
@@ -30,7 +30,7 @@ function flattenFields(items: FormSchemaItem[]): ArcaneField[] {
         } else if ((item as GridSchemaType).type === 'grid') {
             flattenFields((item as GridSchemaType).fields).forEach(f => out.push(f));
         } else {
-            out.push(item as ArcaneField);
+            out.push(item as LarafusionField);
         }
     }
     return out;
@@ -192,7 +192,7 @@ export default function DynamicForm({
                     <button
                         type="submit"
                         disabled={submitting}
-                        className="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg text-white bg-[var(--arcane-primary,#18181b)] hover:opacity-90 disabled:opacity-60 transition-colors"
+                        className="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg text-white bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 disabled:opacity-60 transition-colors"
                     >
                         {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
                         {submitLabel}

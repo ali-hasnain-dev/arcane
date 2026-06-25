@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Navigation;
+namespace Larafusion\Navigation;
 
 class NavigationGroup
 {

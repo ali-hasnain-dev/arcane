@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Tables\Filters;
+namespace Larafusion\Tables\Filters;
 
 class Filter
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Console;
+namespace Larafusion\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -8,11 +8,11 @@ use Illuminate\Support\Str;
 
 class MakeWidgetCommand extends Command
 {
-    protected $signature = 'arcane:widget
+    protected $signature = 'larafusion:widget
         {name : Widget class name e.g. StatsOverview, RevenueChart}
         {--type=custom : Widget template — custom|stats|chart|table}';
 
-    protected $description = 'Create a new Arcane widget';
+    protected $description = 'Create a new Larafusion widget';
 
     public function handle(): int
     {
@@ -24,7 +24,7 @@ class MakeWidgetCommand extends Command
             return self::FAILURE;
         }
 
-        $dir  = app_path('Arcane/Widgets');
+        $dir  = app_path('Larafusion/Widgets');
         $path = "{$dir}/{$name}.php";
 
         if (File::exists($path)) {
@@ -36,9 +36,9 @@ class MakeWidgetCommand extends Command
         File::put($path, $this->stub($name, $type));
 
         $this->newLine();
-        $this->info("✅ Widget created: <comment>app/Arcane/Widgets/{$name}.php</comment>");
+        $this->info("✅ Widget created: <comment>app/Larafusion/Widgets/{$name}.php</comment>");
         $this->line('   Register it in your panel provider or service provider:');
-        $this->line("   <comment>ArcaneManager::registerWidgets([{$name}::make()]);</comment>");
+        $this->line("   <comment>LarafusionManager::registerWidgets([{$name}::make()]);</comment>");
         $this->newLine();
 
         return self::SUCCESS;
@@ -46,7 +46,7 @@ class MakeWidgetCommand extends Command
 
     protected function stub(string $name, string $type): string
     {
-        $ns = 'App\\Arcane\\Widgets';
+        $ns = 'App\\Larafusion\\Widgets';
 
         return match ($type) {
             'stats' => $this->statsStub($name, $ns),
@@ -63,8 +63,8 @@ class MakeWidgetCommand extends Command
 
 namespace {$ns};
 
-use Arcane\Widgets\Stat;
-use Arcane\Widgets\StatsOverviewWidget;
+use Larafusion\Widgets\Stat;
+use Larafusion\Widgets\StatsOverviewWidget;
 
 class {$name} extends StatsOverviewWidget
 {
@@ -101,7 +101,7 @@ PHP;
 
 namespace {$ns};
 
-use Arcane\Widgets\ChartWidget;
+use Larafusion\Widgets\ChartWidget;
 
 class {$name} extends ChartWidget
 {
@@ -150,7 +150,7 @@ PHP;
 
 namespace {$ns};
 
-use Arcane\Widgets\TableWidget;
+use Larafusion\Widgets\TableWidget;
 
 class {$name} extends TableWidget
 {
@@ -189,7 +189,7 @@ PHP;
 
 namespace {$ns};
 
-use Arcane\Widgets\Widget;
+use Larafusion\Widgets\Widget;
 
 class {$name} extends Widget
 {

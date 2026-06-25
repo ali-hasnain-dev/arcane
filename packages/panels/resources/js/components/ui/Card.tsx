@@ -1,1 +1,1 @@
-export { Card, CardHeader, CardBody } from '@arcane/support';
+export { Card, CardHeader, CardBody } from '@larafusion/support';

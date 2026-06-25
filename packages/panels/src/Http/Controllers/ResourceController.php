@@ -1,30 +1,30 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Inertia\Inertia;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Arcane\ArcaneManager;
-use Arcane\Tables\Table;
-use Arcane\Fields\FileUpload;
-use Arcane\Fields\KeyValue;
-use Arcane\Fields\Builder;
-use Arcane\Fields\Relations\BelongsToMany;
-use Arcane\Fields\Relations\MorphTo;
+use Larafusion\LarafusionManager;
+use Larafusion\Tables\Table;
+use Larafusion\Fields\FileUpload;
+use Larafusion\Fields\KeyValue;
+use Larafusion\Fields\Builder;
+use Larafusion\Fields\Relations\BelongsToMany;
+use Larafusion\Fields\Relations\MorphTo;
 
 class ResourceController extends Controller
 {
     public function index(Request $request, string $resource)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canViewAny(), 403);
         $model         = $resourceClass::getModelInstance();
         $query         = $model->newQuery();
 
         // ── Multi-tenancy scope ───────────────────────────────────────────────
-        $panel = ArcaneManager::getPanel();
+        $panel = LarafusionManager::getPanel();
         if ($panel && $panel->hasTenancy()) {
             $tenant = ($panel->getTenantResolver())($request);
             $query  = $resourceClass::scopeForTenant($query, $tenant);
@@ -100,10 +100,10 @@ class ResourceController extends Controller
         // Evaluate widgets once here so we can branch without calling widgets() twice.
         $widgetData = $resourceClass::widgets();
 
-        return Inertia::render('Arcane/Index', [
+        return Inertia::render('Larafusion/Index', [
             // ── Lazy props (fn closures) ──────────────────────────────────────────
             // Evaluated on every full page visit so navigating between resources
-            // (all using the same Arcane/Index component) always gets the correct
+            // (all using the same Larafusion/Index component) always gets the correct
             // resource-specific data.
             //
             // On partial reloads (only:['records']) these closures are NEVER evaluated
@@ -165,9 +165,9 @@ class ResourceController extends Controller
 
     public function create(string $resource)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canCreate(), 403);
-        return Inertia::render('Arcane/Create', [
+        return Inertia::render('Larafusion/Create', [
             // Schema / resource meta never change during the create flow — send once.
             'resource'      => Inertia::once(fn () => $resourceClass::getPageProps('create')['resource']),
             'schema'        => Inertia::once(fn () => $resourceClass::getFormSchema()),
@@ -181,13 +181,13 @@ class ResourceController extends Controller
 
     public function store(Request $request, string $resource)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canCreate(), 403);
         $schema        = $resourceClass::getFlatFields();
         $validated     = $request->validate($resourceClass::getCreateRules());
 
         // 🔌 Plugin hook: record.creating
-        $validated = ArcaneManager::fire('record.creating', $validated) ?? $validated;
+        $validated = LarafusionManager::fire('record.creating', $validated) ?? $validated;
 
         [$validated, $relations] = $this->separateRelations($validated, $schema);
         $validated = $this->handleFileFields($validated, $schema);
@@ -199,21 +199,21 @@ class ResourceController extends Controller
         $this->syncRelations($record, $relations, $schema);
 
         // 🔌 Plugin hook: record.created
-        ArcaneManager::fire('record.created', $record);
+        LarafusionManager::fire('record.created', $record);
 
         // 📡 Realtime broadcast
         $this->broadcastIfEnabled('created', $resource, $record);
 
         Inertia::flash('success', "{$resourceClass::getRecordLabel()} created successfully.");
-        return redirect()->route('arcane.resource.index', $resource);
+        return redirect()->route('larafusion.resource.index', $resource);
     }
 
     public function show(string $resource, int|string $id)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canView(), 403);
         $record = $resourceClass::getModelInstance()->findOrFail($id);
-        return Inertia::render('Arcane/Show', [
+        return Inertia::render('Larafusion/Show', [
             // Static — field definitions and permissions don't change per-visit.
             'resource' => Inertia::once(fn () => $resourceClass::getPageProps('show', $record)['resource']),
             'schema'   => Inertia::once(fn () => $resourceClass::getFormSchema()),
@@ -227,10 +227,10 @@ class ResourceController extends Controller
 
     public function edit(string $resource, int|string $id)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canEdit(), 403);
         $record = $resourceClass::getModelInstance()->findOrFail($id);
-        return Inertia::render('Arcane/Edit', [
+        return Inertia::render('Larafusion/Edit', [
             // Static — schema never changes while the user edits a record.
             'resource'      => Inertia::once(fn () => $resourceClass::getPageProps('edit', $record)['resource']),
             'schema'        => Inertia::once(fn () => $resourceClass::getFormSchema()),
@@ -245,14 +245,14 @@ class ResourceController extends Controller
 
     public function update(Request $request, string $resource, int|string $id)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canEdit(), 403);
         $schema        = $resourceClass::getFlatFields();
         $record        = $resourceClass::getModelInstance()->findOrFail($id);
         $validated     = $request->validate($resourceClass::getUpdateRules($id));
 
         // 🔌 Plugin hook: record.updating
-        $validated = ArcaneManager::fire('record.updating', ['record' => $record, 'data' => $validated])['data'] ?? $validated;
+        $validated = LarafusionManager::fire('record.updating', ['record' => $record, 'data' => $validated])['data'] ?? $validated;
 
         [$validated, $relations] = $this->separateRelations($validated, $schema);
         $validated = $this->handleFileFields($validated, $schema);
@@ -264,39 +264,39 @@ class ResourceController extends Controller
         $this->syncRelations($record, $relations, $schema);
 
         // 🔌 Plugin hook: record.updated
-        ArcaneManager::fire('record.updated', $record);
+        LarafusionManager::fire('record.updated', $record);
 
         // 📡 Realtime broadcast
         $this->broadcastIfEnabled('updated', $resource, $record);
 
         Inertia::flash('success', "{$resourceClass::getRecordLabel()} updated successfully.");
-        return redirect()->route('arcane.resource.index', $resource);
+        return redirect()->route('larafusion.resource.index', $resource);
     }
 
     public function destroy(string $resource, int|string $id)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canDelete(), 403);
         $record        = $resourceClass::getModelInstance()->findOrFail($id);
 
         // 🔌 Plugin hook: record.deleting
-        ArcaneManager::fire('record.deleting', $record);
+        LarafusionManager::fire('record.deleting', $record);
 
         $record->delete();
 
         // 🔌 Plugin hook: record.deleted
-        ArcaneManager::fire('record.deleted', $record);
+        LarafusionManager::fire('record.deleted', $record);
 
         // 📡 Realtime broadcast
         $this->broadcastIfEnabled('deleted', $resource, ['id' => $id]);
 
         Inertia::flash('success', "{$resourceClass::getRecordLabel()} deleted successfully.");
-        return redirect()->route('arcane.resource.index', $resource);
+        return redirect()->route('larafusion.resource.index', $resource);
     }
 
     public function bulkDestroy(Request $request, string $resource)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canDelete(), 403);
         $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'integer'])['ids'];
         $resourceClass::getModelInstance()->whereIn('id', $ids)->delete();
@@ -306,7 +306,7 @@ class ResourceController extends Controller
 
     public function restore(string $resource, int|string $id)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canEdit(), 403);
         abort_unless($resourceClass::softDeletes(), 403);
         $resourceClass::getModelInstance()->withTrashed()->findOrFail($id)->restore();
@@ -316,7 +316,7 @@ class ResourceController extends Controller
 
     public function forceDestroy(string $resource, int|string $id)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canDelete(), 403);
         abort_unless($resourceClass::softDeletes(), 403);
         $resourceClass::getModelInstance()->withTrashed()->findOrFail($id)->forceDelete();
@@ -326,7 +326,7 @@ class ResourceController extends Controller
 
     public function bulkRestore(Request $request, string $resource)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canEdit(), 403);
         abort_unless($resourceClass::softDeletes(), 403);
         $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'integer'])['ids'];
@@ -339,12 +339,12 @@ class ResourceController extends Controller
 
     protected function broadcastIfEnabled(string $event, string $resource, mixed $payload): void
     {
-        $panel = ArcaneManager::getPanel();
+        $panel = LarafusionManager::getPanel();
         if (!$panel || !$panel->hasRealtime()) return;
 
         try {
             $channel = $panel->getRealtimeChannel() . '.' . $resource;
-            broadcast(new \Arcane\Events\RecordEvent($event, $resource, $payload))->toOthers();
+            broadcast(new \Larafusion\Events\RecordEvent($event, $resource, $payload))->toOthers();
         } catch (\Throwable) {
             // Broadcasting is optional — silently ignore if driver not configured
         }

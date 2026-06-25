@@ -1,8 +1,8 @@
 <?php
 
-namespace Arcane\Fields\Relations;
+namespace Larafusion\Fields\Relations;
 
-use Arcane\Fields\Field;
+use Larafusion\Fields\Field;
 
 class HasMany extends Field
 {
@@ -11,7 +11,7 @@ class HasMany extends Field
     protected array  $displayColumns = [];  // column names to show in the mini-table
     protected int    $limit          = 5;
     protected bool   $createInline   = false;
-    protected ?string $relatedResource = null; // Arcane resource slug for links
+    protected ?string $relatedResource = null; // Larafusion resource slug for links
 
     public function __construct(string $name)
     {

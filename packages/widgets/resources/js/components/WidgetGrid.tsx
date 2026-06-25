@@ -2,7 +2,7 @@ import React from 'react';
 import StatsOverview from './StatsOverview';
 import ChartWidgetComponent from './ChartWidget';
 import TableWidgetComponent from './TableWidget';
-import type { WidgetData } from '@arcane/support';
+import type { WidgetData } from '@larafusion/support';
 
 /** Map columnSpan to Tailwind col-span classes. Supports numbers 1-12 and the "full" string. */
 function colSpanClass(span: number | string | undefined): string {

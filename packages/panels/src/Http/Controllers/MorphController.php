@@ -1,11 +1,11 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Arcane\ArcaneManager;
-use Arcane\Fields\Relations\MorphTo;
+use Larafusion\LarafusionManager;
+use Larafusion\Fields\Relations\MorphTo;
 
 class MorphController extends Controller
 {
@@ -15,7 +15,7 @@ class MorphController extends Controller
      */
     public function options(Request $request, string $resource, string $field)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canViewAny(), 403);
 
         // Find the MorphTo field definition

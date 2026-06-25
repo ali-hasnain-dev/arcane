@@ -1,11 +1,11 @@
 <?php
 
-namespace Arcane;
+namespace Larafusion;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use Arcane\Schema\Serializer;
-use Arcane\Tables\Table;
+use Larafusion\Schema\Serializer;
+use Larafusion\Tables\Table;
 
 abstract class Resource
 {
@@ -248,9 +248,9 @@ abstract class Resource
     /**
      * Find the page class for this resource by convention.
      *
-     * PostResource → App\Arcane\Resources\Posts\Pages\ListPosts   ($type='List')
-     * PostResource → App\Arcane\Resources\Posts\Pages\EditPost    ($type='Edit')
-     * PostResource → App\Arcane\Resources\Posts\Pages\CreatePost  ($type='Create')
+     * PostResource → App\Larafusion\Resources\Posts\Pages\ListPosts   ($type='List')
+     * PostResource → App\Larafusion\Resources\Posts\Pages\EditPost    ($type='Edit')
+     * PostResource → App\Larafusion\Resources\Posts\Pages\CreatePost  ($type='Create')
      *
      * Tries the plural form first for List, singular first for Edit/Create.
      */

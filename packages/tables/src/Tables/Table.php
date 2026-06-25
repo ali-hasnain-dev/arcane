@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Tables;
+namespace Larafusion\Tables;
 
 class Table
 {

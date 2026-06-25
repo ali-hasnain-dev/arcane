@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 import { Loader2, AlertTriangle } from 'lucide-react';
-import { ArcaneField } from '@arcane/core';
+import { LarafusionField } from '@larafusion/core';
 import { ExtendedField } from '../../types';
 import { useHybridForm } from '../../hooks/useHybridForm';
 import HybridFieldRenderer from '../fields/HybridFieldRenderer';
@@ -36,7 +36,7 @@ export default function HybridForm({
     recordId = null,
 }: HybridFormProps) {
     const form = useHybridForm({
-        schema: schema as ArcaneField[],
+        schema: schema as LarafusionField[],
         initialValues,
         precognitionUrl: submitUrl,
         precognitionMethod: method,
@@ -106,8 +106,8 @@ export default function HybridForm({
                     disabled={form.isSubmitting}
                     className={cn(
                         'inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                        'bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white',
-                        'focus:outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 focus:ring-offset-1',
+                        'bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white',
+                        'focus:outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 focus:ring-offset-1',
                         'disabled:opacity-60 disabled:cursor-not-allowed',
                     )}
                 >

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, router, Deferred, usePage } from '@inertiajs/react';
-import { Card } from '@arcane/support';
+import { Card } from '@larafusion/support';
 import {
     Plus, Search, Pencil, Eye, Trash2, RotateCcw, Flame,
     ChevronUp, ChevronDown, ChevronsUpDown,
@@ -11,22 +11,22 @@ import {
     Download, Upload,
 } from 'lucide-react';
 import { resolveIcon } from '../lib/icons';
-import type { ResourceMeta, ArcaneField, IndexPageProps, FormValues, RecordAction, FormSchemaItem, Column, ArcaneSharedProps, TableConfig } from '@arcane/support';
+import type { ResourceMeta, LarafusionField, IndexPageProps, FormValues, RecordAction, FormSchemaItem, Column, LarafusionSharedProps, TableConfig } from '@larafusion/support';
 import type { BuiltinRecordAction, ToolbarAction, BuiltinBulkAction, BulkActionGroupDef } from '../types';
 import { cn } from '../lib/utils';
 
 type LinkProps = React.ComponentProps<typeof Link>;
 
 function usePrefetchProps(): Partial<LinkProps> {
-    const { arcane } = usePage<ArcaneSharedProps>().props;
-    const config = arcane?.panel?.prefetch;
+    const { larafusion } = usePage<LarafusionSharedProps>().props;
+    const config = larafusion?.panel?.prefetch;
     if (!config?.enabled) return {};
     return { prefetch: config.strategy as LinkProps['prefetch'], cacheFor: config.cacheFor as LinkProps['cacheFor'] };
 }
 
 // ─── Color helpers ────────────────────────────────────────────────────────────
 const COLOR_CLASSES: Record<string, { bg: string; text: string; border: string }> = {
-    primary: { bg: 'bg-[var(--arcane-primary,#18181b)]/10', text: 'text-[var(--arcane-primary,#18181b)]', border: 'border-[var(--arcane-primary,#18181b)]/20' },
+    primary: { bg: 'bg-[var(--larafusion-primary,#18181b)]/10', text: 'text-[var(--larafusion-primary,#18181b)]', border: 'border-[var(--larafusion-primary,#18181b)]/20' },
     success: { bg: 'bg-green-50 dark:bg-green-900/20', text: 'text-green-700 dark:text-green-400', border: 'border-green-200 dark:border-green-800' },
     warning: { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-700 dark:text-amber-400', border: 'border-amber-200 dark:border-amber-800' },
     danger: { bg: 'bg-red-50 dark:bg-red-900/20', text: 'text-red-700 dark:text-red-400', border: 'border-red-200 dark:border-red-800' },
@@ -41,8 +41,8 @@ import FilterPanel, { SideFilterSidebar } from './BasicFilterPanel';
 import type { StandaloneFilter } from './BasicFilterPanel';
 
 // ─── Flatten layout items to fields ───────────────────────────────────────────
-function flattenFields(items: FormSchemaItem[]): ArcaneField[] {
-    const out: ArcaneField[] = [];
+function flattenFields(items: FormSchemaItem[]): LarafusionField[] {
+    const out: LarafusionField[] = [];
     for (const item of items) {
         if (item.type === 'section') { flattenFields(item.fields).forEach(f => out.push(f)); }
         else if (item.type === 'tabs') { item.tabs.forEach(t => flattenFields(t.fields).forEach(f => out.push(f))); }
@@ -56,12 +56,12 @@ function flattenFields(items: FormSchemaItem[]): ArcaneField[] {
 function SortIcon({ field, current, dir }: { field: string; current: string; dir: string }) {
     if (field !== current) return <ChevronsUpDown className="w-3.5 h-3.5 text-zinc-300 group-hover:text-zinc-400 transition-colors" />;
     return dir === 'asc'
-        ? <ChevronUp className="w-3.5 h-3.5 text-[var(--arcane-primary,#18181b)]" />
-        : <ChevronDown className="w-3.5 h-3.5 text-[var(--arcane-primary,#18181b)]" />;
+        ? <ChevronUp className="w-3.5 h-3.5 text-[var(--larafusion-primary,#18181b)]" />
+        : <ChevronDown className="w-3.5 h-3.5 text-[var(--larafusion-primary,#18181b)]" />;
 }
 
 // ─── Cell value ────────────────────────────────────────────────────────────────
-function CellValue({ col, field, value }: { col: Column; field?: ArcaneField; value: unknown }) {
+function CellValue({ col, field, value }: { col: Column; field?: LarafusionField; value: unknown }) {
     const empty = value === null || value === undefined || value === '';
     if (empty) return <span className="text-zinc-300 dark:text-zinc-600">—</span>;
 
@@ -197,7 +197,7 @@ function CellValue({ col, field, value }: { col: Column; field?: ArcaneField; va
                 type="button"
                 onClick={() => navigator.clipboard?.writeText(str)}
                 title="Copy"
-                className={cn(textCls, 'cursor-copy hover:text-[var(--arcane-primary,#18181b)] transition-colors group')}
+                className={cn(textCls, 'cursor-copy hover:text-[var(--larafusion-primary,#18181b)] transition-colors group')}
             >
                 {display}
             </button>
@@ -220,7 +220,7 @@ function CellValue({ col, field, value }: { col: Column; field?: ArcaneField; va
 
 // ─── Inline-editable cell ─────────────────────────────────────────────────────
 function InlineCell({ field, value, resourceSlug, id }: {
-    field: ArcaneField; value: unknown; resourceSlug: string; id: string | number;
+    field: LarafusionField; value: unknown; resourceSlug: string; id: string | number;
 }) {
     const [editing, setEditing] = useState(false);
     const [val, setVal] = useState(String(value ?? ''));
@@ -257,7 +257,7 @@ function InlineCell({ field, value, resourceSlug, id }: {
             onBlur={save}
             onKeyDown={e => { if (e.key === 'Enter') save(); if (e.key === 'Escape') setEditing(false); }}
             disabled={saving}
-            className="w-full px-2 py-1 text-sm border border-[var(--arcane-primary,#18181b)] rounded-md outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+            className="w-full px-2 py-1 text-sm border border-[var(--larafusion-primary,#18181b)] rounded-md outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
         />
     );
 }
@@ -279,7 +279,7 @@ function ActionButton({ action, resourceSlug, id, openConfirm }: ActionButtonPro
 
     const colorCls = (() => {
         switch (action.color) {
-            case 'primary': return 'text-[var(--arcane-primary,#18181b)] hover:text-[var(--arcane-primary,#18181b)]/80';
+            case 'primary': return 'text-[var(--larafusion-primary,#18181b)] hover:text-[var(--larafusion-primary,#18181b)]/80';
             case 'success': return 'text-green-600 hover:text-green-700';
             case 'warning': return 'text-amber-500 hover:text-amber-600';
             case 'danger': return 'text-red-500 hover:text-red-600';
@@ -359,12 +359,12 @@ function RecordActionsCell({
         if (act.type === 'edit' && can.edit) {
             node = onModalEdit ? (
                 <button type="button" onClick={() => onModalEdit(record)}
-                    className="inline-flex items-center gap-1 text-xs font-medium text-[var(--arcane-primary,#18181b)] dark:text-[var(--arcane-primary-ring,#a78bfa)] hover:opacity-80 transition-colors">
+                    className="inline-flex items-center gap-1 text-xs font-medium text-[var(--larafusion-primary,#18181b)] dark:text-[var(--larafusion-primary-ring,#a78bfa)] hover:opacity-80 transition-colors">
                     <Pencil className="w-3.5 h-3.5" /> {act.label}
                 </button>
             ) : (
                 <Link href={`/admin/${slug}/${id}/edit`} {...prefetchProps}
-                    className="inline-flex items-center gap-1 text-xs font-medium text-[var(--arcane-primary,#18181b)] dark:text-[var(--arcane-primary-ring,#a78bfa)] hover:opacity-80 transition-colors">
+                    className="inline-flex items-center gap-1 text-xs font-medium text-[var(--larafusion-primary,#18181b)] dark:text-[var(--larafusion-primary-ring,#a78bfa)] hover:opacity-80 transition-colors">
                     <Pencil className="w-3.5 h-3.5" /> {act.label}
                 </Link>
             );
@@ -381,7 +381,7 @@ function RecordActionsCell({
             const display = act.display ?? 'icon';
             const colorCls = (() => {
                 switch (act.color) {
-                    case 'primary': return 'text-[var(--arcane-primary,#18181b)] hover:opacity-80';
+                    case 'primary': return 'text-[var(--larafusion-primary,#18181b)] hover:opacity-80';
                     case 'success': return 'text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300';
                     case 'warning': return 'text-amber-500 dark:text-amber-400 hover:text-amber-600 dark:hover:text-amber-300';
                     case 'danger':  return 'text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300';
@@ -510,7 +510,7 @@ function PerPageSelector({ current, resourceSlug }: { current: number; resourceS
             <select
                 value={current}
                 onChange={e => change(Number(e.target.value))}
-                className="border border-zinc-200 dark:border-zinc-700 rounded-md px-2 py-1 text-sm text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 outline-none hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors"
+                className="border border-zinc-200 dark:border-zinc-700 rounded-md px-2 py-1 text-sm text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 outline-none hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors"
             >
                 {PER_PAGE_OPTIONS.map(n => <option key={n} value={n}>{n}</option>)}
             </select>
@@ -552,7 +552,7 @@ function PaginationRow({ records, simple = false }: {
     const window = buildWindow(cur, last);
 
     const base = 'h-8 min-w-[2rem] px-2 inline-flex items-center justify-center rounded-lg text-xs font-medium transition-colors select-none';
-    const active = 'bg-[var(--arcane-primary,#18181b)] text-white shadow-sm';
+    const active = 'bg-[var(--larafusion-primary,#18181b)] text-white shadow-sm';
     const ghost = 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-800 dark:hover:text-zinc-200';
     const disabled = 'text-zinc-300 dark:text-zinc-600 cursor-not-allowed';
 
@@ -649,7 +649,7 @@ function TrashTabs({ resourceSlug }: { resourceSlug: string }) {
                 <button key={val} type="button" onClick={() => go(val)}
                     className={cn('px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors',
                         trashed === val
-                            ? 'border-[var(--arcane-primary,#18181b)] text-[var(--arcane-primary,#18181b)]'
+                            ? 'border-[var(--larafusion-primary,#18181b)] text-[var(--larafusion-primary,#18181b)]'
                             : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200')}>
                     {label}
                 </button>
@@ -679,12 +679,12 @@ interface BasicTableProps {
 
 export default function BasicTable({ resource, schema: rawSchema, records, actions = [], columns = [], tableConfig, onModalEdit }: BasicTableProps) {
     const prefetchProps = usePrefetchProps();
-    const { arcane } = usePage<ArcaneSharedProps>().props;
+    const { larafusion } = usePage<LarafusionSharedProps>().props;
     const striped = tableConfig?.striped ?? false;
     // Table-level setting wins; fall back to panel-level; default false.
     const simplePagination = tableConfig?.simplePagination !== undefined
         ? tableConfig.simplePagination
-        : (arcane?.panel?.simplePagination ?? false);
+        : (larafusion?.panel?.simplePagination ?? false);
     const disablePagination = tableConfig?.disablePagination ?? false;
     const params = new URLSearchParams(window.location.search);
     const sortField = params.get('sort') ?? (tableConfig?.defaultSort?.field ?? 'id');
@@ -1035,7 +1035,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                                     <button
                                         type="button"
                                         onClick={() => setSelectAllPages(true)}
-                                        className="text-sm font-medium text-[var(--arcane-primary,#18181b)] dark:text-[var(--arcane-primary-ring,#a78bfa)] hover:opacity-80 transition-colors"
+                                        className="text-sm font-medium text-[var(--larafusion-primary,#18181b)] dark:text-[var(--larafusion-primary-ring,#a78bfa)] hover:opacity-80 transition-colors"
                                     >
                                         Select all {records.total}
                                     </button>
@@ -1059,7 +1059,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                                             value={search}
                                             onChange={e => handleSearchChange(e.target.value)}
                                             placeholder="Search…"
-                                            className="pl-9 pr-4 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 focus:border-[var(--arcane-primary,#18181b)] outline-none w-48 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
+                                            className="pl-9 pr-4 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 focus:border-[var(--larafusion-primary,#18181b)] outline-none w-48 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
                                         />
                                     </form>
                                 )}
@@ -1076,7 +1076,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                                             value={search}
                                             onChange={e => handleSearchChange(e.target.value)}
                                             placeholder="Search…"
-                                            className="pl-9 pr-9 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 focus:border-[var(--arcane-primary,#18181b)] outline-none w-52 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors"
+                                            className="pl-9 pr-9 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 focus:border-[var(--larafusion-primary,#18181b)] outline-none w-52 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors"
                                         />
                                         {searchLoading ? (
                                             <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none animate-spin" />
@@ -1132,7 +1132,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                                                         checked={allSelected}
                                                         ref={el => { if (el) el.indeterminate = someSelected && !allSelected; }}
                                                         onChange={toggleAll}
-                                                        className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 cursor-pointer accent-[var(--arcane-primary,#18181b)]"
+                                                        className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 cursor-pointer accent-[var(--larafusion-primary,#18181b)]"
                                                     />
                                                 </th>
                                             )}
@@ -1192,7 +1192,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                                                     className={cn(
                                                         'group transition-colors',
                                                         isSelected
-                                                            ? 'bg-[var(--arcane-primary,#18181b)]/5'
+                                                            ? 'bg-[var(--larafusion-primary,#18181b)]/5'
                                                             : striped && records.data.indexOf(record) % 2 !== 0
                                                                 ? 'bg-zinc-50/60 dark:bg-zinc-800/20 hover:bg-zinc-50/80 dark:hover:bg-zinc-800/50'
                                                                 : 'hover:bg-zinc-50/80 dark:hover:bg-zinc-800/50',
@@ -1201,12 +1201,12 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                                                     {/* Checkbox — hidden when no bulk actions defined */}
                                                     {hasBulkActions && (
                                                         <td className="w-10 px-4 py-3.5 relative">
-                                                            <span className={cn('absolute inset-y-0 left-0 w-[3px] transition-colors', isSelected ? 'bg-[var(--arcane-primary,#18181b)]' : 'bg-transparent')} />
+                                                            <span className={cn('absolute inset-y-0 left-0 w-[3px] transition-colors', isSelected ? 'bg-[var(--larafusion-primary,#18181b)]' : 'bg-transparent')} />
                                                             <input
                                                                 type="checkbox"
                                                                 checked={isSelected}
                                                                 onChange={() => toggleRow(id)}
-                                                                className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 cursor-pointer accent-[var(--arcane-primary,#18181b)]"
+                                                                className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 cursor-pointer accent-[var(--larafusion-primary,#18181b)]"
                                                             />
                                                         </td>
                                                     )}

@@ -1,16 +1,16 @@
-# Arcane
+# Larafusion
 
 > An Inertia-powered admin panel framework for Laravel — write PHP, get a fully interactive admin UI.
 
 ---
 
-## What is Arcane?
+## What is Larafusion?
 
-Arcane is a Laravel package that maps your Eloquent models to a fully interactive admin interface powered by Inertia.js v3. You write PHP resource classes; Arcane renders the forms, tables, navigation, dashboard widgets, and auth pages — no page publishing, no manual React wiring.
+Larafusion is a Laravel package that maps your Eloquent models to a fully interactive admin interface powered by Inertia.js v3. You write PHP resource classes; Larafusion renders the forms, tables, navigation, dashboard widgets, and auth pages — no page publishing, no manual React wiring.
 
 ```
-composer require arcanephp/arcane
-php artisan arcane:install
+composer require larafusion/larafusion
+php artisan larafusion:install
 ```
 
 ---
@@ -34,8 +34,8 @@ php artisan arcane:install
 | [Panel Configuration](docs/panel-configuration.md) | `docs/panel-configuration.md` | Full panel API — auth, branding, layout, user menu, prefetch |
 | [Themes](docs/themes.md) | `docs/themes.md` | 6 built-in themes, dark mode, FOUC prevention |
 | [Notifications](docs/notifications.md) | `docs/notifications.md` | Flash toasts (automatic) and `useNotify()` React hook |
-| [Plugins](docs/plugins.md) | `docs/plugins.md` | Extend Arcane with navigation items, slots, lifecycle hooks |
-| [CLI Commands](docs/cli-commands.md) | `docs/cli-commands.md` | `arcane:install`, `arcane:resource`, `arcane:widget`, etc. |
+| [Plugins](docs/plugins.md) | `docs/plugins.md` | Extend Larafusion with navigation items, slots, lifecycle hooks |
+| [CLI Commands](docs/cli-commands.md) | `docs/cli-commands.md` | `larafusion:install`, `larafusion:resource`, `larafusion:widget`, etc. |
 | [HTTP Endpoints](docs/internals.md) | `docs/internals.md` | Full route table and Inertia v3 data-flow internals |
 | [Feature Roadmap](docs/roadmap.md) | `docs/roadmap.md` | Completed features and what's planned next |
 
@@ -46,8 +46,8 @@ php artisan arcane:install
 ### 1. Install
 
 ```bash
-composer require arcanephp/arcane
-php artisan arcane:install
+composer require larafusion/larafusion
+php artisan larafusion:install
 ```
 
 ### 2. Register the provider
@@ -56,14 +56,14 @@ php artisan arcane:install
 // bootstrap/providers.php
 return [
     App\Providers\AppServiceProvider::class,
-    App\Providers\Arcane\AdminPanelProvider::class,
+    App\Providers\Larafusion\AdminPanelProvider::class,
 ];
 ```
 
 ### 3. Configure your panel
 
 ```php
-// app/Providers/Arcane/AdminPanelProvider.php
+// app/Providers/Larafusion/AdminPanelProvider.php
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -85,10 +85,10 @@ class AdminPanelProvider extends PanelProvider
 ### 4. Scaffold a resource
 
 ```bash
-php artisan arcane:resource Post
+php artisan larafusion:resource Post
 ```
 
-Creates `app/Arcane/Resources/Posts/` with 6 files — auto-discovered, no registration needed.
+Creates `app/Larafusion/Resources/Posts/` with 6 files — auto-discovered, no registration needed.
 
 ### 5. Build and visit
 
@@ -112,16 +112,16 @@ Open `http://your-app.test/admin`.
 
 ## Packages
 
-Arcane is a monorepo. Each sub-package is independently composable:
+Larafusion is a monorepo. Each sub-package is independently composable:
 
 | Package | Description |
 |---|---|
-| `arcane/panels` | Core panel engine — routing, auth, dashboard, panel config |
-| `arcane/forms` | Form fields and validation |
-| `arcane/tables` | Table builder, columns, filters, actions |
-| `arcane/widgets` | Stats, chart, and table dashboard widgets |
-| `arcane/actions` | ButtonAction and LinkAction (legacy) |
-| `arcane/schemas` | Schema composition utilities |
-| `arcane/support` | Shared types, utilities, enum interfaces |
-| `arcane/notifications` | Toast notification system |
-| `arcane/infolists` | Read-only info display (planned) |
+| `larafusion/panels` | Core panel engine — routing, auth, dashboard, panel config |
+| `larafusion/forms` | Form fields and validation |
+| `larafusion/tables` | Table builder, columns, filters, actions |
+| `larafusion/widgets` | Stats, chart, and table dashboard widgets |
+| `larafusion/actions` | ButtonAction and LinkAction (legacy) |
+| `larafusion/schemas` | Schema composition utilities |
+| `larafusion/support` | Shared types, utilities, enum interfaces |
+| `larafusion/notifications` | Toast notification system |
+| `larafusion/infolists` | Read-only info display (planned) |

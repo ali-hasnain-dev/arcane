@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Console;
+namespace Larafusion\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -12,8 +12,8 @@ use function Laravel\Prompts\text;
 
 class MakeResourceCommand extends Command
 {
-    protected $signature   = 'arcane:resource {name : The model name e.g. User, BlogPost}';
-    protected $description = 'Create a new Arcane resource with Filament-style folder structure';
+    protected $signature   = 'larafusion:resource {name : The model name e.g. User, BlogPost}';
+    protected $description = 'Create a new Larafusion resource with Filament-style folder structure';
 
     // ── System columns to skip in forms / tables ──────────────────────────────
     private const SKIP_FORM  = ['id', 'created_at', 'updated_at', 'deleted_at', 'remember_token', 'email_verified_at'];
@@ -59,8 +59,8 @@ class MakeResourceCommand extends Command
 
         $plural = Str::plural($name);
 
-        $baseDir = app_path("Arcane/Resources/{$plural}");
-        $ns      = "App\\Arcane\\Resources\\{$plural}";
+        $baseDir = app_path("Larafusion/Resources/{$plural}");
+        $ns      = "App\\Larafusion\\Resources\\{$plural}";
 
         $resourcePath = "{$baseDir}/{$name}Resource.php";
 
@@ -131,7 +131,7 @@ class MakeResourceCommand extends Command
             File::put("{$baseDir}/Pages/View{$name}.php", $this->showPageStub($name, $plural, $ns));
         }
 
-        $rel = "app/Arcane/Resources/{$plural}";
+        $rel = "app/Larafusion/Resources/{$plural}";
         $this->newLine();
         $this->info("✅ Resource scaffolded: <comment>{$rel}/</comment>");
         $this->line("   <comment>{$name}Resource.php</comment>        ← model, navigation, wires schema + table");
@@ -305,7 +305,7 @@ class MakeResourceCommand extends Command
         return "                    Text::make('{$col}'){$extra},";
     }
 
-    /** Collect the set of Arcane field classes actually used. */
+    /** Collect the set of Larafusion field classes actually used. */
     protected function neededFormClasses(array $schema): array
     {
         $classes = [];
@@ -392,7 +392,7 @@ class MakeResourceCommand extends Command
         return "                TextColumn::make('{$col}'){$extra},";
     }
 
-    /** Collect the set of Arcane column classes actually used. */
+    /** Collect the set of Larafusion column classes actually used. */
     protected function neededTableClasses(array $schema): array
     {
         $classes = ['TextColumn', 'DateColumn']; // always include fallback pair
@@ -454,8 +454,8 @@ class MakeResourceCommand extends Command
 namespace {$ns};
 
 use {$model};
-use Arcane\Resource;
-use Arcane\Tables\Table;
+use Larafusion\Resource;
+use Larafusion\Tables\Table;
 use {$ns}\Schemas\\{$name}Form;
 use {$ns}\Tables\\{$plural}Table;
 
@@ -487,7 +487,7 @@ PHP;
         }
 
         $classes   = $this->neededFormClasses($schema);
-        $imports   = implode("\n", array_map(fn($c) => "use Arcane\\Fields\\{$c};", $classes));
+        $imports   = implode("\n", array_map(fn($c) => "use Larafusion\\Fields\\{$c};", $classes));
 
         $fieldLines = [];
         foreach ($schema as $col => $rawType) {
@@ -503,7 +503,7 @@ PHP;
 namespace {$ns}\Schemas;
 
 {$imports}
-use Arcane\Layout\Section;
+use Larafusion\Layout\Section;
 
 class {$name}Form
 {
@@ -529,9 +529,9 @@ PHP;
 
 namespace {$ns}\Schemas;
 
-use Arcane\Fields\Text;
-use Arcane\Fields\Email;
-use Arcane\Layout\Section;
+use Larafusion\Fields\Text;
+use Larafusion\Fields\Email;
+use Larafusion\Layout\Section;
 
 class {$name}Form
 {
@@ -557,7 +557,7 @@ PHP;
         }
 
         $columnClasses = $this->neededTableClasses($schema);
-        $colImports    = implode("\n", array_map(fn($c) => "use Arcane\\Columns\\{$c};", $columnClasses));
+        $colImports    = implode("\n", array_map(fn($c) => "use Larafusion\\Columns\\{$c};", $columnClasses));
 
         $firstString = true;
         $columnLines = [];
@@ -579,12 +579,12 @@ PHP;
 
 namespace {$ns}\Tables;
 
-use Arcane\Tables\Table;
+use Larafusion\Tables\Table;
 {$colImports}
-use Arcane\Tables\Actions\EditAction;
-use Arcane\Tables\Actions\DeleteAction;
-use Arcane\Tables\Actions\BulkActionGroup;
-use Arcane\Tables\Actions\DeleteBulkAction;
+use Larafusion\Tables\Actions\EditAction;
+use Larafusion\Tables\Actions\DeleteAction;
+use Larafusion\Tables\Actions\BulkActionGroup;
+use Larafusion\Tables\Actions\DeleteBulkAction;
 
 class {$plural}Table
 {
@@ -619,13 +619,13 @@ PHP;
 
 namespace {$ns}\Tables;
 
-use Arcane\Tables\Table;
-use Arcane\Columns\TextColumn;
-use Arcane\Columns\DateColumn;
-use Arcane\Tables\Actions\EditAction;
-use Arcane\Tables\Actions\DeleteAction;
-use Arcane\Tables\Actions\BulkActionGroup;
-use Arcane\Tables\Actions\DeleteBulkAction;
+use Larafusion\Tables\Table;
+use Larafusion\Columns\TextColumn;
+use Larafusion\Columns\DateColumn;
+use Larafusion\Tables\Actions\EditAction;
+use Larafusion\Tables\Actions\DeleteAction;
+use Larafusion\Tables\Actions\BulkActionGroup;
+use Larafusion\Tables\Actions\DeleteBulkAction;
 
 class {$plural}Table
 {
@@ -660,8 +660,8 @@ PHP;
 
 namespace {$ns}\Pages;
 
-use Arcane\Pages\ListPage;
-use Arcane\Pages\Actions\CreateAction;
+use Larafusion\Pages\ListPage;
+use Larafusion\Pages\Actions\CreateAction;
 use {$ns}\\{$name}Resource;
 
 class List{$plural} extends ListPage
@@ -685,7 +685,7 @@ PHP;
 
 namespace {$ns}\Pages;
 
-use Arcane\Pages\CreatePage;
+use Larafusion\Pages\CreatePage;
 use {$ns}\\{$name}Resource;
 
 class Create{$name} extends CreatePage
@@ -702,7 +702,7 @@ PHP;
 
 namespace {$ns}\Pages;
 
-use Arcane\Pages\EditPage;
+use Larafusion\Pages\EditPage;
 use {$ns}\\{$name}Resource;
 
 class Edit{$name} extends EditPage
@@ -719,8 +719,8 @@ PHP;
 
 namespace {$ns}\Pages;
 
-use Arcane\Pages\ShowPage;
-use Arcane\Pages\Actions\EditAction;
+use Larafusion\Pages\ShowPage;
+use Larafusion\Pages\Actions\EditAction;
 use {$ns}\\{$name}Resource;
 
 class View{$name} extends ShowPage

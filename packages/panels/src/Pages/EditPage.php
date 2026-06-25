@@ -1,8 +1,8 @@
 <?php
 
-namespace Arcane\Pages;
+namespace Larafusion\Pages;
 
-use Arcane\Pages\Actions\DeleteAction;
+use Larafusion\Pages\Actions\DeleteAction;
 
 abstract class EditPage
 {
@@ -19,9 +19,9 @@ abstract class EditPage
      * Override to customise. Common additions: ForceDeleteAction, RestoreAction.
      *
      * Example:
-     *   use Arcane\Pages\Actions\DeleteAction;
-     *   use Arcane\Pages\Actions\ForceDeleteAction;
-     *   use Arcane\Pages\Actions\RestoreAction;
+     *   use Larafusion\Pages\Actions\DeleteAction;
+     *   use Larafusion\Pages\Actions\ForceDeleteAction;
+     *   use Larafusion\Pages\Actions\RestoreAction;
      *
      *   public static function getHeaderActions(): array
      *   {

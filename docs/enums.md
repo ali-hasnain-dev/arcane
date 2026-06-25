@@ -2,7 +2,7 @@
 
 ## Enums
 
-Arcane has first-class support for PHP 8.1+ backed enums. Implement one or more of the four enum interfaces from `Arcane\Support\Enums\` to drive labels, colors, icons, and descriptions across forms, tables, and filters automatically.
+Larafusion has first-class support for PHP 8.1+ backed enums. Implement one or more of the four enum interfaces from `Larafusion\Support\Enums\` to drive labels, colors, icons, and descriptions across forms, tables, and filters automatically.
 
 ### Interfaces
 
@@ -18,10 +18,10 @@ Valid color values: `primary` · `success` · `warning` · `danger` · `info` ·
 ### Defining an Enum
 
 ```php
-use Arcane\Support\Enums\HasColor;
-use Arcane\Support\Enums\HasDescription;
-use Arcane\Support\Enums\HasIcon;
-use Arcane\Support\Enums\HasLabel;
+use Larafusion\Support\Enums\HasColor;
+use Larafusion\Support\Enums\HasDescription;
+use Larafusion\Support\Enums\HasIcon;
+use Larafusion\Support\Enums\HasLabel;
 
 enum PostStatus: string implements HasLabel, HasColor, HasIcon, HasDescription
 {
@@ -123,11 +123,11 @@ SelectFilter::make('status')->options(PostStatus::class)->label('Status'),
 ### Full Example
 
 ```php
-// app/Arcane/Resources/Posts/Schemas/PostForm.php
+// app/Larafusion/Resources/Posts/Schemas/PostForm.php
 Select::make('status')->options(PostStatus::class)->required(),
 Radio::make('status')->options(PostStatus::class)->label('Post Status'),
 
-// app/Arcane/Resources/Posts/Tables/PostsTable.php
+// app/Larafusion/Resources/Posts/Tables/PostsTable.php
 BadgeColumn::make('status')->enum(PostStatus::class)->sortable(),
 // or: TextColumn::make('status')->enum(PostStatus::class)->sortable(),
 

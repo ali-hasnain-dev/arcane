@@ -1,1 +1,1 @@
-export { FieldRenderer, registerField, getRegisteredField } from '@arcane/forms';
+export { FieldRenderer, registerField, getRegisteredField } from '@larafusion/forms';

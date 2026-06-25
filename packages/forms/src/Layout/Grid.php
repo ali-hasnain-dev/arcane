@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Layout;
+namespace Larafusion\Layout;
 
 class Grid
 {
@@ -33,7 +33,7 @@ class Grid
         return [
             'type'    => 'grid',
             'columns' => $this->columns,
-            'fields'  => \Arcane\Schema\Serializer::fields($this->schema),
+            'fields'  => \Larafusion\Schema\Serializer::fields($this->schema),
         ];
     }
 }

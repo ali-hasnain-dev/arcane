@@ -1,17 +1,17 @@
 <?php
 
-namespace Arcane\Http\Controllers\Api;
+namespace Larafusion\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\JsonResponse;
-use Arcane\ArcaneManager;
-use Arcane\Fields\FileUpload;
-use Arcane\Fields\KeyValue;
-use Arcane\Fields\Builder;
-use Arcane\Fields\Relations\BelongsToMany;
-use Arcane\Fields\Relations\MorphTo;
-use Arcane\Http\Controllers\UploadController;
+use Larafusion\LarafusionManager;
+use Larafusion\Fields\FileUpload;
+use Larafusion\Fields\KeyValue;
+use Larafusion\Fields\Builder;
+use Larafusion\Fields\Relations\BelongsToMany;
+use Larafusion\Fields\Relations\MorphTo;
+use Larafusion\Http\Controllers\UploadController;
 
 class ResourceApiController extends Controller
 {
@@ -19,7 +19,7 @@ class ResourceApiController extends Controller
 
     public function index(Request $request, string $resource): JsonResponse
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canViewAny(), 403);
 
         $model = $resourceClass::getModelInstance();
@@ -50,7 +50,7 @@ class ResourceApiController extends Controller
         }
 
         // Tenant scope
-        $panel = ArcaneManager::getPanel();
+        $panel = LarafusionManager::getPanel();
         if ($panel && $panel->hasTenancy()) {
             $tenant = ($panel->getTenantResolver())($request);
             $query  = $resourceClass::scopeForTenant($query, $tenant);
@@ -80,7 +80,7 @@ class ResourceApiController extends Controller
 
     public function show(string $resource, int|string $id): JsonResponse
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canView(), 403);
         $record = $resourceClass::getModelInstance()->findOrFail($id);
         return response()->json(['data' => $record]);
@@ -90,7 +90,7 @@ class ResourceApiController extends Controller
 
     public function store(Request $request, string $resource): JsonResponse
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canCreate(), 403);
 
         $schema    = $resourceClass::getFlatFields();
@@ -98,7 +98,7 @@ class ResourceApiController extends Controller
         $validated = $this->processFields($validated, $schema);
 
         $record = $resourceClass::getModelInstance()->create($validated);
-        ArcaneManager::fire('record.created', $record);
+        LarafusionManager::fire('record.created', $record);
 
         return response()->json(['data' => $record], 201);
     }
@@ -107,7 +107,7 @@ class ResourceApiController extends Controller
 
     public function update(Request $request, string $resource, int|string $id): JsonResponse
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canEdit(), 403);
 
         $schema    = $resourceClass::getFlatFields();
@@ -116,7 +116,7 @@ class ResourceApiController extends Controller
         $validated = $this->processFields($validated, $schema);
 
         $record->update($validated);
-        ArcaneManager::fire('record.updated', $record);
+        LarafusionManager::fire('record.updated', $record);
 
         return response()->json(['data' => $record]);
     }
@@ -125,13 +125,13 @@ class ResourceApiController extends Controller
 
     public function destroy(string $resource, int|string $id): JsonResponse
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canDelete(), 403);
         $record = $resourceClass::getModelInstance()->findOrFail($id);
 
-        ArcaneManager::fire('record.deleting', $record);
+        LarafusionManager::fire('record.deleting', $record);
         $record->delete();
-        ArcaneManager::fire('record.deleted', $record);
+        LarafusionManager::fire('record.deleted', $record);
 
         return response()->json(null, 204);
     }
@@ -140,7 +140,7 @@ class ResourceApiController extends Controller
 
     public function schema(string $resource): JsonResponse
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canViewAny(), 403);
         return response()->json([
             'schema'  => $resourceClass::getFormSchema(),

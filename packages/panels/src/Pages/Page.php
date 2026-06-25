@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Pages;
+namespace Larafusion\Pages;
 
 use Inertia\Inertia;
 use Inertia\Response;
@@ -13,12 +13,12 @@ use Inertia\Response;
  *       protected static string $slug  = 'reports';
  *       protected static string $title = 'Reports';
  *
- *       public static function getView(): string { return 'Arcane/Reports'; }
+ *       public static function getView(): string { return 'Larafusion/Reports'; }
  *       public static function getViewData(): array { return ['items' => ...]; }
  *   }
  *
- * Then register: ArcaneManager::registerPages([ReportsPage::class])
- * And create your React component at resources/js/Pages/Arcane/Reports.tsx
+ * Then register: LarafusionManager::registerPages([ReportsPage::class])
+ * And create your React component at resources/js/Pages/Larafusion/Reports.tsx
  */
 abstract class Page
 {

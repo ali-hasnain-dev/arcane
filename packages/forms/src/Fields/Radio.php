@@ -1,8 +1,8 @@
 <?php
 
-namespace Arcane\Fields;
+namespace Larafusion\Fields;
 
-use Arcane\Support\Enums\EnumOptions;
+use Larafusion\Support\Enums\EnumOptions;
 use Illuminate\Support\Collection;
 
 class Radio extends Field

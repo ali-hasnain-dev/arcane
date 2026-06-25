@@ -1,6 +1,6 @@
 // ─── Layout ───────────────────────────────────────────────────────────────────
 export { default as AdminLayout  } from './components/layout/AdminLayout';
-export type { ArcaneLayoutProps  } from './components/layout/AdminLayout';
+export type { LarafusionLayoutProps  } from './components/layout/AdminLayout';
 export { default as AuthLayout   } from './components/auth/AuthLayout';
 
 // ─── Theme (Phase 7) ──────────────────────────────────────────────────────────
@@ -20,18 +20,18 @@ export { FieldRenderer } from './components/fields';
 export { default as DynamicForm } from './components/form/DynamicForm';
 
 // ─── Pages ────────────────────────────────────────────────────────────────────
-export { default as Dashboard } from './pages/Arcane/Dashboard';
-export { default as Index     } from './pages/Arcane/Index';
-export { default as Create    } from './pages/Arcane/Create';
-export { default as Edit      } from './pages/Arcane/Edit';
-export { default as Show      } from './pages/Arcane/Show';
-export { default as Settings  } from './pages/Arcane/Settings';
-export { default as Login     } from './pages/Arcane/Auth/Login';
+export { default as Dashboard } from './pages/Larafusion/Dashboard';
+export { default as Index     } from './pages/Larafusion/Index';
+export { default as Create    } from './pages/Larafusion/Create';
+export { default as Edit      } from './pages/Larafusion/Edit';
+export { default as Show      } from './pages/Larafusion/Show';
+export { default as Settings  } from './pages/Larafusion/Settings';
+export { default as Login     } from './pages/Larafusion/Auth/Login';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export type {
-    ArcaneField, ArcanePageProps, IndexPageProps,
-    ArcaneSharedProps, FormValues, FormErrors,
+    LarafusionField, LarafusionPageProps, IndexPageProps,
+    LarafusionSharedProps, FormValues, FormErrors,
     NavigationItem, ResourceMeta, Column,
     FieldType, FieldValidation, BaseField,
     ThemeConfig, PluginInfo,

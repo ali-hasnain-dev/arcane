@@ -22,7 +22,7 @@ function useDarkMode(): boolean {
 
 const bgMap: Record<string, string> = {
     default: 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400',
-    primary: 'bg-[var(--arcane-primary,#18181b)]/10 text-[var(--arcane-primary,#18181b)] dark:text-white',
+    primary: 'bg-[var(--larafusion-primary,#18181b)]/10 text-[var(--larafusion-primary,#18181b)] dark:text-white',
     success: 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300',
     warning: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300',
     danger:  'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-300',
@@ -32,7 +32,7 @@ const bgMap: Record<string, string> = {
 
 const dotMap: Record<string, string> = {
     default: 'bg-zinc-400',
-    primary: 'bg-[var(--arcane-primary,#18181b)]',
+    primary: 'bg-[var(--larafusion-primary,#18181b)]',
     success: 'bg-green-500',
     warning: 'bg-amber-500',
     danger:  'bg-red-500',
@@ -42,7 +42,7 @@ const dotMap: Record<string, string> = {
 
 const descColorMap: Record<string, string> = {
     default: 'text-zinc-400 dark:text-zinc-500',
-    primary: 'text-[var(--arcane-primary,#18181b)]',
+    primary: 'text-[var(--larafusion-primary,#18181b)]',
     success: 'text-green-600 dark:text-green-400',
     warning: 'text-amber-600 dark:text-amber-400',
     danger:  'text-red-500 dark:text-red-400',
@@ -148,7 +148,7 @@ function StatCard({ stat }: { stat: StatData }) {
     };
     const sparkColor = color === 'primary'
         ? (typeof document !== 'undefined'
-            ? getComputedStyle(document.documentElement).getPropertyValue('--arcane-primary').trim() || '#292524'
+            ? getComputedStyle(document.documentElement).getPropertyValue('--larafusion-primary').trim() || '#292524'
             : '#292524')
         : (sparkColors[color] ?? sparkColors.default);
 

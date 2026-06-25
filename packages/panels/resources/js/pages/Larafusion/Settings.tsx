@@ -3,7 +3,7 @@ import { router, setLayoutProps, usePage } from '@inertiajs/react';
 import AdminLayout from '../../components/layout/AdminLayout';
 import Breadcrumb from '../../components/ui/Breadcrumb';
 import { Card, CardHeader, CardBody } from '../../components/ui/Card';
-import { ArcaneSharedProps, ThemeConfig, PluginInfo } from '../../types';
+import { LarafusionSharedProps, ThemeConfig, PluginInfo } from '../../types';
 import { Check, Puzzle, Palette, Type, Sliders } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -37,9 +37,9 @@ function Section({ title, icon: Icon, children }: {
 export default function Settings() {
     setLayoutProps({ pageTitle: 'Settings', fullBleed: false });
 
-    const { arcane } = usePage<ArcaneSharedProps>().props;
-    const theme   = arcane?.theme   as ThemeConfig;
-    const plugins = arcane?.plugins as PluginInfo[] ?? [];
+    const { larafusion } = usePage<LarafusionSharedProps>().props;
+    const theme   = larafusion?.theme   as ThemeConfig;
+    const plugins = larafusion?.plugins as PluginInfo[] ?? [];
 
     const [saving, setSaving] = useState(false);
 
@@ -84,7 +84,7 @@ export default function Settings() {
                                             disabled={saving}
                                             className={cn(
                                                 'relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all',
-                                                isActive ? 'border-[var(--arcane-primary,#18181b)] shadow-md' : 'border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600',
+                                                isActive ? 'border-[var(--larafusion-primary,#18181b)] shadow-md' : 'border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600',
                                             )}
                                         >
                                             {/* Mini preview */}
@@ -97,7 +97,7 @@ export default function Settings() {
                                             </div>
                                             <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400 capitalize">{name}</span>
                                             {isActive && (
-                                                <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[var(--arcane-primary,#18181b)] flex items-center justify-center">
+                                                <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[var(--larafusion-primary,#18181b)] flex items-center justify-center">
                                                     <Check className="w-2.5 h-2.5 text-white" />
                                                 </span>
                                             )}
@@ -119,7 +119,7 @@ export default function Settings() {
                                     onClick={toggleDarkMode}
                                     className={cn(
                                         'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none',
-                                        theme.darkMode ? 'bg-[var(--arcane-primary,#18181b)]' : 'bg-zinc-300 dark:bg-zinc-600',
+                                        theme.darkMode ? 'bg-[var(--larafusion-primary,#18181b)]' : 'bg-zinc-300 dark:bg-zinc-600',
                                     )}
                                 >
                                     <span className={cn(
@@ -144,7 +144,7 @@ export default function Settings() {
                             <div className="text-center py-8 text-zinc-400 dark:text-zinc-500">
                                 <Puzzle className="w-10 h-10 mx-auto mb-3 opacity-30" />
                                 <p className="text-sm font-medium">No plugins installed</p>
-                                <p className="text-xs mt-1">Add plugins to <code className="bg-zinc-100 dark:bg-zinc-800 px-1 rounded text-xs">config/arcane.php</code></p>
+                                <p className="text-xs mt-1">Add plugins to <code className="bg-zinc-100 dark:bg-zinc-800 px-1 rounded text-xs">config/larafusion.php</code></p>
                             </div>
                         ) : (
                             <div className="space-y-3">

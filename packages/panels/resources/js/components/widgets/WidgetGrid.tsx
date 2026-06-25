@@ -1,1 +1,1 @@
-export { WidgetGrid as default } from '@arcane/widgets';
+export { WidgetGrid as default } from '@larafusion/widgets';

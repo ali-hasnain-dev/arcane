@@ -1,6 +1,6 @@
 {
-    "name": "arcane/monorepo",
-    "description": "Arcane monorepo — React-powered admin panel for Laravel",
+    "name": "larafusion/monorepo",
+    "description": "Larafusion monorepo — React-powered admin panel for Laravel",
     "type": "project",
     "repositories": [
         {
@@ -37,11 +37,11 @@
         },
         {
             "type": "path",
-            "url": "./packages/arcane"
+            "url": "./packages/larafusion"
         }
     ],
     "require": {
-        "arcanephp/arcane": "*"
+        "larafusion/larafusion": "*"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

@@ -1,20 +1,20 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Arcane\ArcaneManager;
-use Arcane\Actions\ButtonAction;
-use Arcane\Actions\LinkAction;
-use Arcane\Tables\Table;
-use Arcane\Tables\Actions\Action as TableAction;
+use Larafusion\LarafusionManager;
+use Larafusion\Actions\ButtonAction;
+use Larafusion\Actions\LinkAction;
+use Larafusion\Tables\Table;
+use Larafusion\Tables\Actions\Action as TableAction;
 
 class ActionController extends Controller
 {
     public function handle(Request $request, string $resource, int|string $id, string $action)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         $record        = $resourceClass::getModelInstance()->findOrFail($id);
 
         $actionInstance = null;
@@ -60,7 +60,7 @@ class ActionController extends Controller
             ?? ucwords(str_replace(['_', '-'], ' ', $action)) . ' completed successfully.';
 
         $redirectTo = $actionInstance->getRedirectTo()
-            ?? route('arcane.resource.index', $resource);
+            ?? route('larafusion.resource.index', $resource);
 
         return redirect($redirectTo)->with('success', $message);
     }

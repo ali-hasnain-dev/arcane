@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Themes;
+namespace Larafusion\Themes;
 
 class ThemeManager
 {
@@ -24,14 +24,14 @@ class ThemeManager
 
     public function __construct()
     {
-        $this->config = \config('arcane.theme', []);
+        $this->config = \config('larafusion.theme', []);
 
         // Session overrides (set by SettingsController)
-        if (\session()->has('arcane_theme')) {
-            $this->config['name'] = \session('arcane_theme');
+        if (\session()->has('larafusion_theme')) {
+            $this->config['name'] = \session('larafusion_theme');
         }
-        if (\session()->has('arcane_dark_mode')) {
-            $this->config['dark_mode'] = \session('arcane_dark_mode');
+        if (\session()->has('larafusion_dark_mode')) {
+            $this->config['dark_mode'] = \session('larafusion_dark_mode');
         }
     }
 
@@ -55,11 +55,11 @@ class ThemeManager
 
         $vars = [];
         foreach ($colors as $key => $value) {
-            $vars["--arcane-{$key}"] = $value;
+            $vars["--larafusion-{$key}"] = $value;
         }
-        $vars['--arcane-font']      = $this->config['font']      ?? '"Instrument Sans", system-ui, sans-serif';
-        $vars['--arcane-font-mono'] = $this->config['font_mono'] ?? '"JetBrains Mono", monospace';
-        $vars['--arcane-radius']    = $this->config['radius']    ?? '0.625rem';
+        $vars['--larafusion-font']      = $this->config['font']      ?? '"Instrument Sans", system-ui, sans-serif';
+        $vars['--larafusion-font-mono'] = $this->config['font_mono'] ?? '"JetBrains Mono", monospace';
+        $vars['--larafusion-radius']    = $this->config['radius']    ?? '0.625rem';
         return $vars;
     }
 
@@ -70,16 +70,16 @@ class ThemeManager
             'cssVars'          => $this->cssVars(),
             'available'        => $this->available(),
             'brand'            => [
-                'name'        => \config('arcane.brand.name', \config('app.name')),
-                'logo'        => \config('arcane.brand.logo'),
-                'darkLogo'    => \config('arcane.brand.dark_logo'),
-                'logoHeight'  => \config('arcane.brand.logo_height', '2rem'),
-                'favicon'     => \config('arcane.brand.favicon'),
+                'name'        => \config('larafusion.brand.name', \config('app.name')),
+                'logo'        => \config('larafusion.brand.logo'),
+                'darkLogo'    => \config('larafusion.brand.dark_logo'),
+                'logoHeight'  => \config('larafusion.brand.logo_height', '2rem'),
+                'favicon'     => \config('larafusion.brand.favicon'),
             ],
-            'font'             => \config('arcane.font.family'),
-            'fontWeight'       => \config('arcane.font.weight', '300..900'),
+            'font'             => \config('larafusion.font.family'),
+            'fontWeight'       => \config('larafusion.font.weight', '300..900'),
             'darkMode'         => (bool) ($this->config['dark_mode'] ?? false),
-            'defaultThemeMode' => \config('arcane.theme.default_mode', 'light'),
+            'defaultThemeMode' => \config('larafusion.theme.default_mode', 'light'),
         ];
     }
 

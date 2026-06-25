@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Contracts;
+namespace Larafusion\Contracts;
 
 /**
  * Implement this interface on your User model to display a custom avatar
@@ -8,20 +8,20 @@ namespace Arcane\Contracts;
  *
  * Usage:
  *
- *   class User extends Authenticatable implements HasArcaneAvatar
+ *   class User extends Authenticatable implements HasLarafusionAvatar
  *   {
- *       public function getArcaneAvatarUrl(): ?string
+ *       public function getLarafusionAvatarUrl(): ?string
  *       {
  *           return $this->avatar_url
  *               ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
  *       }
  *   }
  */
-interface HasArcaneAvatar
+interface HasLarafusionAvatar
 {
     /**
      * Return a fully-qualified URL for the user's avatar image,
      * or null to fall back to the initials badge.
      */
-    public function getArcaneAvatarUrl(): ?string;
+    public function getLarafusionAvatarUrl(): ?string;
 }

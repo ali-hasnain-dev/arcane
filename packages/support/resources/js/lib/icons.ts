@@ -1,5 +1,5 @@
 /**
- * Centralized Lucide icon registry for all Arcane packages.
+ * Centralized Lucide icon registry for all Larafusion packages.
  *
  * Keys are kebab-case names (matching what PHP passes as strings).
  * Add entries here to make new icons available everywhere: navigation,

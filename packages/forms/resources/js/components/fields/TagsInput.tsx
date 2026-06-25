@@ -22,7 +22,7 @@ function tagColorCls(color?: string | null): string {
         case 'danger':  return 'bg-red-100   dark:bg-red-900/40   text-red-700   dark:text-red-300   border-red-200   dark:border-red-800';
         case 'info':    return 'bg-blue-100  dark:bg-blue-900/40  text-blue-700  dark:text-blue-300  border-blue-200  dark:border-blue-800';
         case 'gray':    return 'bg-zinc-100  dark:bg-zinc-800     text-zinc-600  dark:text-zinc-300  border-zinc-200  dark:border-zinc-700';
-        default:        return 'bg-[var(--arcane-primary,#18181b)]/10 text-[var(--arcane-primary,#18181b)] border-[var(--arcane-primary,#18181b)]/20 dark:text-white';
+        default:        return 'bg-[var(--larafusion-primary,#18181b)]/10 text-[var(--larafusion-primary,#18181b)] border-[var(--larafusion-primary,#18181b)]/20 dark:text-white';
     }
 }
 
@@ -87,7 +87,7 @@ export default function TagsInput({ field, value = [], error, status = 'idle', o
                     focused
                         ? status === 'invalid'
                             ? 'border-red-400 ring-2 ring-red-200 dark:ring-red-900'
-                            : 'border-[var(--arcane-primary,#18181b)] ring-2 ring-[var(--arcane-primary,#18181b)]/20 bg-white dark:bg-zinc-800'
+                            : 'border-[var(--larafusion-primary,#18181b)] ring-2 ring-[var(--larafusion-primary,#18181b)]/20 bg-white dark:bg-zinc-800'
                         : status === 'invalid'
                         ? 'border-red-400 bg-red-50 dark:border-red-800 dark:bg-red-950/30'
                         : 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800',
@@ -133,7 +133,7 @@ export default function TagsInput({ field, value = [], error, status = 'idle', o
                             key={s}
                             type="button"
                             onMouseDown={e => { e.preventDefault(); addTag(s); }}
-                            className="w-full text-left px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-[var(--arcane-primary,#18181b)]/5 hover:text-[var(--arcane-primary,#18181b)] transition-colors"
+                            className="w-full text-left px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-[var(--larafusion-primary,#18181b)]/5 hover:text-[var(--larafusion-primary,#18181b)] transition-colors"
                         >
                             {formatTag(s)}
                         </button>

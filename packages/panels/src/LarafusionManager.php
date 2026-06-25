@@ -1,13 +1,13 @@
 <?php
 
-namespace Arcane;
+namespace Larafusion;
 
 use InvalidArgumentException;
-use Arcane\Plugins\PluginManager;
-use Arcane\Themes\ThemeManager;
-use Arcane\Navigation\NavigationGroup;
+use Larafusion\Plugins\PluginManager;
+use Larafusion\Themes\ThemeManager;
+use Larafusion\Navigation\NavigationGroup;
 
-class ArcaneManager
+class LarafusionManager
 {
     protected static array        $resources      = [];
     protected static array        $widgets        = [];
@@ -24,10 +24,10 @@ class ArcaneManager
     {
         static::$panel = $panel;
 
-        // Use explicitly registered resources, or auto-discover from app/Arcane/
+        // Use explicitly registered resources, or auto-discover from app/Larafusion/
         $resources = $panel->getResources();
         if (empty($resources)) {
-            $resources = static::discoverResources(app_path('Arcane'));
+            $resources = static::discoverResources(app_path('Larafusion'));
         }
         if (!empty($resources)) {
             static::register($resources);
@@ -51,7 +51,7 @@ class ArcaneManager
     }
 
     /**
-     * Scan a directory recursively for classes that extend Arcane\Resource.
+     * Scan a directory recursively for classes that extend Larafusion\Resource.
      * Uses PSR-4 convention: files under app/ → App\ namespace.
      */
     public static function discoverResources(string $directory): array
@@ -73,13 +73,13 @@ class ArcaneManager
                 continue;
             }
 
-            // Derive PSR-4 class name: app/Arcane/Resources/Users/UserResource.php → App\Arcane\Resources\Users\UserResource
+            // Derive PSR-4 class name: app/Larafusion/Resources/Users/UserResource.php → App\Larafusion\Resources\Users\UserResource
             $relativePath = ltrim(str_replace($appPath, '', $file->getPathname()), DIRECTORY_SEPARATOR . '/');
             $className    = 'App\\' . str_replace(['/', DIRECTORY_SEPARATOR], '\\', substr($relativePath, 0, -4));
 
             if (
                 class_exists($className) &&
-                is_subclass_of($className, \Arcane\Resource::class)
+                is_subclass_of($className, \Larafusion\Resource::class)
             ) {
                 $found[] = $className;
             }
@@ -119,7 +119,7 @@ class ArcaneManager
     public static function resolve(string $slug): string
     {
         if (!isset(static::$resources[$slug])) {
-            throw new InvalidArgumentException("Arcane resource [{$slug}] is not registered.");
+            throw new InvalidArgumentException("Larafusion resource [{$slug}] is not registered.");
         }
         return static::$resources[$slug];
     }
@@ -147,7 +147,7 @@ class ArcaneManager
                 'label'  => $class::getNavigationLabel(),
                 'icon'   => $class::getNavigationIcon(),
                 'slug'   => $slug,
-                'url'    => route('arcane.resource.index', $slug),
+                'url'    => route('larafusion.resource.index', $slug),
                 'plugin' => null,
                 'badge'  => $class::getNavigationBadge(),
                 'group'  => $class::getNavigationGroup(),
@@ -163,7 +163,7 @@ class ArcaneManager
                 'label'  => $class::getNavigationLabel(),
                 'icon'   => $class::getNavigationIcon(),
                 'slug'   => $slug,
-                'url'    => route('arcane.page.show', $slug),
+                'url'    => route('larafusion.page.show', $slug),
                 'plugin' => null,
                 'badge'  => null,
                 'group'  => $class::getNavigationGroup(),
@@ -225,7 +225,7 @@ class ArcaneManager
     public static function resolvePage(string $slug): string
     {
         if (!isset(static::$pages[$slug])) {
-            abort(404, "Arcane page [{$slug}] is not registered.");
+            abort(404, "Larafusion page [{$slug}] is not registered.");
         }
         return static::$pages[$slug];
     }
@@ -242,7 +242,7 @@ class ArcaneManager
         return static::$plugins;
     }
 
-    public static function plugin(string $id): ?\Arcane\Plugins\ArcanePlugin
+    public static function plugin(string $id): ?\Larafusion\Plugins\LarafusionPlugin
     {
         return static::plugins()->get($id);
     }

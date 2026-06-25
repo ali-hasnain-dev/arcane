@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../components/layout/AdminLayout';
-import { ArcaneSharedProps } from '../../types';
+import { LarafusionSharedProps } from '../../types';
 import { CheckCircle, Eye, EyeOff, Loader2, User } from 'lucide-react';
 
 interface ProfileProps {
@@ -18,7 +18,7 @@ function inputCls(hasError: boolean) {
         'text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500',
         hasError
             ? 'border-red-400 bg-red-50 dark:bg-red-950/30 dark:border-red-800 focus:ring-2 focus:ring-red-300 dark:focus:ring-red-900'
-            : 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/20 focus:border-[var(--arcane-primary,#18181b)]',
+            : 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/20 focus:border-[var(--larafusion-primary,#18181b)]',
     ].join(' ');
 }
 
@@ -76,9 +76,9 @@ function StatusAlert({ message }: { message: string }) {
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function Profile({ revealablePasswords = true, status, password_status }: ProfileProps) {
-    const { auth, arcane }  = usePage<ArcaneSharedProps>().props;
+    const { auth, larafusion }  = usePage<LarafusionSharedProps>().props;
     const user              = auth?.user;
-    const adminPath         = `/${arcane?.panel?.path ?? 'admin'}`;
+    const adminPath         = `/${larafusion?.panel?.path ?? 'admin'}`;
     const initials          = user?.name?.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase() ?? 'A';
 
     // ── Profile form ──────────────────────────────────────────────────────────
@@ -111,7 +111,7 @@ export default function Profile({ revealablePasswords = true, status, password_s
                         <img src={user.avatar} alt={user.name}
                             className="w-14 h-14 rounded-full object-cover ring-2 ring-white dark:ring-zinc-900 shadow" />
                     ) : (
-                        <div className="w-14 h-14 rounded-full bg-[var(--arcane-primary,#18181b)] flex items-center justify-center text-lg font-bold text-white shadow">
+                        <div className="w-14 h-14 rounded-full bg-[var(--larafusion-primary,#18181b)] flex items-center justify-center text-lg font-bold text-white shadow">
                             {initials}
                         </div>
                     )}
@@ -147,7 +147,7 @@ export default function Profile({ revealablePasswords = true, status, password_s
 
                         <div className="flex justify-end">
                             <button type="submit" disabled={profileForm.processing}
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white transition-opacity disabled:opacity-60 disabled:cursor-not-allowed">
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-opacity disabled:opacity-60 disabled:cursor-not-allowed">
                                 {profileForm.processing && <Loader2 className="w-4 h-4 animate-spin" />}
                                 Save changes
                             </button>
@@ -205,7 +205,7 @@ export default function Profile({ revealablePasswords = true, status, password_s
 
                         <div className="flex justify-end">
                             <button type="submit" disabled={passwordForm.processing}
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white transition-opacity disabled:opacity-60 disabled:cursor-not-allowed">
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-opacity disabled:opacity-60 disabled:cursor-not-allowed">
                                 {passwordForm.processing && <Loader2 className="w-4 h-4 animate-spin" />}
                                 Update password
                             </button>

@@ -1,15 +1,15 @@
 {
-    "name": "arcane/tables",
-    "description": "Arcane tables — column definitions, filters, bulk actions, and table schema.",
+    "name": "larafusion/tables",
+    "description": "Larafusion tables — column definitions, filters, bulk actions, and table schema.",
     "type": "library",
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "arcane/support": "@dev"
+        "larafusion/support": "@dev"
     },
     "autoload": {
         "psr-4": {
-            "Arcane\\": "src/"
+            "Larafusion\\": "src/"
         }
     },
     "minimum-stability": "stable",

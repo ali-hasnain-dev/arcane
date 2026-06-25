@@ -49,14 +49,14 @@ const inputBase = [
     'disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-zinc-50 dark:disabled:bg-zinc-900',
 ].join(' ');
 
-const borderNormal = 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/20 focus:border-[var(--arcane-primary,#18181b)]';
+const borderNormal = 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/20 focus:border-[var(--larafusion-primary,#18181b)]';
 const borderError  = 'border-red-400 bg-red-50 dark:bg-red-950/30 dark:border-red-800 focus:ring-2 focus:ring-red-200 focus:border-red-400';
 
 // ─── Affix wrapper ─────────────────────────────────────────────────────────────
 
 function iconColorClass(color?: string | null): string {
     switch (color) {
-        case 'primary': return 'text-[var(--arcane-primary,#18181b)]';
+        case 'primary': return 'text-[var(--larafusion-primary,#18181b)]';
         case 'success': return 'text-green-500';
         case 'warning': return 'text-amber-500';
         case 'danger':  return 'text-red-500';
@@ -302,7 +302,7 @@ function CustomSelect({ field, value, error, onChange }: {
     const triggerCls = cn(
         'flex items-center gap-2 w-full min-h-[38px] px-3 py-2 rounded-lg border text-sm cursor-pointer transition-colors',
         field.disabled && 'opacity-50 cursor-not-allowed pointer-events-none',
-        open  ? 'border-[var(--arcane-primary,#18181b)] ring-2 ring-[var(--arcane-primary,#18181b)]/20 bg-white dark:bg-zinc-800'
+        open  ? 'border-[var(--larafusion-primary,#18181b)] ring-2 ring-[var(--larafusion-primary,#18181b)]/20 bg-white dark:bg-zinc-800'
               : error ? 'border-red-400 bg-red-50 dark:bg-red-950/30'
               : 'border-zinc-300 bg-white dark:bg-zinc-800 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600',
     );
@@ -319,13 +319,13 @@ function CustomSelect({ field, value, error, onChange }: {
                 'flex items-center justify-between w-full px-3 py-2 text-sm text-left transition-colors',
                 opt.disabled ? 'opacity-40 cursor-not-allowed text-zinc-400 dark:text-zinc-500'
                 : isSelected(opt.value)
-                    ? 'bg-[var(--arcane-primary,#18181b)]/5 text-[var(--arcane-primary,#18181b)] dark:bg-[var(--arcane-primary,#18181b)]/10 dark:text-white font-medium'
+                    ? 'bg-[var(--larafusion-primary,#18181b)]/5 text-[var(--larafusion-primary,#18181b)] dark:bg-[var(--larafusion-primary,#18181b)]/10 dark:text-white font-medium'
                     : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700',
             )}
         >
             <span className={wrapLabels ? 'break-words' : 'truncate'}>{opt.label}</span>
             {isSelected(opt.value) && !opt.disabled && (
-                <Check className="w-3.5 h-3.5 text-[var(--arcane-primary,#18181b)] shrink-0 ml-2" />
+                <Check className="w-3.5 h-3.5 text-[var(--larafusion-primary,#18181b)] shrink-0 ml-2" />
             )}
         </button>
     ));
@@ -347,7 +347,7 @@ function CustomSelect({ field, value, error, onChange }: {
                     <div className="flex-1 flex flex-wrap gap-1 min-w-0">
                         {isMulti && (selected as string[]).length > 0
                             ? (selected as string[]).map(v => (
-                                <span key={v} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--arcane-primary,#18181b)]/10 text-[var(--arcane-primary,#18181b)] dark:text-white">
+                                <span key={v} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--larafusion-primary,#18181b)]/10 text-[var(--larafusion-primary,#18181b)] dark:text-white">
                                     {labelOf(v)}
                                     {!field.disabled && (
                                         <button type="button" onClick={e => removeChip(v, e)}
@@ -401,7 +401,7 @@ function CustomSelect({ field, value, error, onChange }: {
                                         value={search}
                                         onChange={e => setSearch(e.target.value)}
                                         placeholder={field.searchPrompt ?? 'Search…'}
-                                        className="w-full pl-8 pr-3 py-1.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 outline-none focus:border-[var(--arcane-primary,#18181b)] focus:ring-1 focus:ring-[var(--arcane-primary,#18181b)]/20"
+                                        className="w-full pl-8 pr-3 py-1.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 outline-none focus:border-[var(--larafusion-primary,#18181b)] focus:ring-1 focus:ring-[var(--larafusion-primary,#18181b)]/20"
                                     />
                                 </div>
                             </div>

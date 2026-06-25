@@ -1,10 +1,10 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Arcane\ArcaneManager;
+use Larafusion\LarafusionManager;
 
 class SearchController extends Controller
 {
@@ -18,7 +18,7 @@ class SearchController extends Controller
 
         $results = [];
 
-        foreach (ArcaneManager::all() as $slug => $resourceClass) {
+        foreach (LarafusionManager::all() as $slug => $resourceClass) {
             if (!$resourceClass::canViewAny()) continue;
 
             $searchable = $resourceClass::getSearchable();
@@ -44,8 +44,8 @@ class SearchController extends Controller
                     'id'          => $record->getKey(),
                     'title'       => $title,
                     'description' => $description,
-                    'url'         => route('arcane.resource.show', [$slug, $record->getKey()]),
-                    'editUrl'     => route('arcane.resource.edit', [$slug, $record->getKey()]),
+                    'url'         => route('larafusion.resource.show', [$slug, $record->getKey()]),
+                    'editUrl'     => route('larafusion.resource.edit', [$slug, $record->getKey()]),
                 ];
             }
         }

@@ -129,7 +129,7 @@ export default function BelongsToManySelect({
                         'flex flex-wrap items-center gap-1.5 min-h-[38px] px-2.5 py-1.5 rounded-lg border cursor-pointer transition-colors',
                         field.disabled && 'opacity-50 cursor-not-allowed',
                         open
-                            ? 'border-[var(--arcane-primary,#18181b)] ring-2 ring-[var(--arcane-primary,#18181b)]/20'
+                            ? 'border-[var(--larafusion-primary,#18181b)] ring-2 ring-[var(--larafusion-primary,#18181b)]/20'
                             : status === 'invalid'
                             ? 'border-red-400 bg-red-50'
                             : 'border-zinc-300 bg-white hover:border-zinc-400',
@@ -139,7 +139,7 @@ export default function BelongsToManySelect({
                     {selected.map(opt => (
                         <span
                             key={opt.value}
-                            className="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-md text-xs font-medium bg-[var(--arcane-primary,#18181b)]/10 text-[var(--arcane-primary,#18181b)] border border-[var(--arcane-primary,#18181b)]/20"
+                            className="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-md text-xs font-medium bg-[var(--larafusion-primary,#18181b)]/10 text-[var(--larafusion-primary,#18181b)] border border-[var(--larafusion-primary,#18181b)]/20"
                         >
                             {opt.label}
                             {!field.disabled && (
@@ -174,7 +174,7 @@ export default function BelongsToManySelect({
                                     value={search}
                                     onChange={e => handleSearch(e.target.value)}
                                     placeholder="Search…"
-                                    className="w-full pl-8 pr-3 py-1.5 text-sm border border-zinc-200 rounded-lg outline-none focus:border-[var(--arcane-primary,#18181b)] focus:ring-1 focus:ring-[var(--arcane-primary,#18181b)]/20"
+                                    className="w-full pl-8 pr-3 py-1.5 text-sm border border-zinc-200 rounded-lg outline-none focus:border-[var(--larafusion-primary,#18181b)] focus:ring-1 focus:ring-[var(--larafusion-primary,#18181b)]/20"
                                 />
                             </div>
                         </div>
@@ -197,13 +197,13 @@ export default function BelongsToManySelect({
                                             onClick={() => toggleOption(opt)}
                                             className={cn(
                                                 'flex items-center gap-2.5 w-full px-3 py-2 text-sm text-left transition-colors',
-                                                isSelected ? 'bg-[var(--arcane-primary,#18181b)]/5 text-[var(--arcane-primary,#18181b)]' : 'text-zinc-700 hover:bg-zinc-50'
+                                                isSelected ? 'bg-[var(--larafusion-primary,#18181b)]/5 text-[var(--larafusion-primary,#18181b)]' : 'text-zinc-700 hover:bg-zinc-50'
                                             )}
                                         >
                                             {/* Checkbox indicator */}
                                             <span className={cn(
                                                 'w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors',
-                                                isSelected ? 'bg-[var(--arcane-primary,#18181b)] border-[var(--arcane-primary,#18181b)]' : 'border-zinc-300'
+                                                isSelected ? 'bg-[var(--larafusion-primary,#18181b)] border-[var(--larafusion-primary,#18181b)]' : 'border-zinc-300'
                                             )}>
                                                 {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
                                             </span>

@@ -1,31 +1,31 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Arcane\Http\Controllers\ResourceController;
-use Arcane\Http\Controllers\DashboardController;
-use Arcane\Http\Controllers\UploadController;
-use Arcane\Http\Controllers\RelationController;
-use Arcane\Http\Controllers\ActionController;
-use Arcane\Http\Controllers\SearchController;
-use Arcane\Http\Controllers\ExportController;
-use Arcane\Http\Controllers\ImportController;
-use Arcane\Http\Controllers\InlineEditController;
-use Arcane\Http\Controllers\MorphController;
-use Arcane\Http\Controllers\PageController;
-use Arcane\Http\Controllers\AuthController;
-use Arcane\Http\Controllers\ProfileController;
-use Arcane\Http\Controllers\TwoFactorController;
-use Arcane\Http\Middleware\HandlePrecognition;
-use Arcane\Http\Middleware\EnsureTwoFactorAuthenticated;
+use Larafusion\Http\Controllers\ResourceController;
+use Larafusion\Http\Controllers\DashboardController;
+use Larafusion\Http\Controllers\UploadController;
+use Larafusion\Http\Controllers\RelationController;
+use Larafusion\Http\Controllers\ActionController;
+use Larafusion\Http\Controllers\SearchController;
+use Larafusion\Http\Controllers\ExportController;
+use Larafusion\Http\Controllers\ImportController;
+use Larafusion\Http\Controllers\InlineEditController;
+use Larafusion\Http\Controllers\MorphController;
+use Larafusion\Http\Controllers\PageController;
+use Larafusion\Http\Controllers\AuthController;
+use Larafusion\Http\Controllers\ProfileController;
+use Larafusion\Http\Controllers\TwoFactorController;
+use Larafusion\Http\Middleware\HandlePrecognition;
+use Larafusion\Http\Middleware\EnsureTwoFactorAuthenticated;
 
 // ── Auth routes — public (no auth middleware) ─────────────────────────────────
-Route::prefix(config('arcane.prefix', 'admin'))
+Route::prefix(config('larafusion.prefix', 'admin'))
     ->middleware(['web'])
-    ->name('arcane.')
+    ->name('larafusion.')
     ->group(function () {
         Route::get ('/login',  [AuthController::class, 'showLogin'])->name('login');
         Route::post('/login',  [AuthController::class, 'login'])->name('login.store')
-            ->middleware('throttle:arcane-login');
+            ->middleware('throttle:larafusion-login');
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
         // Registration (enabled via ->registration() on the panel)
@@ -41,16 +41,16 @@ Route::prefix(config('arcane.prefix', 'admin'))
         // 2FA challenge (public — user is not yet auth'd, awaiting second factor)
         Route::get ('/two-factor/challenge', [TwoFactorController::class, 'showChallenge'])->name('two-factor.challenge');
         Route::post('/two-factor/challenge', [TwoFactorController::class, 'challenge'])->name('two-factor.challenge.store')
-            ->middleware('throttle:arcane-2fa');
+            ->middleware('throttle:larafusion-2fa');
     });
 
 // ── Authenticated routes ───────────────────────────────────────────────────────
-Route::prefix(config('arcane.prefix', 'admin'))
+Route::prefix(config('larafusion.prefix', 'admin'))
     ->middleware(array_merge(
-        config('arcane.middleware', ['web', 'auth']),
+        config('larafusion.middleware', ['web', 'auth']),
         [EnsureTwoFactorAuthenticated::class]
     ))
-    ->name('arcane.')
+    ->name('larafusion.')
     ->group(function () {
 
         // Logout — duplicated here so the explicit route always wins over /{resource} wildcard

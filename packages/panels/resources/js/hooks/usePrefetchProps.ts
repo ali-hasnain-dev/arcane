@@ -1,5 +1,5 @@
 import { usePage } from '@inertiajs/react';
-import { ArcaneSharedProps, PrefetchConfig } from '../types';
+import { LarafusionSharedProps, PrefetchConfig } from '../types';
 
 /**
  * Returns ready-to-spread Link props controlled by the panel's prefetch config.
@@ -15,8 +15,8 @@ export function usePrefetchProps(): {
     prefetch?: PrefetchConfig['strategy'] | boolean;
     cacheFor?: PrefetchConfig['cacheFor'];
 } {
-    const { arcane } = usePage<ArcaneSharedProps>().props;
-    const config = arcane?.panel?.prefetch;
+    const { larafusion } = usePage<LarafusionSharedProps>().props;
+    const config = larafusion?.panel?.prefetch;
 
     if (!config?.enabled) return {};
 

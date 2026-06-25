@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useLayoutEffect, useRef } from 'react';
 import { usePage } from '@inertiajs/react';
-import { ArcaneSharedProps, ThemeConfig } from '../../types';
+import { LarafusionSharedProps, ThemeConfig } from '../../types';
 
 // Re-export so existing imports from ThemeProvider keep working
 export type { ThemeConfig };
@@ -14,9 +14,9 @@ export function useTheme(): ThemeConfig {
 }
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const { arcane } = usePage<ArcaneSharedProps>().props;
-    const theme = arcane?.theme as ThemeConfig | undefined;
-    const panel = arcane?.panel;
+    const { larafusion } = usePage<LarafusionSharedProps>().props;
+    const theme = larafusion?.theme as ThemeConfig | undefined;
+    const panel = larafusion?.panel;
 
     // Track the previously applied theme name to detect colour-theme switches.
     const prevThemeNameRef = useRef<string | undefined>(undefined);
@@ -32,7 +32,7 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
 
         // Only animate when the colour theme itself is switching (not on every
         // navigation where the same theme is re-delivered). Use the same
-        // arcane-theme-transition + forced-reflow pattern as applyMode() so that
+        // larafusion-theme-transition + forced-reflow pattern as applyMode() so that
         // CSS-var-driven colours cross-fade in sync with Tailwind dark: transitions.
         const switching = prevThemeNameRef.current !== undefined
             && theme.name !== prevThemeNameRef.current;
@@ -40,7 +40,7 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
 
         // Compute effective dark mode before any DOM mutations.
         const storedMode = (typeof localStorage !== 'undefined'
-            ? localStorage.getItem('arcane_theme_mode')
+            ? localStorage.getItem('larafusion_theme_mode')
             : null) as 'light' | 'dark' | 'system' | null;
         const defaultMode = storedMode ?? panel?.defaultThemeMode ?? theme.defaultThemeMode ?? 'light';
         let isDark = theme.darkMode;
@@ -58,7 +58,7 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
             });
             root.classList.toggle('dark', isDark);
             // Cache so the FOUC-prevention script can apply .dark before first paint.
-            try { localStorage.setItem('arcane_dark', isDark ? '1' : '0'); } catch (_) {}
+            try { localStorage.setItem('larafusion_dark', isDark ? '1' : '0'); } catch (_) {}
         };
 
         if (switching && 'startViewTransition' in document) {
@@ -68,11 +68,11 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
             (document as Document & { startViewTransition(cb: () => void): void })
                 .startViewTransition(applyVarsAndDark);
         } else if (switching) {
-            // Firefox fallback: manual arcane-theme-transition + forced reflow.
-            root.classList.add('arcane-theme-transition');
+            // Firefox fallback: manual larafusion-theme-transition + forced reflow.
+            root.classList.add('larafusion-theme-transition');
             void root.offsetHeight;
             applyVarsAndDark();
-            const id = window.setTimeout(() => root.classList.remove('arcane-theme-transition'), 300);
+            const id = window.setTimeout(() => root.classList.remove('larafusion-theme-transition'), 300);
             return () => window.clearTimeout(id);
         } else {
             // Same theme on regular navigation — apply instantly (no animation).
@@ -83,14 +83,14 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     // Re-apply when OS colour-scheme changes (only when mode is 'system')
     useEffect(() => {
         const storedMode = (typeof localStorage !== 'undefined'
-            ? localStorage.getItem('arcane_theme_mode')
+            ? localStorage.getItem('larafusion_theme_mode')
             : null) as 'light' | 'dark' | 'system' | null;
         const mode = storedMode ?? panel?.defaultThemeMode ?? theme?.defaultThemeMode ?? 'light';
         if (mode !== 'system') return;
         const mq = window.matchMedia('(prefers-color-scheme: dark)');
         const handler = (e: MediaQueryListEvent) => {
             document.documentElement.classList.toggle('dark', e.matches);
-            try { localStorage.setItem('arcane_dark', e.matches ? '1' : '0'); } catch (_) {}
+            try { localStorage.setItem('larafusion_dark', e.matches ? '1' : '0'); } catch (_) {}
         };
         mq.addEventListener('change', handler);
         return () => mq.removeEventListener('change', handler);

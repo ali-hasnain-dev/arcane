@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Console;
+namespace Larafusion\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\Validator;
 
 class MakeUserCommand extends Command
 {
-    protected $signature = 'arcane:user
+    protected $signature = 'larafusion:user
         {--name=        : The user\'s display name}
         {--email=       : The user\'s email address}
         {--password=    : The user\'s password (min 8 chars)}
         {--model=       : Fully-qualified model class (default: App\Models\User)}';
 
-    protected $description = 'Create a new Arcane admin user';
+    protected $description = 'Create a new Larafusion admin user';
 
     public function handle(): int
     {

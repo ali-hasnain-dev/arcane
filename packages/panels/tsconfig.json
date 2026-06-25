@@ -20,11 +20,11 @@
             "../../../../arcane-test-v2/node_modules/@types"
         ],
         "paths": {
-            "@arcane/core": ["../support/resources/js/types/index.ts"],
-            "@arcane/support": ["../support/resources/js/index.ts"],
-            "@arcane/forms": ["../forms/resources/js/index.ts"],
-            "@arcane/tables": ["../tables/resources/js/index.ts"],
-            "@arcane/widgets": ["../widgets/resources/js/index.ts"]
+            "@larafusion/core": ["../support/resources/js/types/index.ts"],
+            "@larafusion/support": ["../support/resources/js/index.ts"],
+            "@larafusion/forms": ["../forms/resources/js/index.ts"],
+            "@larafusion/tables": ["../tables/resources/js/index.ts"],
+            "@larafusion/widgets": ["../widgets/resources/js/index.ts"]
         }
     },
     "include": ["resources/js/**/*"],

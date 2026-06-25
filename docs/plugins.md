@@ -2,17 +2,17 @@
 
 ## Plugins
 
-Plugins extend Arcane with navigation items, sidebar/topbar slots, and lifecycle hooks.
+Plugins extend Larafusion with navigation items, sidebar/topbar slots, and lifecycle hooks.
 
 ```bash
-php artisan arcane:plugin Analytics
+php artisan larafusion:plugin Analytics
 ```
 
 ```php
-// app/Arcane/Plugins/AnalyticsPlugin.php
-use Arcane\Plugins\ArcanePlugin;
+// app/Larafusion/Plugins/AnalyticsPlugin.php
+use Larafusion\Plugins\LarafusionPlugin;
 
-class AnalyticsPlugin extends ArcanePlugin
+class AnalyticsPlugin extends LarafusionPlugin
 {
     public string $id      = 'analytics';
     public string $name    = 'Analytics';
@@ -34,11 +34,11 @@ class AnalyticsPlugin extends ArcanePlugin
 }
 ```
 
-Register in `config/arcane.php`:
+Register in `config/larafusion.php`:
 
 ```php
 'plugins' => [
-    \App\Arcane\Plugins\AnalyticsPlugin::class,
+    \App\Larafusion\Plugins\AnalyticsPlugin::class,
 ],
 ```
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
-import { ArcaneSharedProps, NavigationNode, NavigationGroupNode, NavigationItem, ThemeConfig, PanelConfig, UserMenuItemConfig, UserMenuConfig } from '../../types';
+import { LarafusionSharedProps, NavigationNode, NavigationGroupNode, NavigationItem, ThemeConfig, PanelConfig, UserMenuItemConfig, UserMenuConfig } from '../../types';
 import { usePrefetchProps } from '../../hooks/usePrefetchProps';
 import {
     ChevronRight, ChevronDown, PanelLeft, PanelLeftClose, PanelRightClose, Bell, LogOut, Circle,
@@ -15,7 +15,7 @@ import { NotificationProvider } from '../ui/Notifications';
 import { BreadcrumbPortalProvider, useBreadcrumbPortal } from '../../lib/breadcrumbPortal';
 
 // ─── Layout props (set by child pages) ───────────────────────────────────────
-export interface ArcaneLayoutProps {
+export interface LarafusionLayoutProps {
     pageTitle: string;
     fullBleed: boolean;
 }
@@ -27,7 +27,7 @@ function NavIcon({ name, className }: { name: string; className?: string }) {
 }
 
 // ─── CSS vars for nav items — dark/light mode aware ───────────────────────────
-// These override the global arcane theme vars to produce correct nav colours
+// These override the global larafusion theme vars to produce correct nav colours
 // in both light and dark modes without JS dark-mode detection in each component.
 function NavModeStyles() {
     return (
@@ -36,19 +36,19 @@ function NavModeStyles() {
                 --nav-text:           #52525b;
                 --nav-hover-bg:       rgba(0,0,0,0.04);
                 --nav-hover-text:     #18181b;
-                --nav-active-bg:      color-mix(in srgb, var(--arcane-primary,#18181b) 8%, transparent);
-                --nav-active-text:    var(--arcane-primary, #18181b);
+                --nav-active-bg:      color-mix(in srgb, var(--larafusion-primary,#18181b) 8%, transparent);
+                --nav-active-text:    var(--larafusion-primary, #18181b);
                 --nav-group-text:     #a1a1aa;
                 --sidebar-border:     rgba(0,0,0,0.06);
-                --sidebar-bg-light:   var(--arcane-sidebar-bg-light, #fafafa);
+                --sidebar-bg-light:   var(--larafusion-sidebar-bg-light, #fafafa);
             }
             .dark {
-                --nav-text:           var(--arcane-sidebar-text, #a8a29e);
+                --nav-text:           var(--larafusion-sidebar-text, #a8a29e);
                 --nav-hover-bg:       rgba(255,255,255,0.05);
                 --nav-hover-text:     #ffffff;
                 --nav-active-bg:      rgba(255,255,255,0.10);
                 --nav-active-text:    #ffffff;
-                --nav-group-text:     var(--arcane-sidebar-text, #a8a29e);
+                --nav-group-text:     var(--larafusion-sidebar-text, #a8a29e);
                 --sidebar-border:     rgba(255,255,255,0.07);
             }
         `}</style>
@@ -69,7 +69,7 @@ export function injectGoogleFont(family: string, weight: string = '300..900'): v
             document.head.appendChild(pc);
         }
     }
-    const linkId = 'arcane-google-font';
+    const linkId = 'larafusion-google-font';
     const encodedFamily = encodeURIComponent(family);
     const href = `https://fonts.googleapis.com/css2?family=${encodedFamily}:wght@${weight}&display=swap`;
     let link = document.getElementById(linkId) as HTMLLinkElement | null;
@@ -80,7 +80,7 @@ export function injectGoogleFont(family: string, weight: string = '300..900'): v
         document.head.appendChild(link);
     }
     if (link.href !== href) link.href = href;
-    const styleId = 'arcane-font-override';
+    const styleId = 'larafusion-font-override';
     let style = document.getElementById(styleId) as HTMLStyleElement | null;
     if (!style) {
         style = document.createElement('style');
@@ -88,8 +88,8 @@ export function injectGoogleFont(family: string, weight: string = '300..900'): v
         document.head.appendChild(style);
     }
     style.textContent = [
-        `:root { --arcane-font: "${family}", system-ui, sans-serif; }`,
-        `body  { font-family: var(--arcane-font) !important; }`,
+        `:root { --larafusion-font: "${family}", system-ui, sans-serif; }`,
+        `body  { font-family: var(--larafusion-font) !important; }`,
     ].join('\n');
 }
 
@@ -158,19 +158,19 @@ function UserMenuCustomItem({ item, onClose }: { item: UserMenuItemConfig; onClo
 }
 
 function UserMenuPanel({ panel, onClose }: { panel: PanelConfig; onClose: () => void }) {
-    const { auth } = usePage<ArcaneSharedProps>().props;
+    const { auth } = usePage<LarafusionSharedProps>().props;
     const [mode, setMode] = useState<'light' | 'dark' | 'system'>(() => {
         try {
-            const stored = localStorage.getItem('arcane_theme_mode');
+            const stored = localStorage.getItem('larafusion_theme_mode');
             return (stored as 'light' | 'dark' | 'system') ?? panel.defaultThemeMode ?? 'light';
         } catch { return panel.defaultThemeMode ?? 'light'; }
     });
     function applyMode(m: 'light' | 'dark' | 'system') {
         setMode(m);
-        try { localStorage.setItem('arcane_theme_mode', m); } catch (_) {}
+        try { localStorage.setItem('larafusion_theme_mode', m); } catch (_) {}
         let isDark = m === 'dark';
         if (m === 'system') isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        try { localStorage.setItem('arcane_dark', isDark ? '1' : '0'); } catch (_) {}
+        try { localStorage.setItem('larafusion_dark', isDark ? '1' : '0'); } catch (_) {}
         const root = document.documentElement;
 
         // View Transitions API gives a guaranteed simultaneous cross-fade at the
@@ -182,12 +182,12 @@ function UserMenuPanel({ panel, onClose }: { panel: PanelConfig; onClose: () => 
             (document as Document & { startViewTransition(cb: () => void): void })
                 .startViewTransition(() => { root.classList.toggle('dark', isDark); });
         } else {
-            root.classList.add('arcane-theme-transition');
+            root.classList.add('larafusion-theme-transition');
             // Forced reflow commits the transition starting state so the browser
             // knows what colour to animate FROM before the .dark class changes.
             void root.offsetHeight;
             root.classList.toggle('dark', isDark);
-            window.setTimeout(() => root.classList.remove('arcane-theme-transition'), 300);
+            window.setTimeout(() => root.classList.remove('larafusion-theme-transition'), 300);
         }
     }
     const user     = auth?.user;
@@ -204,7 +204,7 @@ function UserMenuPanel({ panel, onClose }: { panel: PanelConfig; onClose: () => 
             <div className="flex items-center gap-3 px-4 py-3.5 border-b border-zinc-100 dark:border-zinc-800">
                 {user?.avatar
                     ? <img src={user.avatar} alt={user.name} className="w-9 h-9 rounded-full object-cover ring-1 ring-zinc-200 dark:ring-zinc-700 shrink-0" />
-                    : <div className="w-9 h-9 rounded-full bg-[var(--arcane-primary,#292524)] flex items-center justify-center text-sm font-bold text-white shrink-0">{initials}</div>
+                    : <div className="w-9 h-9 rounded-full bg-[var(--larafusion-primary,#292524)] flex items-center justify-center text-sm font-bold text-white shrink-0">{initials}</div>
                 }
                 <div className="min-w-0 flex-1">
                     {profileUrl
@@ -242,7 +242,7 @@ function UserMenuPanel({ panel, onClose }: { panel: PanelConfig; onClose: () => 
 }
 
 function UserMenu({ panel }: { panel: PanelConfig }) {
-    const { auth } = usePage<ArcaneSharedProps>().props;
+    const { auth } = usePage<LarafusionSharedProps>().props;
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
     const cfg = panel.userMenu ?? { enabled: true, position: 'topbar', profile: null, logout: null, items: [] };
@@ -257,7 +257,7 @@ function UserMenu({ panel }: { panel: PanelConfig }) {
     return (
         <div className="relative" ref={ref}>
             <button onClick={() => setOpen(o => !o)}
-                className="w-8 h-8 rounded-full bg-[var(--arcane-primary,#292524)] flex items-center justify-center text-xs font-bold text-white hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#292524)] focus:ring-offset-1"
+                className="w-8 h-8 rounded-full bg-[var(--larafusion-primary,#292524)] flex items-center justify-center text-xs font-bold text-white hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#292524)] focus:ring-offset-1"
                 aria-label="User menu" aria-expanded={open}>
                 {initials}
             </button>
@@ -271,7 +271,7 @@ function UserMenu({ panel }: { panel: PanelConfig }) {
 }
 
 function SidebarUserMenu({ panel, collapsed }: { panel: PanelConfig; collapsed: boolean }) {
-    const { auth } = usePage<ArcaneSharedProps>().props;
+    const { auth } = usePage<LarafusionSharedProps>().props;
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
     const cfg = panel.userMenu ?? { enabled: true, position: 'topbar', profile: null, logout: null, items: [] };
@@ -292,7 +292,7 @@ function SidebarUserMenu({ panel, collapsed }: { panel: PanelConfig; collapsed: 
                 aria-label="User menu" aria-expanded={open}>
                 {user?.avatar
                     ? <img src={user.avatar} alt={user.name} className="w-7 h-7 rounded-full object-cover ring-1 ring-zinc-200 dark:ring-zinc-700 shrink-0" />
-                    : <div className="w-7 h-7 rounded-full bg-[var(--arcane-primary,#292524)] flex items-center justify-center text-xs font-bold text-white shrink-0">{initials}</div>
+                    : <div className="w-7 h-7 rounded-full bg-[var(--larafusion-primary,#292524)] flex items-center justify-center text-xs font-bold text-white shrink-0">{initials}</div>
                 }
                 {!collapsed && (
                     <div className="min-w-0 flex-1 text-left">
@@ -328,7 +328,7 @@ function NavItem({ href, icon, label, active, collapsed, badge, horizontal = fal
                 className={cn(
                     'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap',
                     active
-                        ? 'bg-[var(--arcane-primary,#292524)] text-white'
+                        ? 'bg-[var(--larafusion-primary,#292524)] text-white'
                         : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100',
                 )}>
                 <NavIcon name={icon} className="w-4 h-4 shrink-0" />
@@ -364,7 +364,7 @@ function NavItem({ href, icon, label, active, collapsed, badge, horizontal = fal
                 <NavIcon name={icon} className="w-5 h-5 shrink-0" />
                 {!collapsed && <span className="flex-1 truncate">{label}</span>}
                 {!collapsed && badge != null && (
-                    <span className="ml-auto px-1.5 py-0.5 text-xs font-bold rounded-full bg-[var(--arcane-primary,#292524)] text-white min-w-[1.25rem] text-center">{badge}</span>
+                    <span className="ml-auto px-1.5 py-0.5 text-xs font-bold rounded-full bg-[var(--larafusion-primary,#292524)] text-white min-w-[1.25rem] text-center">{badge}</span>
                 )}
             </Link>
 
@@ -447,10 +447,10 @@ function Sidebar({ collapsed, panel, adminPrefix, showTopbar, onToggle, currentS
     onToggle: () => void;
     currentSidebarW: string;
 }) {
-    const page  = usePage<ArcaneSharedProps>();
-    const { arcane } = page.props;
-    const nav: NavigationNode[] = arcane?.navigation ?? [];
-    const theme = arcane?.theme as ThemeConfig | undefined;
+    const page  = usePage<LarafusionSharedProps>();
+    const { larafusion } = page.props;
+    const nav: NavigationNode[] = larafusion?.navigation ?? [];
+    const theme = larafusion?.theme as ThemeConfig | undefined;
     const brand = theme?.brand;
     const path  = page.url.split('?')[0];
     const prefetchProps = usePrefetchProps();
@@ -494,7 +494,7 @@ function Sidebar({ collapsed, panel, adminPrefix, showTopbar, onToggle, currentS
                 {/* Brand name — only when expanded */}
                 {!collapsed && (
                     <span className="font-bold text-base tracking-tight truncate text-zinc-900 dark:text-white flex-1 min-w-0">
-                        {brand?.name ?? 'Arcane'}
+                        {brand?.name ?? 'Larafusion'}
                     </span>
                 )}
 
@@ -580,10 +580,10 @@ function Sidebar({ collapsed, panel, adminPrefix, showTopbar, onToggle, currentS
 
 // ─── Top Navigation bar (horizontal mode) ─────────────────────────────────────
 function TopNav({ panel, adminPrefix }: { panel: PanelConfig; adminPrefix: string }) {
-    const page = usePage<ArcaneSharedProps>();
-    const { arcane } = page.props;
-    const nav: NavigationNode[] = arcane?.navigation ?? [];
-    const theme = arcane?.theme as ThemeConfig | undefined;
+    const page = usePage<LarafusionSharedProps>();
+    const { larafusion } = page.props;
+    const nav: NavigationNode[] = larafusion?.navigation ?? [];
+    const theme = larafusion?.theme as ThemeConfig | undefined;
     const brand = theme?.brand;
     const path  = page.url.split('?')[0];
     const prefetchProps = usePrefetchProps();
@@ -591,7 +591,7 @@ function TopNav({ panel, adminPrefix }: { panel: PanelConfig; adminPrefix: strin
         <header className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-zinc-950 border-b border-zinc-100 dark:border-zinc-800/60 z-40 flex items-center px-6 gap-6">
             <div className="flex items-center gap-2 shrink-0">
                 {brand?.logo ? <img src={brand.logo} alt={brand.name} className="h-7 w-auto object-contain" /> : <span className="text-lg">🪄</span>}
-                <span className="font-bold text-base text-zinc-900 dark:text-zinc-100 tracking-tight">{brand?.name ?? 'Arcane'}</span>
+                <span className="font-bold text-base text-zinc-900 dark:text-zinc-100 tracking-tight">{brand?.name ?? 'Larafusion'}</span>
             </div>
             <nav className="flex items-center gap-1 flex-1 overflow-x-auto">
                 <NavItem href={`/${adminPrefix}`} icon="dashboard" label="Dashboard" active={path === `/${adminPrefix}`} collapsed={false} horizontal prefetchProps={prefetchProps} />
@@ -684,8 +684,8 @@ function Topbar({ collapsed, onToggle, sidebarWidth, collapsedSidebarWidth, pane
 
 // ─── Plugin asset injector ────────────────────────────────────────────────────
 function PluginAssets() {
-    const { arcane } = usePage<ArcaneSharedProps>().props;
-    const assets = arcane?.assets ?? [];
+    const { larafusion } = usePage<LarafusionSharedProps>().props;
+    const assets = larafusion?.assets ?? [];
     return (
         <>
             {assets.map(url => (
@@ -703,9 +703,9 @@ function AdminLayoutInner({ children, pageTitle = 'Dashboard', fullBleed = false
     pageTitle?: string;
     fullBleed?: boolean;
 }) {
-    const { arcane } = usePage<ArcaneSharedProps>().props;
-    const theme  = arcane?.theme as ThemeConfig | undefined;
-    const panel  = (arcane?.panel ?? {}) as PanelConfig;
+    const { larafusion } = usePage<LarafusionSharedProps>().props;
+    const theme  = larafusion?.theme as ThemeConfig | undefined;
+    const panel  = (larafusion?.panel ?? {}) as PanelConfig;
 
     const adminPrefix  = panel.path ?? 'admin';
     const isTopNav     = panel.topNavigation ?? false;
@@ -718,7 +718,7 @@ function AdminLayoutInner({ children, pageTitle = 'Dashboard', fullBleed = false
     const bcPosition   = (!isTopNav && panel.breadcrumbsPosition === 'header') ? 'header' : 'page';
 
     const [collapsed, setCollapsed] = useState(
-        () => localStorage.getItem('arcane_sidebar_collapsed') === '1'
+        () => localStorage.getItem('larafusion_sidebar_collapsed') === '1'
     );
 
     useEffect(() => {
@@ -729,7 +729,7 @@ function AdminLayoutInner({ children, pageTitle = 'Dashboard', fullBleed = false
     function toggleSidebar() {
         setCollapsed(c => {
             const next = !c;
-            localStorage.setItem('arcane_sidebar_collapsed', next ? '1' : '0');
+            localStorage.setItem('larafusion_sidebar_collapsed', next ? '1' : '0');
             return next;
         });
     }

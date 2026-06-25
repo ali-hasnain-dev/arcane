@@ -1,25 +1,25 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Arcane\ArcaneManager;
-use Arcane\Fields\Relations\BelongsTo;
-use Arcane\Fields\Relations\HasMany;
-use Arcane\Schema\Serializer;
+use Larafusion\LarafusionManager;
+use Larafusion\Fields\Relations\BelongsTo;
+use Larafusion\Fields\Relations\HasMany;
+use Larafusion\Schema\Serializer;
 
 class RelationController extends Controller
 {
     /**
-     * GET /arcane/relations/{resource}/{field}/options?search=&page=
+     * GET /larafusion/relations/{resource}/{field}/options?search=&page=
      *
      * Returns paginated options for a BelongsTo or BelongsToMany field.
      * Called by the React async select on keystroke.
      */
     public function options(Request $request, string $resource, string $fieldName)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         $field         = $this->findField($resourceClass::form(), $fieldName);
 
         if (!($field instanceof BelongsTo)) {
@@ -61,13 +61,13 @@ class RelationController extends Controller
     }
 
     /**
-     * GET /arcane/relations/{resource}/{id}/{field}
+     * GET /larafusion/relations/{resource}/{id}/{field}
      *
      * Returns HasMany related records for a given parent record.
      */
     public function related(Request $request, string $resource, int|string $id, string $fieldName)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         $field         = $this->findField($resourceClass::form(), $fieldName);
 
         if (!($field instanceof HasMany)) {

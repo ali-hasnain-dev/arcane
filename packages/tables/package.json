@@ -1,7 +1,7 @@
 {
-    "name": "@arcane/tables",
+    "name": "@larafusion/tables",
     "version": "0.1.0",
-    "description": "Arcane tables \u2014 advanced table, column filters, bulk actions, export, inline editing, and pagination",
+    "description": "Larafusion tables \u2014 advanced table, column filters, bulk actions, export, inline editing, and pagination",
     "main": "dist/index.js",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts",
@@ -21,7 +21,7 @@
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "@inertiajs/react": "^3.0.0",
-        "@arcane/support": "*"
+        "@larafusion/support": "*"
     },
     "devDependencies": {
         "@types/react": "^19.0.0",

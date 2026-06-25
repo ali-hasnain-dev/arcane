@@ -1,15 +1,15 @@
 {
-    "name": "arcane/actions",
-    "description": "Arcane actions — button, link, and custom action definitions for resources and pages.",
+    "name": "larafusion/actions",
+    "description": "Larafusion actions — button, link, and custom action definitions for resources and pages.",
     "type": "library",
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "arcane/support": "@dev"
+        "larafusion/support": "@dev"
     },
     "autoload": {
         "psr-4": {
-            "Arcane\\Actions\\": "src/"
+            "Larafusion\\Actions\\": "src/"
         }
     },
     "minimum-stability": "stable",

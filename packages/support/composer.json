@@ -1,6 +1,6 @@
 {
-    "name": "arcane/support",
-    "description": "Arcane support — shared utilities, helpers, and base classes used across all Arcane packages.",
+    "name": "larafusion/support",
+    "description": "Larafusion support — shared utilities, helpers, and base classes used across all Larafusion packages.",
     "type": "library",
     "license": "MIT",
     "require": {
@@ -9,7 +9,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Arcane\\Support\\": "src/"
+            "Larafusion\\Support\\": "src/"
         }
     },
     "minimum-stability": "stable",

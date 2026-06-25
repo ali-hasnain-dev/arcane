@@ -105,7 +105,7 @@ export default function ImageUploadField({ field, value, error, status = 'idle',
                     <div className="relative shrink-0">
                         <div className={cn(
                             'w-20 h-20 rounded-full border-2 border-dashed flex items-center justify-center overflow-hidden transition-colors',
-                            isDragOver ? 'border-[var(--arcane-primary,#18181b)] bg-zinc-100' : 'border-zinc-300 bg-zinc-50',
+                            isDragOver ? 'border-[var(--larafusion-primary,#18181b)] bg-zinc-100' : 'border-zinc-300 bg-zinc-50',
                         )}>
                             {single?.preview ? (
                                 <img src={single.preview} alt="Avatar" className="w-full h-full object-cover" />
@@ -133,7 +133,7 @@ export default function ImageUploadField({ field, value, error, status = 'idle',
                         <button
                             type="button"
                             onClick={() => inputRef.current?.click()}
-                            className="text-sm font-medium text-[var(--arcane-primary,#18181b)] hover:opacity-80 hover:underline"
+                            className="text-sm font-medium text-[var(--larafusion-primary,#18181b)] hover:opacity-80 hover:underline"
                         >
                             {single ? 'Change photo' : 'Upload photo'}
                         </button>
@@ -211,11 +211,11 @@ export default function ImageUploadField({ field, value, error, status = 'idle',
                         className={cn(
                             'aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-colors',
                             isDragOver
-                                ? 'border-[var(--arcane-primary,#18181b)] bg-zinc-100'
-                                : 'border-zinc-300 hover:border-[var(--arcane-primary,#18181b)] hover:bg-zinc-50',
+                                ? 'border-[var(--larafusion-primary,#18181b)] bg-zinc-100'
+                                : 'border-zinc-300 hover:border-[var(--larafusion-primary,#18181b)] hover:bg-zinc-50',
                         )}
                     >
-                        <Upload className={cn('w-6 h-6 mb-1 transition-colors', isDragOver ? 'text-[var(--arcane-primary,#18181b)]' : 'text-zinc-400')} />
+                        <Upload className={cn('w-6 h-6 mb-1 transition-colors', isDragOver ? 'text-[var(--larafusion-primary,#18181b)]' : 'text-zinc-400')} />
                         <span className="text-xs text-zinc-500 font-medium">
                             {field.multiple ? 'Add images' : 'Upload'}
                         </span>

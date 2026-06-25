@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Support\Enums;
+namespace Larafusion\Support\Enums;
 
 interface HasLabel
 {

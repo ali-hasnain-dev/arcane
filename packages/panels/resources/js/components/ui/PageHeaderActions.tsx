@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
-import { resolveIcon } from '@arcane/support';
+import { resolveIcon } from '@larafusion/support';
 import { cn } from '../../lib/utils';
-import type { PageHeaderAction } from '@arcane/support';
+import type { PageHeaderAction } from '@larafusion/support';
 import { ConfirmDialog } from './ConfirmDialog';
 
 // ── Color → class map ─────────────────────────────────────────────────────────
 
 const colorCls: Record<string, string> = {
-    primary: 'bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white shadow-sm',
+    primary: 'bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white shadow-sm',
     danger:  'bg-red-600 hover:bg-red-700 text-white shadow-sm',
     warning: 'bg-amber-500 hover:bg-amber-600 text-white shadow-sm',
     success: 'bg-green-600 hover:bg-green-700 text-white shadow-sm',

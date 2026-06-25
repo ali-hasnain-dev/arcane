@@ -33,7 +33,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'brand' => [
-        'name'       => env('ARCANE_BRAND', config('app.name', 'Arcane')),
+        'name'       => env('LARAFUSION_BRAND', config('app.name', 'Larafusion')),
         'logo'       => null,
         'dark_logo'  => null,
         'logo_height'=> '2rem',
@@ -45,7 +45,7 @@ return [
     | Font
     |--------------------------------------------------------------------------
     | Set a Google Fonts family name (e.g. 'Inter', 'Nunito', 'DM Sans').
-    | Arcane will inject the Google Fonts stylesheet automatically.
+    | Larafusion will inject the Google Fonts stylesheet automatically.
     | Leave 'family' null to use the built-in Inter font.
     */
     'font' => [
@@ -65,7 +65,7 @@ return [
         'name'         => env('ARCANE_THEME', 'neutral'),
         'dark_mode'    => false,
         'default_mode' => 'light',
-        'font'         => null,   // legacy — prefer arcane.font.family
+        'font'         => null,   // legacy — prefer larafusion.font.family
         'radius'       => '0.625rem',
         'colors'       => [],
     ],

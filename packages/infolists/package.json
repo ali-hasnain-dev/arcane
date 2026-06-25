@@ -1,7 +1,7 @@
 {
-    "name": "@arcane/infolists",
+    "name": "@larafusion/infolists",
     "version": "0.1.0",
-    "description": "Arcane infolists \u2014 read-only entry components for displaying model data in panels",
+    "description": "Larafusion infolists \u2014 read-only entry components for displaying model data in panels",
     "main": "dist/index.js",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts",
@@ -20,7 +20,7 @@
     "peerDependencies": {
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
-        "@arcane/support": "*"
+        "@larafusion/support": "*"
     },
     "devDependencies": {
         "@types/react": "^19.0.0",

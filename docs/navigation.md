@@ -17,10 +17,10 @@ class PostResource extends Resource
 **Register group appearance:**
 
 ```php
-use Arcane\ArcaneManager;
-use Arcane\Navigation\NavigationGroup;
+use Larafusion\LarafusionManager;
+use Larafusion\Navigation\NavigationGroup;
 
-ArcaneManager::registerNavGroup('Content',
+LarafusionManager::registerNavGroup('Content',
     NavigationGroup::make('Content')
         ->icon('file-text')
         ->collapsible()
@@ -52,8 +52,8 @@ Create arbitrary non-CRUD admin pages not tied to any resource.
 ### 1. Create the Page class
 
 ```php
-// app/Arcane/Pages/ReportsPage.php
-use Arcane\Pages\Page;
+// app/Larafusion/Pages/ReportsPage.php
+use Larafusion\Pages\Page;
 
 class ReportsPage extends Page
 {
@@ -65,7 +65,7 @@ class ReportsPage extends Page
 
     public static function getView(): string
     {
-        return 'Arcane/Reports';   // → resources/js/Pages/Arcane/Reports.tsx
+        return 'Larafusion/Reports';   // → resources/js/Pages/Larafusion/Reports.tsx
     }
 
     public static function getViewData(): array
@@ -78,15 +78,15 @@ class ReportsPage extends Page
 ### 2. Register it
 
 ```php
-use Arcane\ArcaneManager;
+use Larafusion\LarafusionManager;
 
-ArcaneManager::registerPages([\App\Arcane\Pages\ReportsPage::class]);
+LarafusionManager::registerPages([\App\Larafusion\Pages\ReportsPage::class]);
 ```
 
 ### 3. Create the React component
 
 ```tsx
-// resources/js/Pages/Arcane/Reports.tsx
+// resources/js/Pages/Larafusion/Reports.tsx
 import AdminLayout from "../components/layout/AdminLayout";
 
 export default function Reports({ totals }: { totals: any[] }) {

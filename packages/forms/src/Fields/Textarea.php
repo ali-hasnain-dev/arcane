@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Fields;
+namespace Larafusion\Fields;
 
 class Textarea extends Field
 {

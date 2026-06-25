@@ -1,13 +1,13 @@
 <?php
 
-namespace Arcane\Events;
+namespace Larafusion\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Arcane\ArcaneManager;
+use Larafusion\LarafusionManager;
 
 class RecordEvent implements ShouldBroadcast
 {
@@ -21,8 +21,8 @@ class RecordEvent implements ShouldBroadcast
 
     public function broadcastOn(): array
     {
-        $panel   = ArcaneManager::getPanel();
-        $channel = $panel ? $panel->getRealtimeChannel() : 'arcane';
+        $panel   = LarafusionManager::getPanel();
+        $channel = $panel ? $panel->getRealtimeChannel() : 'larafusion';
 
         return [
             new Channel("{$channel}.{$this->resource}"),
@@ -31,7 +31,7 @@ class RecordEvent implements ShouldBroadcast
 
     public function broadcastAs(): string
     {
-        return "arcane.record.{$this->event}";
+        return "larafusion.record.{$this->event}";
     }
 
     public function broadcastWith(): array

@@ -1,5 +1,5 @@
 {
-    "name": "arcane-monorepo",
+    "name": "larafusion-monorepo",
     "private": true,
     "workspaces": [
         "packages/support",

@@ -1,12 +1,12 @@
 <?php
 
-namespace Arcane\Plugins;
+namespace Larafusion\Plugins;
 
 use Illuminate\Support\Collection;
 
 class PluginManager
 {
-    /** @var ArcanePlugin[] */
+    /** @var LarafusionPlugin[] */
     protected array $plugins = [];
 
     /** @var array<string, callable[]> */
@@ -34,7 +34,7 @@ class PluginManager
         }
     }
 
-    public function get(string $id): ?ArcanePlugin
+    public function get(string $id): ?LarafusionPlugin
     {
         return $this->plugins[$id] ?? null;
     }
@@ -140,7 +140,7 @@ class PluginManager
      */
     public function toArray(): array
     {
-        return array_map(fn(ArcanePlugin $p) => [
+        return array_map(fn(LarafusionPlugin $p) => [
             'id'          => $p::id(),
             'name'        => $p::name(),
             'version'     => $p::version(),

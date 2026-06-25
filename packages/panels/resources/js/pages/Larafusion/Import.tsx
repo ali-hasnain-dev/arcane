@@ -94,13 +94,13 @@ export default function Import({ resource, columns }: ImportPageProps) {
                             onClick={() => inputRef.current?.click()}
                             className={cn(
                                 'border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors',
-                                dragging ? 'border-[var(--arcane-primary,#18181b)] bg-[var(--arcane-primary,#18181b)]/5' : 'border-zinc-200 hover:border-zinc-300',
+                                dragging ? 'border-[var(--larafusion-primary,#18181b)] bg-[var(--larafusion-primary,#18181b)]/5' : 'border-zinc-200 hover:border-zinc-300',
                             )}
                         >
                             <input ref={inputRef} type="file" accept=".csv,.txt" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
                             {file ? (
                                 <div className="flex items-center justify-center gap-3">
-                                    <FileText className="w-8 h-8 text-[var(--arcane-primary,#18181b)]" />
+                                    <FileText className="w-8 h-8 text-[var(--larafusion-primary,#18181b)]" />
                                     <div className="text-left">
                                         <p className="font-medium text-zinc-800">{file.name}</p>
                                         <p className="text-sm text-zinc-400">{(file.size / 1024).toFixed(1)} KB</p>
@@ -121,7 +121,7 @@ export default function Import({ resource, columns }: ImportPageProps) {
                         {error && <p className="mt-3 text-sm text-red-600 flex items-center gap-1.5"><AlertCircle className="w-4 h-4" />{error}</p>}
                         {file && !preview && (
                             <button type="button" onClick={fetchPreview} disabled={loading}
-                                className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white transition-colors disabled:opacity-60">
+                                className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors disabled:opacity-60">
                                 {loading ? 'Loading preview…' : <>Preview <ChevronRight className="w-4 h-4" /></>}
                             </button>
                         )}
@@ -144,7 +144,7 @@ export default function Import({ resource, columns }: ImportPageProps) {
                                         <select
                                             value={mapping[h] ?? ''}
                                             onChange={e => setMapping(m => ({ ...m, [h]: e.target.value }))}
-                                            className="flex-1 px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 focus:border-[var(--arcane-primary,#18181b)] outline-none bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                                            className="flex-1 px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 focus:border-[var(--larafusion-primary,#18181b)] outline-none bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
                                         >
                                             <option value="">— skip —</option>
                                             {dbColumns.map(col => (
@@ -169,7 +169,7 @@ export default function Import({ resource, columns }: ImportPageProps) {
                                         {preview.headers.map(h => (
                                             <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
                                                 {h}
-                                                {mapping[h] && <span className="ml-1 text-[var(--arcane-primary,#18181b)]">→ {mapping[h]}</span>}
+                                                {mapping[h] && <span className="ml-1 text-[var(--larafusion-primary,#18181b)]">→ {mapping[h]}</span>}
                                             </th>
                                         ))}
                                     </tr>

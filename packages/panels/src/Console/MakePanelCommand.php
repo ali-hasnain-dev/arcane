@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Console;
+namespace Larafusion\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -8,8 +8,8 @@ use Illuminate\Support\Str;
 
 class MakePanelCommand extends Command
 {
-    protected $signature   = 'arcane:panel {name? : Panel name, e.g. admin, cpanel, my-app}';
-    protected $description = 'Create a new Arcane panel provider';
+    protected $signature   = 'larafusion:panel {name? : Panel name, e.g. admin, cpanel, my-app}';
+    protected $description = 'Create a new Larafusion panel provider';
 
     public function handle(): int
     {
@@ -25,14 +25,14 @@ class MakePanelCommand extends Command
         $studly    = Str::studly($rawName);
         $className = "{$studly}Provider";
         $panelPath = Str::slug($rawName);   // keep original slug as URL prefix
-        $namespace = 'App\\Providers\\Arcane';
-        $dir       = app_path('Providers/Arcane');
+        $namespace = 'App\\Providers\\Larafusion';
+        $dir       = app_path('Providers/Larafusion');
         $filePath  = "{$dir}/{$className}.php";
 
         File::ensureDirectoryExists($dir);
 
         if (File::exists($filePath)) {
-            $this->error("Provider already exists: app/Providers/Arcane/{$className}.php");
+            $this->error("Provider already exists: app/Providers/Larafusion/{$className}.php");
             return self::FAILURE;
         }
 
@@ -43,8 +43,8 @@ class MakePanelCommand extends Command
 
 namespace {$namespace};
 
-use Arcane\Panel;
-use Arcane\PanelProvider;
+use Larafusion\Panel;
+use Larafusion\PanelProvider;
 
 class {$className} extends PanelProvider
 {
@@ -63,7 +63,7 @@ PHP;
 
         File::put($filePath, $stub);
 
-        $this->info("✅ Panel provider created: <comment>app/Providers/Arcane/{$className}.php</comment>");
+        $this->info("✅ Panel provider created: <comment>app/Providers/Larafusion/{$className}.php</comment>");
         $this->newLine();
         $this->line("Register it in <comment>bootstrap/providers.php</comment>:");
         $this->line("  <comment>{$namespace}\\{$className}::class</comment>");

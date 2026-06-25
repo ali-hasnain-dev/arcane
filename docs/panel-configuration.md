@@ -2,13 +2,13 @@
 
 ## Panel Configuration
 
-All configuration lives in `app/Providers/Arcane/AdminPanelProvider.php`.
+All configuration lives in `app/Providers/Larafusion/AdminPanelProvider.php`.
 
 ```php
-namespace App\Providers\Arcane;
+namespace App\Providers\Larafusion;
 
-use Arcane\Panel;
-use Arcane\PanelProvider;
+use Larafusion\Panel;
+use Larafusion\PanelProvider;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -62,13 +62,13 @@ class AdminPanelProvider extends PanelProvider
 
 Implement these interfaces on your `User` model to unlock built-in behaviour.
 
-#### `ArcaneUser` — control panel access
+#### `LarafusionUser` — control panel access
 
 ```php
-use Arcane\Contracts\ArcaneUser;
-use Arcane\Panel;
+use Larafusion\Contracts\LarafusionUser;
+use Larafusion\Panel;
 
-class User extends Authenticatable implements ArcaneUser
+class User extends Authenticatable implements LarafusionUser
 {
     public function canAccessPanel(Panel $panel): bool
     {
@@ -79,16 +79,16 @@ class User extends Authenticatable implements ArcaneUser
 }
 ```
 
-When a user logs in successfully but `canAccessPanel()` returns `false`, they are immediately logged out and shown an authorization error. If the model does **not** implement `ArcaneUser`, all authenticated users are allowed in.
+When a user logs in successfully but `canAccessPanel()` returns `false`, they are immediately logged out and shown an authorization error. If the model does **not** implement `LarafusionUser`, all authenticated users are allowed in.
 
-#### `HasArcaneName` — custom display name
+#### `HasLarafusionName` — custom display name
 
 ```php
-use Arcane\Contracts\HasArcaneName;
+use Larafusion\Contracts\HasLarafusionName;
 
-class User extends Authenticatable implements HasArcaneName
+class User extends Authenticatable implements HasLarafusionName
 {
-    public function getArcaneName(): string
+    public function getLarafusionName(): string
     {
         return $this->display_name ?? $this->name;
     }
@@ -97,14 +97,14 @@ class User extends Authenticatable implements HasArcaneName
 
 Used in the user menu header and wherever the user's name is shown in the panel.
 
-#### `HasArcaneAvatar` — custom avatar image
+#### `HasLarafusionAvatar` — custom avatar image
 
 ```php
-use Arcane\Contracts\HasArcaneAvatar;
+use Larafusion\Contracts\HasLarafusionAvatar;
 
-class User extends Authenticatable implements HasArcaneAvatar
+class User extends Authenticatable implements HasLarafusionAvatar
 {
-    public function getArcaneAvatarUrl(): ?string
+    public function getLarafusionAvatarUrl(): ?string
     {
         return $this->avatar_url
             ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
@@ -154,7 +154,7 @@ Or rely on auto-linking — when `->profile()` is enabled, the user's name in th
 
 **Default: Inter** — designed for UI, used by Linear, Vercel, GitHub. Loaded automatically from Google Fonts with no extra setup.
 
-Arcane injects the stylesheet, sets the `--arcane-font` CSS variable on `:root`, and applies `font-family` to `<body>` — including on auth pages. Preconnect hints for `fonts.googleapis.com` and `fonts.gstatic.com` are added automatically.
+Larafusion injects the stylesheet, sets the `--larafusion-font` CSS variable on `:root`, and applies `font-family` to `<body>` — including on auth pages. Preconnect hints for `fonts.googleapis.com` and `fonts.gstatic.com` are added automatically.
 
 ```php
 // Inter is the default — no call needed unless you want to change it
@@ -313,7 +313,7 @@ The user menu appears in the top-right corner of the admin layout (or at the bot
 #### Add custom items
 
 ```php
-use Arcane\Navigation\UserMenuItem;
+use Larafusion\Navigation\UserMenuItem;
 
 ->userMenuItems([
     UserMenuItem::make('settings')
@@ -447,7 +447,7 @@ return $panel
     ->simplePagination()    // Prev/Next only; override per-table with ->simplePagination(false)
 
     // Boot hook
-    ->bootUsing(fn ($panel) => logger('Arcane booted'));
+    ->bootUsing(fn ($panel) => logger('Larafusion booted'));
 ```
 
 ---

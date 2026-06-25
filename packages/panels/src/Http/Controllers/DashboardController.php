@@ -1,20 +1,20 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Routing\Controller;
 use Inertia\Inertia;
-use Arcane\ArcaneManager;
+use Larafusion\LarafusionManager;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Arcane/Dashboard', [
-            'navigation' => ArcaneManager::getNavigation(),
+        return Inertia::render('Larafusion/Dashboard', [
+            'navigation' => LarafusionManager::getNavigation(),
 
             'stats' => Inertia::defer(function () {
-                $resources = ArcaneManager::all();
+                $resources = LarafusionManager::all();
                 $counts    = [];
 
                 foreach ($resources as $slug => $class) {
@@ -32,7 +32,7 @@ class DashboardController extends Controller
             }),
 
             'widgets' => Inertia::defer(function () {
-                return array_map(fn($w) => $w->toArray(), ArcaneManager::getWidgets());
+                return array_map(fn($w) => $w->toArray(), LarafusionManager::getWidgets());
             }),
         ]);
     }

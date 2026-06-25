@@ -1,8 +1,8 @@
 <?php
 
-namespace Arcane\Fields\Relations;
+namespace Larafusion\Fields\Relations;
 
-use Arcane\Fields\Field;
+use Larafusion\Fields\Field;
 
 /**
  * Polymorphic relation field.

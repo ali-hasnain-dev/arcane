@@ -1,8 +1,8 @@
 <?php
 
-namespace Arcane\Fields;
+namespace Larafusion\Fields;
 
-use Arcane\Concerns\HasAffixes;
+use Larafusion\Concerns\HasAffixes;
 
 class Email extends Field
 {

@@ -4,23 +4,23 @@
 
 | Command                                 | Description                                                       |
 | --------------------------------------- | ----------------------------------------------------------------- |
-| `php artisan arcane:install`            | Full setup: template, vite, bootstrap, env, npm, example resource |
-| `php artisan arcane:resource ModelName` | Scaffold Filament-style resource folder (6 files)                 |
-| `php artisan arcane:panel {name?}`      | Create a new panel provider in `app/Providers/Arcane/`            |
-| `php artisan arcane:plugin PluginName`  | Generate a plugin stub in `app/Arcane/Plugins/`                   |
+| `php artisan larafusion:install`            | Full setup: template, vite, bootstrap, env, npm, example resource |
+| `php artisan larafusion:resource ModelName` | Scaffold Filament-style resource folder (6 files)                 |
+| `php artisan larafusion:panel {name?}`      | Create a new panel provider in `app/Providers/Larafusion/`            |
+| `php artisan larafusion:plugin PluginName`  | Generate a plugin stub in `app/Larafusion/Plugins/`                   |
 
-### `arcane:resource`
+### `larafusion:resource`
 
 Generates a complete Filament-style folder structure:
 
 ```bash
-php artisan arcane:resource Post
+php artisan larafusion:resource Post
 ```
 
 Creates:
 
 ```
-app/Arcane/Resources/Posts/
+app/Larafusion/Resources/Posts/
 ├── PostResource.php         ← model, navigation, wires form + table
 ├── Schemas/PostForm.php     ← form field definitions
 ├── Tables/PostsTable.php    ← column + action definitions
@@ -31,11 +31,11 @@ app/Arcane/Resources/Posts/
 
 Resources are **auto-discovered** immediately — no registration step required.
 
-### `arcane:panel`
+### `larafusion:panel`
 
 ```bash
-php artisan arcane:panel admin    # → app/Providers/Arcane/AdminPanelProvider.php
-php artisan arcane:panel          # prompts: "Panel name?"
+php artisan larafusion:panel admin    # → app/Providers/Larafusion/AdminPanelProvider.php
+php artisan larafusion:panel          # prompts: "Panel name?"
 ```
 
 ---

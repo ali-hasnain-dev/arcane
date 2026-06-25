@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import HybridFieldRenderer from '../fields/HybridFieldRenderer';
-import { ArcaneField, FormValues, FormErrors } from '../../types';
+import { LarafusionField, FormValues, FormErrors } from '../../types';
 
 // ─── Schema item types ─────────────────────────────────────────────────────────
 
@@ -36,7 +36,7 @@ export interface GridSchema {
     fields: SchemaItem[];
 }
 
-export type SchemaItem = ArcaneField | SectionSchema | TabsSchema | GridSchema;
+export type SchemaItem = LarafusionField | SectionSchema | TabsSchema | GridSchema;
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -65,7 +65,7 @@ function FieldGrid({ fields, columns, data, errors, onChange, resourceSlug, reco
     return (
         <div className={cn('grid gap-5', colClass)}>
             {fields.map((item, i) => {
-                const key = (item as ArcaneField).name ?? `layout-${i}`;
+                const key = (item as LarafusionField).name ?? `layout-${i}`;
                 return (
                     <SchemaItemRenderer
                         key={key}
@@ -148,7 +148,7 @@ function TabsRenderer({ tabs: tabsSchema, data, errors, onChange, resourceSlug, 
 
     // Show error indicator on tab if any contained field has an error
     const tabHasError = (tab: TabSchema) =>
-        tab.fields.some(f => (f as ArcaneField).name && errors[(f as ArcaneField).name]);
+        tab.fields.some(f => (f as LarafusionField).name && errors[(f as LarafusionField).name]);
 
     return (
         <div className="border border-zinc-200 dark:border-zinc-700 rounded-xl">
@@ -161,7 +161,7 @@ function TabsRenderer({ tabs: tabsSchema, data, errors, onChange, resourceSlug, 
                         className={cn(
                             'px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px',
                             active === tab.label
-                                ? 'border-[var(--arcane-primary,#18181b)] text-[var(--arcane-primary,#18181b)] bg-white dark:bg-zinc-900'
+                                ? 'border-[var(--larafusion-primary,#18181b)] text-[var(--larafusion-primary,#18181b)] bg-white dark:bg-zinc-900'
                                 : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700',
                             tabHasError(tab) && active !== tab.label && 'text-red-500',
                         )}
@@ -234,7 +234,7 @@ export function SchemaItemRenderer({ item, data, errors, onChange, resourceSlug,
     }
 
     // Plain field — use HybridFieldRenderer so relation fields (BelongsTo, etc.) work
-    const field = item as ArcaneField;
+    const field = item as LarafusionField;
     return (
         <div
             data-field-error={!!errors[field.name] || undefined}
@@ -266,7 +266,7 @@ export default function FormLayout({ schema, data, errors, onChange, resourceSlu
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {schema.map((item, i) => {
-                    const field = item as ArcaneField;
+                    const field = item as LarafusionField;
                     return (
                         <div
                             key={field.name ?? i}
@@ -292,7 +292,7 @@ export default function FormLayout({ schema, data, errors, onChange, resourceSlu
         <div className="space-y-5">
             {schema.map((item, i) => (
                 <SchemaItemRenderer
-                    key={(item as ArcaneField).name ?? `layout-${i}`}
+                    key={(item as LarafusionField).name ?? `layout-${i}`}
                     item={item}
                     data={data}
                     errors={errors}

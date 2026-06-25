@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import DynamicForm from './DynamicForm';
-import type { FormSchemaItem, FormValues, ArcaneField } from '../../types';
+import type { FormSchemaItem, FormValues, LarafusionField } from '../../types';
 
 interface FormModalProps {
     open: boolean;
@@ -30,13 +30,13 @@ function useModalAnimation(open: boolean, exitMs = 160) {
     return { rendered, exiting };
 }
 
-function flattenFields(items: FormSchemaItem[]): ArcaneField[] {
-    const out: ArcaneField[] = [];
+function flattenFields(items: FormSchemaItem[]): LarafusionField[] {
+    const out: LarafusionField[] = [];
     for (const item of items) {
         if (item.type === 'section') { flattenFields(item.fields).forEach(f => out.push(f)); }
         else if (item.type === 'tabs') { item.tabs.forEach(t => flattenFields(t.fields).forEach(f => out.push(f))); }
         else if (item.type === 'grid') { flattenFields(item.fields).forEach(f => out.push(f)); }
-        else out.push(item as ArcaneField);
+        else out.push(item as LarafusionField);
     }
     return out;
 }
@@ -61,12 +61,12 @@ export default function FormModal({ open, onClose, title, resourceSlug, schema, 
     return (
         <div className={cn(
             'fixed inset-0 z-50 flex items-center justify-center p-4',
-            exiting ? 'animate-arcane-overlay-out' : 'animate-arcane-overlay-in',
+            exiting ? 'animate-larafusion-overlay-out' : 'animate-larafusion-overlay-in',
         )}>
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
             <div className={cn(
                 'relative bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col',
-                exiting ? 'animate-arcane-modal-out' : 'animate-arcane-modal-in',
+                exiting ? 'animate-larafusion-modal-out' : 'animate-larafusion-modal-in',
             )}>
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 shrink-0">

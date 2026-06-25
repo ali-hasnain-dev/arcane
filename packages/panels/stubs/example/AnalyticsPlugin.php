@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Arcane\Plugins;
+namespace App\Larafusion\Plugins;
 
-use Arcane\Plugins\ArcanePlugin;
+use Larafusion\Plugins\LarafusionPlugin;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Example Arcane plugin — Analytics
+ * Example Larafusion plugin — Analytics
  *
  * Shows how to:
  * - Add navigation items to the sidebar
@@ -14,12 +14,12 @@ use Illuminate\Support\Facades\Log;
  * - Register custom React components
  * - Inject assets
  */
-class AnalyticsPlugin extends ArcanePlugin
+class AnalyticsPlugin extends LarafusionPlugin
 {
-    public static function id(): string          { return 'arcane-analytics'; }
+    public static function id(): string          { return 'larafusion-analytics'; }
     public static function name(): string        { return 'Analytics'; }
     public static function version(): string     { return '1.0.0'; }
-    public static function description(): string { return 'Adds an analytics dashboard to Arcane.'; }
+    public static function description(): string { return 'Adds an analytics dashboard to Larafusion.'; }
 
     /**
      * Boot — register any services, bindings, observers.
@@ -41,7 +41,7 @@ class AnalyticsPlugin extends ArcanePlugin
                 'label' => 'Analytics',
                 'icon'  => 'chart',
                 'slug'  => 'analytics',
-                'url'   => route('arcane.dashboard'),  // or a custom route
+                'url'   => route('larafusion.dashboard'),  // or a custom route
                 'badge' => null,
             ],
         ];
@@ -55,7 +55,7 @@ class AnalyticsPlugin extends ArcanePlugin
         return [
             // Log every record creation
             'record.created' => function ($record) {
-                Log::info('Arcane: record created', [
+                Log::info('Larafusion: record created', [
                     'model' => get_class($record),
                     'id'    => $record->id ?? null,
                 ]);

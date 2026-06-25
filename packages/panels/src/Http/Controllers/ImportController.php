@@ -1,22 +1,22 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
-use Arcane\ArcaneManager;
+use Larafusion\LarafusionManager;
 
 class ImportController extends Controller
 {
     public function show(string $resource)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canCreate(), 403);
         abort_unless($resourceClass::importable(), 403, 'Import is not enabled for this resource.');
 
-        return Inertia::render('Arcane/Import', [
+        return Inertia::render('Larafusion/Import', [
             'resource' => $resourceClass::getPageProps('index')['resource'],
             'columns'  => $resourceClass::getImportColumns(),
         ]);
@@ -24,7 +24,7 @@ class ImportController extends Controller
 
     public function preview(Request $request, string $resource)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canCreate(), 403);
         abort_unless($resourceClass::importable(), 403);
 
@@ -59,7 +59,7 @@ class ImportController extends Controller
 
     public function commit(Request $request, string $resource)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canCreate(), 403);
         abort_unless($resourceClass::importable(), 403);
 
@@ -108,7 +108,7 @@ class ImportController extends Controller
         }
 
         return redirect()
-            ->route('arcane.resource.index', $resource)
+            ->route('larafusion.resource.index', $resource)
             ->with('success', $message);
     }
 }

@@ -7,7 +7,7 @@
 Every CRUD operation automatically shows a toast. Trigger from any controller:
 
 ```php
-return redirect()->route('arcane.resource.index', 'posts')
+return redirect()->route('larafusion.resource.index', 'posts')
     ->with('success', 'Post published!');
 
 return redirect()->back()

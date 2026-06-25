@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { router, Link } from '@inertiajs/react';
-import { ArcaneField, FormValues } from '../../types';
+import { LarafusionField, FormValues } from '../../types';
 import { Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import FormLayout, { SchemaItem, SectionSchema, TabsSchema, GridSchema } from './FormLayout';
@@ -24,8 +24,8 @@ interface DynamicFormProps {
     recordId?: string | number | null;
 }
 
-function collectFields(items: SchemaItem[]): ArcaneField[] {
-    const out: ArcaneField[] = [];
+function collectFields(items: SchemaItem[]): LarafusionField[] {
+    const out: LarafusionField[] = [];
     for (const item of items) {
         if ((item as SectionSchema).type === 'section') {
             collectFields((item as SectionSchema).fields).forEach(f => out.push(f));
@@ -36,7 +36,7 @@ function collectFields(items: SchemaItem[]): ArcaneField[] {
         } else if ((item as GridSchema).type === 'grid') {
             collectFields((item as GridSchema).fields).forEach(f => out.push(f));
         } else {
-            out.push(item as ArcaneField);
+            out.push(item as LarafusionField);
         }
     }
     return out;
@@ -157,8 +157,8 @@ export default function DynamicForm({
                     disabled={processing}
                     className={cn(
                         'inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium',
-                        'bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white transition-colors',
-                        'focus:outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)] focus:ring-offset-1',
+                        'bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors',
+                        'focus:outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)] focus:ring-offset-1',
                         'disabled:opacity-60 disabled:cursor-not-allowed',
                     )}
                 >

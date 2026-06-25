@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Console;
+namespace Larafusion\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -11,12 +11,12 @@ use function Laravel\Prompts\text;
 
 class InstallCommand extends Command
 {
-    protected $signature   = 'arcane:install';
-    protected $description = 'Install Arcane admin panel into your Laravel application';
+    protected $signature   = 'larafusion:install';
+    protected $description = 'Install Larafusion admin panel into your Laravel application';
 
     public function handle(): int
     {
-        $this->info('Installing Arcane...');
+        $this->info('Installing Larafusion...');
         $this->newLine();
 
         // Ask for the panel name up-front so all derived values are consistent.
@@ -44,7 +44,7 @@ class InstallCommand extends Command
         // 4. Patch app.tsx entry — vendor-based glob resolver (pages stay in package)
         $this->patchAppEntry();
 
-        // 5. Patch bootstrap/app.php — register Inertia middleware + redirect guests to arcane.login
+        // 5. Patch bootstrap/app.php — register Inertia middleware + redirect guests to larafusion.login
         $this->patchBootstrapApp();
 
         // 6. Patch .env — enable Inertia v3 script-element page data format
@@ -59,21 +59,21 @@ class InstallCommand extends Command
         // 9. Create example UserResource
         $this->createExampleResource();
 
-        // 10. Ensure app/Arcane directory structure exists
-        File::ensureDirectoryExists(app_path('Arcane/Resources'));
-        File::ensureDirectoryExists(app_path('Arcane/Pages'));
-        File::ensureDirectoryExists(app_path('Arcane/Plugins'));
+        // 10. Ensure app/Larafusion directory structure exists
+        File::ensureDirectoryExists(app_path('Larafusion/Resources'));
+        File::ensureDirectoryExists(app_path('Larafusion/Pages'));
+        File::ensureDirectoryExists(app_path('Larafusion/Plugins'));
 
         $this->newLine();
-        $this->info('Arcane installed successfully!');
+        $this->info('Larafusion installed successfully!');
         $this->newLine();
         $this->table(
             ['Step', 'Action'],
             [
                 ['Build assets',      '<comment>npm run build</comment>'],
                 ['Visit admin panel', '<comment>http://your-app.test/' . $panelId . '</comment>'],
-                ['Create a resource', '<comment>php artisan arcane:resource User</comment>'],
-                ['Create a plugin',   '<comment>php artisan arcane:plugin Analytics</comment>'],
+                ['Create a resource', '<comment>php artisan larafusion:resource User</comment>'],
+                ['Create a plugin',   '<comment>php artisan larafusion:plugin Analytics</comment>'],
                 ['Switch theme',      "<comment>->theme('emerald') in your {$panelClass}</comment>"],
             ]
         );
@@ -83,14 +83,14 @@ class InstallCommand extends Command
 
     protected function createPanelProvider(string $panelId, string $panelClass): void
     {
-        $dir  = app_path('Providers/Arcane');
+        $dir  = app_path('Providers/Larafusion');
         $path = "{$dir}/{$panelClass}.php";
-        $fqn  = "App\\Providers\\Arcane\\{$panelClass}";
+        $fqn  = "App\\Providers\\Larafusion\\{$panelClass}";
 
         File::ensureDirectoryExists($dir);
 
         if (File::exists($path)) {
-            $this->line("  ✅ PanelProvider already exists → <comment>app/Providers/Arcane/{$panelClass}.php</comment>");
+            $this->line("  ✅ PanelProvider already exists → <comment>app/Providers/Larafusion/{$panelClass}.php</comment>");
             return;
         }
 
@@ -99,10 +99,10 @@ class InstallCommand extends Command
         $stub = <<<PHP
 <?php
 
-namespace App\Providers\Arcane;
+namespace App\Providers\Larafusion;
 
-use Arcane\Panel;
-use Arcane\PanelProvider;
+use Larafusion\Panel;
+use Larafusion\PanelProvider;
 
 class {$panelClass} extends PanelProvider
 {
@@ -116,13 +116,13 @@ class {$panelClass} extends PanelProvider
             ->theme('neutral')
             ->defaultThemeMode('light');
         // Font defaults to Inter — override with ->font('DM Sans') if desired.
-        // Resources in app/Arcane/ are auto-discovered — no need to list them here.
+        // Resources in app/Larafusion/ are auto-discovered — no need to list them here.
     }
 }
 PHP;
 
         File::put($path, $stub);
-        $this->line("  ✅ PanelProvider created → <comment>app/Providers/Arcane/{$panelClass}.php</comment>");
+        $this->line("  ✅ PanelProvider created → <comment>app/Providers/Larafusion/{$panelClass}.php</comment>");
 
         // Auto-register in bootstrap/providers.php (Laravel 11+)
         $bootstrapPath = base_path('bootstrap/providers.php');
@@ -176,7 +176,7 @@ BLADE;
 
         $barrel = <<<'TS'
 export { FieldRenderer } from './components/fields';
-export type { ArcaneField, FormValues, FormErrors } from './types';
+export type { LarafusionField, FormValues, FormErrors } from './types';
 TS;
 
         File::put($path, $barrel);
@@ -198,7 +198,7 @@ TS;
         $content = File::get($viteConfigPath);
 
         // Already configured — skip
-        if (str_contains($content, 'arcane-cross-package-resolve')) {
+        if (str_contains($content, 'larafusion-cross-package-resolve')) {
             $this->line('  ✅ vite.config already configured');
             return;
         }
@@ -212,7 +212,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 // Use symlink paths (not realpathSync) so bare-module imports resolve from project node_modules.
-const vendor = path.resolve(__dirname, 'vendor/arcane');
+const vendor = path.resolve(__dirname, 'vendor/larafusion');
 const panelsJs  = path.join(vendor, 'panels/resources/js');
 const formsJs   = path.join(vendor, 'forms/resources/js');
 const tablesJs  = path.join(vendor, 'tables/resources/js');
@@ -242,8 +242,8 @@ function resolveFile(base) {
     return null;
 }
 
-const arcaneResolve = {
-    name: 'arcane-cross-package-resolve',
+const larafusionResolve = {
+    name: 'larafusion-cross-package-resolve',
     resolveId(id, importer) {
         if (!importer) return null;
         if (!id.startsWith('.')) return null;
@@ -265,7 +265,7 @@ const arcaneResolve = {
 
 export default defineConfig({
     plugins: [
-        arcaneResolve,
+        larafusionResolve,
         react(),
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],
@@ -289,7 +289,7 @@ export default defineConfig({
 JS;
 
         File::put($viteConfigPath, $stub);
-        $this->line('  ✅ <comment>vite.config</comment> replaced — arcaneResolve plugin + preserveSymlinks added');
+        $this->line('  ✅ <comment>vite.config</comment> replaced — larafusionResolve plugin + preserveSymlinks added');
     }
 
     protected function patchAppEntry(): void
@@ -311,12 +311,12 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 
-// User pages override vendor pages — create resources/js/Pages/Arcane/Foo.tsx to customise any built-in page.
+// User pages override vendor pages — create resources/js/Pages/Larafusion/Foo.tsx to customise any built-in page.
 const userPages   = import.meta.glob('./Pages/**/*.tsx', { eager: false });
 const vendorPages = import.meta.glob([
-    '../../vendor/arcane/panels/resources/js/pages/**/*.tsx',
-    '../../vendor/arcane/forms/resources/js/pages/**/*.tsx',
-    '../../vendor/arcane/widgets/resources/js/pages/**/*.tsx',
+    '../../vendor/larafusion/panels/resources/js/pages/**/*.tsx',
+    '../../vendor/larafusion/forms/resources/js/pages/**/*.tsx',
+    '../../vendor/larafusion/widgets/resources/js/pages/**/*.tsx',
 ], { eager: false });
 
 createInertiaApp({
@@ -326,12 +326,12 @@ createInertiaApp({
 
     async resolve(name) {
         const userKey   = `./Pages/${name}.tsx`;
-        const vendorKey = `../../vendor/arcane/panels/resources/js/pages/${name}.tsx`;
+        const vendorKey = `../../vendor/larafusion/panels/resources/js/pages/${name}.tsx`;
 
         const loader = userPages[userKey] ?? vendorPages[vendorKey];
 
         if (!loader) {
-            throw new Error(`[Arcane] Page not found: "${name}". Create resources/js/Pages/${name}.tsx to add a custom page.`);
+            throw new Error(`[Larafusion] Page not found: "${name}". Create resources/js/Pages/${name}.tsx to add a custom page.`);
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -373,7 +373,7 @@ TSX;
             $inject .= "\n" . '        $middleware->web(append: [\\Inertia\\Middleware::class]);';
         }
         if ($needsGuestRedirect) {
-            $inject .= "\n" . '        $middleware->redirectGuestsTo(fn () => route(\'arcane.login\'));';
+            $inject .= "\n" . '        $middleware->redirectGuestsTo(fn () => route(\'larafusion.login\'));';
         }
 
         $content = preg_replace(
@@ -386,7 +386,7 @@ TSX;
 
         $messages = [];
         if ($needsInertiaMiddleware) $messages[] = '<comment>\\Inertia\\Middleware</comment>';
-        if ($needsGuestRedirect)     $messages[] = '<comment>redirectGuestsTo arcane.login</comment>';
+        if ($needsGuestRedirect)     $messages[] = '<comment>redirectGuestsTo larafusion.login</comment>';
         $this->line('  ✅ bootstrap/app.php patched → ' . implode(' + ', $messages));
     }
 
@@ -433,11 +433,11 @@ TSX;
             $changed = true;
         }
 
-        // Add vendor arcane @source so Tailwind scans package component files
-        if (!str_contains($content, 'vendor/arcane')) {
+        // Add vendor larafusion @source so Tailwind scans package component files
+        if (!str_contains($content, 'vendor/larafusion')) {
             $content = preg_replace(
                 "/(@source\s+'[^']*\*\*\/\*\.js';)/",
-                "$1\n@source '../../vendor/arcane/*/resources/js/**/*.{ts,tsx}';",
+                "$1\n@source '../../vendor/larafusion/*/resources/js/**/*.{ts,tsx}';",
                 $content,
                 1
             );
@@ -445,7 +445,7 @@ TSX;
         }
 
         // Add theme-transition styles for View Transitions API + Firefox fallback
-        if (!str_contains($content, 'view-transition-old') && !str_contains($content, 'arcane-theme-transition')) {
+        if (!str_contains($content, 'view-transition-old') && !str_contains($content, 'larafusion-theme-transition')) {
             $themeTransitionCss = <<<'CSS'
 
 /*
@@ -461,10 +461,10 @@ TSX;
 }
 
 /* Firefox fallback — used when View Transitions are not available. */
-.arcane-theme-transition,
-.arcane-theme-transition *,
-.arcane-theme-transition *::before,
-.arcane-theme-transition *::after {
+.larafusion-theme-transition,
+.larafusion-theme-transition *,
+.larafusion-theme-transition *::before,
+.larafusion-theme-transition *::after {
     transition:
         color            250ms ease,
         background-color 250ms ease,
@@ -481,7 +481,7 @@ CSS;
 
         if ($changed) {
             File::put($cssPath, $content);
-            $this->line('  ✅ app.css patched → <comment>@custom-variant dark</comment> + <comment>vendor arcane @source</comment> + <comment>theme transitions</comment>');
+            $this->line('  ✅ app.css patched → <comment>@custom-variant dark</comment> + <comment>vendor larafusion @source</comment> + <comment>theme transitions</comment>');
         } else {
             $this->line('  ✅ app.css already configured');
         }
@@ -547,11 +547,11 @@ CSS;
 
     protected function createExampleResource(): void
     {
-        $base = app_path('Arcane/Resources/Users');
-        $ns   = 'App\\Arcane\\Resources\\Users';
+        $base = app_path('Larafusion/Resources/Users');
+        $ns   = 'App\\Larafusion\\Resources\\Users';
 
         if (File::exists("{$base}/UserResource.php")) {
-            $this->line('  ✅ Example resource exists → <comment>app/Arcane/Resources/Users/</comment>');
+            $this->line('  ✅ Example resource exists → <comment>app/Larafusion/Resources/Users/</comment>');
             return;
         }
 
@@ -566,7 +566,7 @@ CSS;
         File::put("{$base}/Pages/CreateUser.php",      $this->exampleCreatePageStub($ns));
         File::put("{$base}/Pages/EditUser.php",        $this->exampleEditPageStub($ns));
 
-        $this->line('  ✅ Example resource created → <comment>app/Arcane/Resources/Users/</comment>');
+        $this->line('  ✅ Example resource created → <comment>app/Larafusion/Resources/Users/</comment>');
     }
 
     protected function exampleResourceStub(string $ns): string
@@ -577,7 +577,7 @@ CSS;
 namespace {$ns};
 
 use App\Models\User;
-use Arcane\Resource;
+use Larafusion\Resource;
 use {$ns}\Schemas\UserForm;
 use {$ns}\Tables\UsersTable;
 
@@ -614,12 +614,12 @@ PHP;
 
 namespace {$ns}\Schemas;
 
-use Arcane\Fields\Text;
-use Arcane\Fields\Email;
-use Arcane\Fields\Password;
-use Arcane\Fields\Select;
-use Arcane\Fields\Toggle;
-use Arcane\Fields\Textarea;
+use Larafusion\Fields\Text;
+use Larafusion\Fields\Email;
+use Larafusion\Fields\Password;
+use Larafusion\Fields\Select;
+use Larafusion\Fields\Toggle;
+use Larafusion\Fields\Textarea;
 
 class UserForm
 {
@@ -649,8 +649,8 @@ PHP;
 
 namespace {$ns}\Tables;
 
-use Arcane\Columns\Column;
-use Arcane\Actions\ButtonAction;
+use Larafusion\Columns\Column;
+use Larafusion\Actions\ButtonAction;
 
 class UsersTable
 {
@@ -698,7 +698,7 @@ PHP;
 
 namespace {$ns}\Pages;
 
-use Arcane\Pages\ListPage;
+use Larafusion\Pages\ListPage;
 use {$ns}\UserResource;
 
 class ListUsers extends ListPage
@@ -715,7 +715,7 @@ PHP;
 
 namespace {$ns}\Pages;
 
-use Arcane\Pages\CreatePage;
+use Larafusion\Pages\CreatePage;
 use {$ns}\UserResource;
 
 class CreateUser extends CreatePage
@@ -732,7 +732,7 @@ PHP;
 
 namespace {$ns}\Pages;
 
-use Arcane\Pages\EditPage;
+use Larafusion\Pages\EditPage;
 use {$ns}\UserResource;
 
 class EditUser extends EditPage

@@ -189,7 +189,7 @@ export default function GlobalSearch({ panel, sidebarOffset, inSidebar = false }
                                         className={cn(
                                             'w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors',
                                             idx === activeIdx
-                                                ? 'bg-[var(--arcane-primary,#18181b)]/5 dark:bg-white/5'
+                                                ? 'bg-[var(--larafusion-primary,#18181b)]/5 dark:bg-white/5'
                                                 : 'hover:bg-zinc-50 dark:hover:bg-zinc-800',
                                         )}
                                         onMouseEnter={() => setActiveIdx(idx)}

@@ -5,10 +5,10 @@ import AdminLayout from '../../components/layout/AdminLayout';
 import Breadcrumb from '../../components/ui/Breadcrumb';
 import { Card, CardHeader, CardBody } from '../../components/ui/Card';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
-import { ArcanePageProps, FormValues, ArcaneField, FormSchemaItem } from '../../types';
+import { LarafusionPageProps, FormValues, LarafusionField, FormSchemaItem } from '../../types';
 
-function flattenFields(items: FormSchemaItem[]): ArcaneField[] {
-    const out: ArcaneField[] = [];
+function flattenFields(items: FormSchemaItem[]): LarafusionField[] {
+    const out: LarafusionField[] = [];
     for (const item of items) {
         if (item.type === 'section') { flattenFields(item.fields).forEach(f => out.push(f)); }
         else if (item.type === 'tabs') { item.tabs.forEach(t => flattenFields(t.fields).forEach(f => out.push(f))); }
@@ -20,7 +20,7 @@ function flattenFields(items: FormSchemaItem[]): ArcaneField[] {
 import { Pencil, Trash2, FileText, Image as ImageIcon, ExternalLink } from 'lucide-react';
 
 // ─── Cell value renderer for Show page ───────────────────────────────────────
-function FieldValue({ field, value }: { field: ArcaneField; value: unknown }) {
+function FieldValue({ field, value }: { field: LarafusionField; value: unknown }) {
     if (value === null || value === undefined || value === '') {
         return <span className="text-zinc-300 dark:text-zinc-600">—</span>;
     }
@@ -34,7 +34,7 @@ function FieldValue({ field, value }: { field: ArcaneField; value: unknown }) {
         case 'select': {
             const opts = (field as never as { options: Record<string, string> }).options;
             const label = opts[value as string] ?? (value as string);
-            return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--arcane-primary,#18181b)]/10 text-[var(--arcane-primary,#18181b)] dark:text-white">{label}</span>;
+            return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--larafusion-primary,#18181b)]/10 text-[var(--larafusion-primary,#18181b)] dark:text-white">{label}</span>;
         }
 
         case 'tags': {
@@ -42,7 +42,7 @@ function FieldValue({ field, value }: { field: ArcaneField; value: unknown }) {
             return (
                 <div className="flex flex-wrap gap-1.5">
                     {tags.map((t: string) => (
-                        <span key={t} className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-[var(--arcane-primary,#18181b)]/10 text-[var(--arcane-primary,#18181b)] dark:text-white border border-[var(--arcane-primary,#18181b)]/20">
+                        <span key={t} className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-[var(--larafusion-primary,#18181b)]/10 text-[var(--larafusion-primary,#18181b)] dark:text-white border border-[var(--larafusion-primary,#18181b)]/20">
                             {t}
                         </span>
                     ))}
@@ -96,7 +96,7 @@ function FieldValue({ field, value }: { field: ArcaneField; value: unknown }) {
                             href={`/storage/${p}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-sm text-[var(--arcane-primary,#18181b)] dark:text-zinc-300 hover:opacity-80 hover:underline"
+                            className="inline-flex items-center gap-2 text-sm text-[var(--larafusion-primary,#18181b)] dark:text-zinc-300 hover:opacity-80 hover:underline"
                         >
                             <FileText className="w-4 h-4" />
                             {p.split('/').pop()}
@@ -112,7 +112,7 @@ function FieldValue({ field, value }: { field: ArcaneField; value: unknown }) {
     }
 }
 
-export default function Show({ resource, schema: rawSchema, record }: ArcanePageProps) {
+export default function Show({ resource, schema: rawSchema, record }: LarafusionPageProps) {
     const schema = flattenFields(rawSchema);
     const data   = record as FormValues;
     const id     = data?.id as string | number;
@@ -140,7 +140,7 @@ export default function Show({ resource, schema: rawSchema, record }: ArcanePage
                                 <Link
                                     href={`/admin/${resource.slug}/${id}/edit`}
                                     {...prefetchProps}
-                                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white transition-colors"
+                                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors"
                                 >
                                     <Pencil className="w-3.5 h-3.5" /> Edit
                                 </Link>

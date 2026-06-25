@@ -1,6 +1,6 @@
 import React from 'react';
 import { FieldRenderer } from '.';        // same directory: fields/index.tsx
-import { ArcaneField } from '@arcane/core'; // support types via vite alias
+import { LarafusionField } from '@larafusion/core'; // support types via vite alias
 import {
     ExtendedField, RepeaterField, TagsField, ColorField,
     FileField, ImageField,
@@ -97,7 +97,7 @@ export default function HybridFieldRenderer({
                 <div onBlur={onBlur ? (e: React.FocusEvent<HTMLDivElement>) => {
                     if (!e.currentTarget.contains(e.relatedTarget as Node)) onBlur();
                 } : undefined}>
-                    <FieldRenderer field={field as ArcaneField} value={value} error={error} onChange={onChange} />
+                    <FieldRenderer field={field as LarafusionField} value={value} error={error} onChange={onChange} />
                 </div>
             );
     }

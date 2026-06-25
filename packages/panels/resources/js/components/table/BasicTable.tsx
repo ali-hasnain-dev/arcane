@@ -1,1 +1,1 @@
-export { BasicTable as default } from '@arcane/tables';
+export { BasicTable as default } from '@larafusion/tables';

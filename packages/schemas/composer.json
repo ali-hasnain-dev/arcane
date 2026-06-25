@@ -1,15 +1,15 @@
 {
-    "name": "arcane/schemas",
-    "description": "Arcane schemas — schema serialization and component schema definitions.",
+    "name": "larafusion/schemas",
+    "description": "Larafusion schemas — schema serialization and component schema definitions.",
     "type": "library",
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "arcane/support": "@dev"
+        "larafusion/support": "@dev"
     },
     "autoload": {
         "psr-4": {
-            "Arcane\\": "src/"
+            "Larafusion\\": "src/"
         }
     },
     "minimum-stability": "stable",

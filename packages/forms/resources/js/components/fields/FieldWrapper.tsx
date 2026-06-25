@@ -67,7 +67,7 @@ export function inputClasses(status: ValidationStatus, extra = '') {
             ? 'border-red-400 bg-red-50 dark:bg-red-950/30 dark:border-red-800 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-900 focus:border-red-400'
             : status === 'valid'
             ? 'border-green-400 bg-white dark:bg-zinc-800 dark:border-green-700 focus:ring-2 focus:ring-green-200 dark:focus:ring-green-900 focus:border-green-400'
-            : 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/20 focus:border-[var(--arcane-primary,#18181b)]',
+            : 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/20 focus:border-[var(--larafusion-primary,#18181b)]',
         extra,
     );
 }

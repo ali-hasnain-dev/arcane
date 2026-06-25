@@ -39,7 +39,7 @@ protected $hidden = ['password', 'remember_token', 'two_factor_secret', 'two_fac
 Enable 2FA in your panel provider:
 
 ```php
-// app/Providers/Arcane/AdminPanelProvider.php
+// app/Providers/Larafusion/AdminPanelProvider.php
 return $panel
     ->twoFactor()                    // optional, allow users to opt-in
     ->twoFactor(enforce: true)       // enforce — all users must set up 2FA
@@ -55,7 +55,7 @@ The `canViewAny()` / `canCreate()` / etc. methods now accept an optional `$user`
 To start using role-based checks:
 
 ```php
-// app/Arcane/Resources/Posts/PostResource.php
+// app/Larafusion/Resources/Posts/PostResource.php
 public static function canViewAny(mixed $user = null): bool
 {
     return $user?->role->in([UserRole::Admin, UserRole::Editor]) ?? false;
@@ -90,8 +90,8 @@ Rate limiting is **enabled by default** (5 attempts / minute). To customise or d
 ->loginRateLimiting(false)
 ```
 
-No changes needed to your `bootstrap/app.php` — Arcane registers the named `arcane-login`
-and `arcane-2fa` rate limiters automatically via the service provider.
+No changes needed to your `bootstrap/app.php` — Larafusion registers the named `larafusion-login`
+and `larafusion-2fa` rate limiters automatically via the service provider.
 
 ---
 
@@ -110,8 +110,8 @@ Enable in your panel provider:
 Or generate standalone routes file:
 
 ```bash
-php artisan arcane:api
-# Creates routes/arcane-api.php — include it in bootstrap/app.php manually
+php artisan larafusion:api
+# Creates routes/larafusion-api.php — include it in bootstrap/app.php manually
 ```
 
 To issue Sanctum tokens for API access:
@@ -166,6 +166,6 @@ public static function scopeForTenant($query, $tenant): mixed
 
 | Command | Description |
 |---------|-------------|
-| `php artisan arcane:user` | Create an admin user interactively or via options |
-| `php artisan arcane:ide-helpers` | Generate `_ide_helper_arcane.php` PHPDoc stubs |
-| `php artisan arcane:api` | Generate `routes/arcane-api.php` REST API routes file |
+| `php artisan larafusion:user` | Create an admin user interactively or via options |
+| `php artisan larafusion:ide-helpers` | Generate `_ide_helper_larafusion.php` PHPDoc stubs |
+| `php artisan larafusion:api` | Generate `routes/larafusion-api.php` REST API routes file |

@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Widgets;
+namespace Larafusion\Widgets;
 
 abstract class Widget
 {

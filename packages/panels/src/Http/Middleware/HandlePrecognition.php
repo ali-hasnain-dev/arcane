@@ -1,19 +1,19 @@
 <?php
 
-namespace Arcane\Http\Middleware;
+namespace Larafusion\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Arcane\ArcaneManager;
+use Larafusion\LarafusionManager;
 
 /**
- * Arcane Precognition Middleware
+ * Larafusion Precognition Middleware
  *
  * When a request comes in with the `Precognition: true` header,
  * this middleware runs ONLY the validation (via the resource's rules)
  * and returns the result — without executing the controller action.
  *
- * This powers the hybrid validation in @arcane/form:
+ * This powers the hybrid validation in @larafusion/form:
  * - Simple rules are validated instantly on the client (no network)
  * - unique/exists rules fire a Precognition request here
  */
@@ -32,7 +32,7 @@ class HandlePrecognition
         }
 
         try {
-            $resourceClass = ArcaneManager::resolve($resourceSlug);
+            $resourceClass = LarafusionManager::resolve($resourceSlug);
         } catch (\Throwable) {
             return $next($request);
         }

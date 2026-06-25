@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Contracts;
+namespace Larafusion\Contracts;
 
 /**
  * Implement this interface on your User model to customise how the user's
@@ -8,18 +8,18 @@ namespace Arcane\Contracts;
  *
  * Usage:
  *
- *   class User extends Authenticatable implements HasArcaneName
+ *   class User extends Authenticatable implements HasLarafusionName
  *   {
- *       public function getArcaneName(): string
+ *       public function getLarafusionName(): string
  *       {
  *           return $this->display_name ?? $this->name;
  *       }
  *   }
  */
-interface HasArcaneName
+interface HasLarafusionName
 {
     /**
      * Return the display name for this user.
      */
-    public function getArcaneName(): string;
+    public function getLarafusionName(): string;
 }

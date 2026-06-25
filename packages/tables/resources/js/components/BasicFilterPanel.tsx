@@ -225,13 +225,13 @@ export function ActiveFilterIndicators({
             {chips.map(chip => (
                 <span
                     key={chip.key}
-                    className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-0.5 rounded-full text-xs font-medium bg-[var(--arcane-primary,#18181b)]/10 text-[var(--arcane-primary,#18181b)] border border-[var(--arcane-primary,#18181b)]/20"
+                    className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-0.5 rounded-full text-xs font-medium bg-[var(--larafusion-primary,#18181b)]/10 text-[var(--larafusion-primary,#18181b)] border border-[var(--larafusion-primary,#18181b)]/20"
                 >
                     <span>{chip.label}: <span className="font-semibold">{chip.value}</span></span>
                     <button
                         type="button"
                         onClick={() => removeOne(chip.key)}
-                        className="ml-0.5 w-3.5 h-3.5 rounded-full hover:bg-[var(--arcane-primary,#18181b)]/20 flex items-center justify-center transition-colors"
+                        className="ml-0.5 w-3.5 h-3.5 rounded-full hover:bg-[var(--larafusion-primary,#18181b)]/20 flex items-center justify-center transition-colors"
                         aria-label={`Remove ${chip.label} filter`}
                     >
                         <X className="w-2.5 h-2.5" />
@@ -258,7 +258,7 @@ function TextFilterInput({ name, label, value, onChange }: { name: string; label
             value={value}
             onChange={e => onChange(e.target.value)}
             placeholder={`Filter ${label}…`}
-            className="w-full px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 focus:border-[var(--arcane-primary,#18181b)] outline-none bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
+            className="w-full px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 focus:border-[var(--larafusion-primary,#18181b)] outline-none bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
         />
     );
 }
@@ -272,7 +272,7 @@ function BooleanButtons({ value, onChange, labels }: { value: string; onChange: 
                     className={cn(
                         'flex-1 min-w-0 px-2 py-1.5 text-xs font-medium rounded-lg border transition-colors truncate',
                         value === v
-                            ? 'bg-[var(--arcane-primary,#18181b)] text-white border-[var(--arcane-primary,#18181b)]'
+                            ? 'bg-[var(--larafusion-primary,#18181b)] text-white border-[var(--larafusion-primary,#18181b)]'
                             : 'border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800',
                     )}>
                     {lbl}
@@ -300,12 +300,12 @@ function ChecklistOptions({
         <div className="space-y-1.5">
             {searchable && (
                 <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
-                    className="w-full mb-2 px-2.5 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400" />
+                    className="w-full mb-2 px-2.5 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400" />
             )}
             {visible.map(opt => (
                 <label key={opt.value} className="flex items-center gap-2 cursor-pointer group">
                     <input type="checkbox" checked={value.includes(opt.value)} onChange={() => toggle(opt.value)}
-                        className="w-4 h-4 rounded border-zinc-300 text-[var(--arcane-primary,#18181b)] focus:ring-[var(--arcane-primary,#18181b)]" />
+                        className="w-4 h-4 rounded border-zinc-300 text-[var(--larafusion-primary,#18181b)] focus:ring-[var(--larafusion-primary,#18181b)]" />
                     <span className="text-sm text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-100">{opt.label}</span>
                 </label>
             ))}
@@ -323,12 +323,12 @@ function DateRangeInputs({ value, onChange }: {
             <div className="flex-1">
                 <label className="block text-xs text-zinc-400 dark:text-zinc-500 mb-1">From</label>
                 <input type="date" value={value.from ?? ''} onChange={e => onChange({ ...value, from: e.target.value || undefined })}
-                    className="w-full px-2 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                    className="w-full px-2 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
             </div>
             <div className="flex-1">
                 <label className="block text-xs text-zinc-400 dark:text-zinc-500 mb-1">To</label>
                 <input type="date" value={value.to ?? ''} onChange={e => onChange({ ...value, to: e.target.value || undefined })}
-                    className="w-full px-2 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                    className="w-full px-2 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
             </div>
         </div>
     );
@@ -341,9 +341,9 @@ function NumberRangeInputs({ value, onChange }: {
     return (
         <div className="flex gap-2">
             <input type="number" placeholder="Min" value={value.from ?? ''} onChange={e => onChange({ ...value, from: e.target.value || undefined })}
-                className="flex-1 px-2 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400" />
+                className="flex-1 px-2 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400" />
             <input type="number" placeholder="Max" value={value.to ?? ''} onChange={e => onChange({ ...value, to: e.target.value || undefined })}
-                className="flex-1 px-2 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400" />
+                className="flex-1 px-2 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400" />
         </div>
     );
 }
@@ -389,7 +389,7 @@ function StandaloneFilterControl({
             <select
                 value={(value as string) ?? ''}
                 onChange={e => (onChange as (v: string) => void)(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/30 focus:border-[var(--arcane-primary,#18181b)] bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                className="w-full px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 focus:border-[var(--larafusion-primary,#18181b)] bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
             >
                 <option value="">All</option>
                 {opts.map(o => (
@@ -501,7 +501,7 @@ function InlineFiltersPanel({
                         <Filter className="w-4 h-4" />
                         Filters
                         {activeCount > 0 && (
-                            <span className="px-1.5 py-0.5 text-xs font-bold rounded-full bg-[var(--arcane-primary,#18181b)] text-white">{activeCount}</span>
+                            <span className="px-1.5 py-0.5 text-xs font-bold rounded-full bg-[var(--larafusion-primary,#18181b)] text-white">{activeCount}</span>
                         )}
                     </span>
                     {collapsed ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronUp className="w-4 h-4 text-zinc-400" />}
@@ -523,7 +523,7 @@ function InlineFiltersPanel({
                             <RotateCcw className="w-3.5 h-3.5" /> Reset
                         </button>
                         <button type="button" onClick={apply}
-                            className="flex-1 px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white transition-colors">
+                            className="flex-1 px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors">
                             Apply Filters
                         </button>
                     </div>
@@ -596,7 +596,7 @@ function DrawerPanel({
                     <RotateCcw className="w-3.5 h-3.5" /> Reset
                 </button>
                 <button type="button" onClick={apply}
-                    className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white transition-colors">
+                    className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors">
                     Apply Filters
                 </button>
             </div>
@@ -607,12 +607,12 @@ function DrawerPanel({
         return (
             <div className={cn(
                 'fixed inset-0 z-40 flex items-center justify-center p-4',
-                exiting ? 'animate-arcane-overlay-out' : 'animate-arcane-overlay-in',
+                exiting ? 'animate-larafusion-overlay-out' : 'animate-larafusion-overlay-in',
             )}>
                 <div className="absolute inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm" onClick={onClose} />
                 <div className={cn(
                     'relative w-full max-w-lg bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl flex flex-col max-h-[85vh]',
-                    exiting ? 'animate-arcane-modal-out' : 'animate-arcane-modal-in',
+                    exiting ? 'animate-larafusion-modal-out' : 'animate-larafusion-modal-in',
                 )}>
                     {body}
                 </div>
@@ -624,12 +624,12 @@ function DrawerPanel({
     return (
         <div className={cn(
             'fixed inset-0 z-40 flex',
-            exiting ? 'animate-arcane-overlay-out' : 'animate-arcane-overlay-in',
+            exiting ? 'animate-larafusion-overlay-out' : 'animate-larafusion-overlay-in',
         )}>
             <div className="absolute inset-0 bg-black/20 dark:bg-black/40" onClick={onClose} />
             <div className={cn(
                 'relative ml-auto w-80 bg-white dark:bg-zinc-900 h-full shadow-2xl flex flex-col',
-                exiting ? 'animate-arcane-drawer-out' : 'animate-arcane-drawer-in',
+                exiting ? 'animate-larafusion-drawer-out' : 'animate-larafusion-drawer-in',
             )}>
                 {body}
             </div>
@@ -680,7 +680,7 @@ export function SideFilterSidebar({
                         <Filter className="w-4 h-4" />
                         Filters
                         {activeCount > 0 && (
-                            <span className="px-1.5 py-0.5 text-xs font-bold rounded-full bg-[var(--arcane-primary,#18181b)] text-white">
+                            <span className="px-1.5 py-0.5 text-xs font-bold rounded-full bg-[var(--larafusion-primary,#18181b)] text-white">
                                 {activeCount}
                             </span>
                         )}
@@ -695,7 +695,7 @@ export function SideFilterSidebar({
                     <Filter className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
                     <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Filters</span>
                     {activeCount > 0 && (
-                        <span className="ml-auto px-1.5 py-0.5 text-xs font-bold rounded-full bg-[var(--arcane-primary,#18181b)] text-white">
+                        <span className="ml-auto px-1.5 py-0.5 text-xs font-bold rounded-full bg-[var(--larafusion-primary,#18181b)] text-white">
                             {activeCount}
                         </span>
                     )}
@@ -721,7 +721,7 @@ export function SideFilterSidebar({
                             <RotateCcw className="w-3.5 h-3.5" /> Reset
                         </button>
                         <button type="button" onClick={apply}
-                            className="flex-1 px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white transition-colors">
+                            className="flex-1 px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors">
                             Apply
                         </button>
                     </div>
@@ -785,14 +785,14 @@ function DropdownFilterPanel({
                 className={cn(
                     'relative inline-flex items-center justify-center w-9 h-9 rounded-lg border transition-colors',
                     activeCount > 0 || open
-                        ? 'bg-[var(--arcane-primary,#18181b)] text-white border-[var(--arcane-primary,#18181b)]'
+                        ? 'bg-[var(--larafusion-primary,#18181b)] text-white border-[var(--larafusion-primary,#18181b)]'
                         : 'border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800',
                 )}
                 aria-label="Filters"
             >
                 <Filter className="w-4 h-4" />
                 {activeCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 min-w-[1.1rem] h-[1.1rem] flex items-center justify-center rounded-full text-[10px] font-bold bg-white text-[var(--arcane-primary,#18181b)] border border-[var(--arcane-primary,#18181b)] leading-none px-0.5">
+                    <span className="absolute -top-1.5 -right-1.5 min-w-[1.1rem] h-[1.1rem] flex items-center justify-center rounded-full text-[10px] font-bold bg-white text-[var(--larafusion-primary,#18181b)] border border-[var(--larafusion-primary,#18181b)] leading-none px-0.5">
                         {activeCount}
                     </span>
                 )}
@@ -803,7 +803,7 @@ function DropdownFilterPanel({
                 <div
                     className={cn(
                         'absolute top-full right-0 mt-1.5 z-50 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xl flex flex-col origin-top-right',
-                        dropExiting ? 'animate-arcane-drop-out' : 'animate-arcane-drop-in',
+                        dropExiting ? 'animate-larafusion-drop-out' : 'animate-larafusion-drop-in',
                     )}
                     style={{ width: formWidth ?? '20rem' }}
                 >
@@ -841,7 +841,7 @@ function DropdownFilterPanel({
                         <button
                             type="button"
                             onClick={apply}
-                            className="w-full py-2 rounded-lg text-sm font-medium bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white transition-colors"
+                            className="w-full py-2 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors"
                         >
                             Apply filters
                         </button>
@@ -867,7 +867,7 @@ export function FilterTriggerButton({
             className={cn(
                 'relative inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors',
                 activeCount > 0
-                    ? 'bg-[var(--arcane-primary,#18181b)] text-white border-[var(--arcane-primary,#18181b)]'
+                    ? 'bg-[var(--larafusion-primary,#18181b)] text-white border-[var(--larafusion-primary,#18181b)]'
                     : 'border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800',
             )}>
             <Filter className="w-4 h-4" />

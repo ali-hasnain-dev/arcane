@@ -1,8 +1,8 @@
 <?php
 
-namespace Arcane\Fields;
+namespace Larafusion\Fields;
 
-use Arcane\Schema\Serializer;
+use Larafusion\Schema\Serializer;
 
 class Repeater extends Field
 {

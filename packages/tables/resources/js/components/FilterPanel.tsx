@@ -16,7 +16,7 @@ function FilterInput({ filter, value, onChange }: {
     value: unknown;
     onChange: (v: unknown) => void;
 }) {
-    const base = 'w-full text-sm border border-zinc-300 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/20 focus:border-[var(--arcane-primary,#18181b)] bg-white';
+    const base = 'w-full text-sm border border-zinc-300 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/20 focus:border-[var(--larafusion-primary,#18181b)] bg-white';
 
     switch (filter.type) {
         case 'select':
@@ -136,7 +136,7 @@ function ActiveFilterChips({ filters, activeFilters, onSetFilter }: {
             {chips.map(chip => (
                 <span
                     key={chip.field}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--arcane-primary,#18181b)]/10 text-[var(--arcane-primary,#18181b)] border border-[var(--arcane-primary,#18181b)]/20"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--larafusion-primary,#18181b)]/10 text-[var(--larafusion-primary,#18181b)] border border-[var(--larafusion-primary,#18181b)]/20"
                 >
                     {chip.label}
                     <button
@@ -162,7 +162,7 @@ export default function FilterPanel({ filters, activeFilters, onSetFilter, onCle
                 {hasActive && (
                     <button
                         onClick={onClearAll}
-                        className="text-xs text-[var(--arcane-primary,#18181b)] hover:opacity-80 hover:underline font-medium"
+                        className="text-xs text-[var(--larafusion-primary,#18181b)] hover:opacity-80 hover:underline font-medium"
                     >
                         Clear all
                     </button>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -11,9 +11,9 @@ use Inertia\Inertia;
 
 class ProfileController extends Controller
 {
-    protected function panel(): \Arcane\Panel
+    protected function panel(): \Larafusion\Panel
     {
-        return app('arcane')->getPanel();
+        return app('larafusion')->getPanel();
     }
 
     protected function guard(): \Illuminate\Contracts\Auth\Guard
@@ -26,7 +26,7 @@ class ProfileController extends Controller
         $panel = $this->panel();
         abort_unless($panel->hasProfile(), 404);
 
-        return Inertia::render('Arcane/Profile', [
+        return Inertia::render('Larafusion/Profile', [
             'revealablePasswords' => $panel->hasRevealablePasswords(),
         ]);
     }

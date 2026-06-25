@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Pages\Actions;
+namespace Larafusion\Pages\Actions;
 
 /**
  * Page header action that links to the resource's edit page.

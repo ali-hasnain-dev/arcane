@@ -1,17 +1,17 @@
 <?php
 
-namespace Arcane\Contracts;
+namespace Larafusion\Contracts;
 
-use Arcane\Panel;
+use Larafusion\Panel;
 
 /**
  * Implement this interface on your User model to control who can access
- * the Arcane panel. If the model does NOT implement this interface, all
+ * the Larafusion panel. If the model does NOT implement this interface, all
  * authenticated users are allowed in.
  *
  * Usage:
  *
- *   class User extends Authenticatable implements ArcaneUser
+ *   class User extends Authenticatable implements LarafusionUser
  *   {
  *       public function canAccessPanel(Panel $panel): bool
  *       {
@@ -19,7 +19,7 @@ use Arcane\Panel;
  *       }
  *   }
  */
-interface ArcaneUser
+interface LarafusionUser
 {
     /**
      * Return true to allow this user into the panel.

@@ -28,7 +28,7 @@ export default function Pagination({ data, perPage, onPageChange, onPerPageChang
                     <select
                         value={perPage}
                         onChange={e => onPerPageChange(Number(e.target.value))}
-                        className="text-xs border border-zinc-300 rounded-md px-1.5 py-1 bg-white outline-none focus:ring-1 focus:ring-[var(--arcane-primary,#18181b)]/20 text-zinc-600"
+                        className="text-xs border border-zinc-300 rounded-md px-1.5 py-1 bg-white outline-none focus:ring-1 focus:ring-[var(--larafusion-primary,#18181b)]/20 text-zinc-600"
                     >
                         {PER_PAGE_OPTIONS.map(n => (
                             <option key={n} value={n}>{n}</option>
@@ -57,7 +57,7 @@ export default function Pagination({ data, perPage, onPageChange, onPerPageChang
                             className={cn(
                                 'w-8 h-8 rounded-lg text-sm transition-colors',
                                 item === current_page
-                                    ? 'bg-[var(--arcane-primary,#18181b)] text-white font-semibold'
+                                    ? 'bg-[var(--larafusion-primary,#18181b)] text-white font-semibold'
                                     : 'text-zinc-600 hover:bg-zinc-100'
                             )}
                         >

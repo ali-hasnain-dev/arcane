@@ -1,26 +1,26 @@
 {
-    "name": "arcane/panels",
-    "description": "Arcane panels — admin panel, resources, pages, navigation, plugins, and theme management.",
+    "name": "larafusion/panels",
+    "description": "Larafusion panels — admin panel, resources, pages, navigation, plugins, and theme management.",
     "type": "library",
     "keywords": ["laravel", "react", "admin", "inertia", "crud", "panel"],
     "license": "MIT",
     "authors": [
         {
-            "name": "Arcane",
-            "email": "hello@arcane.dev",
-            "homepage": "https://arcane.dev"
+            "name": "Larafusion",
+            "email": "hello@larafusion.dev",
+            "homepage": "https://larafusion.dev"
         }
     ],
     "require": {
         "php": "^8.2",
         "laravel/framework": "^11.0|^12.0|^13.0",
         "inertiajs/inertia-laravel": "^2.0",
-        "arcane/actions": "@dev",
-        "arcane/forms": "@dev",
-        "arcane/tables": "@dev",
-        "arcane/widgets": "@dev",
-        "arcane/schemas": "@dev",
-        "arcane/support": "@dev"
+        "larafusion/actions": "@dev",
+        "larafusion/forms": "@dev",
+        "larafusion/tables": "@dev",
+        "larafusion/widgets": "@dev",
+        "larafusion/schemas": "@dev",
+        "larafusion/support": "@dev"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0",
@@ -28,18 +28,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Arcane\\": "src/"
+            "Larafusion\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Arcane\\Tests\\": "tests/"
+            "Larafusion\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Arcane\\ArcaneServiceProvider"
+                "Larafusion\\LarafusionServiceProvider"
             ]
         }
     },

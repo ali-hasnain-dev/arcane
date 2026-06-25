@@ -1,8 +1,8 @@
 <?php
 
-namespace Arcane\Pages;
+namespace Larafusion\Pages;
 
-use Arcane\Pages\Actions\CreateAction;
+use Larafusion\Pages\Actions\CreateAction;
 
 abstract class ListPage
 {

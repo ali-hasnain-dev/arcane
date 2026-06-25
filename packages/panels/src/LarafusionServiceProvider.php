@@ -1,43 +1,43 @@
 <?php
 
-namespace Arcane;
+namespace Larafusion;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Arcane\Contracts\HasArcaneAvatar;
-use Arcane\Contracts\HasArcaneName;
-use Arcane\Console\InstallCommand;
-use Arcane\Console\MakePanelCommand;
-use Arcane\Console\MakeResourceCommand;
-use Arcane\Console\MakePluginCommand;
-use Arcane\Console\MakeWidgetCommand;
-use Arcane\Console\MakeUserCommand;
-use Arcane\Console\GenerateApiCommand;
-use Arcane\Console\IdeHelpersCommand;
-use Arcane\TwoFactor\TwoFactorManager;
+use Larafusion\Contracts\HasLarafusionAvatar;
+use Larafusion\Contracts\HasLarafusionName;
+use Larafusion\Console\InstallCommand;
+use Larafusion\Console\MakePanelCommand;
+use Larafusion\Console\MakeResourceCommand;
+use Larafusion\Console\MakePluginCommand;
+use Larafusion\Console\MakeWidgetCommand;
+use Larafusion\Console\MakeUserCommand;
+use Larafusion\Console\GenerateApiCommand;
+use Larafusion\Console\IdeHelpersCommand;
+use Larafusion\TwoFactor\TwoFactorManager;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 
-class ArcaneServiceProvider extends ServiceProvider
+class LarafusionServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/arcane.php', 'arcane');
-        $this->app->singleton('arcane',         fn () => new ArcaneManager());
-        $this->app->singleton('arcane.plugins', fn () => ArcaneManager::plugins());
-        $this->app->singleton('arcane.theme',   fn () => ArcaneManager::theme());
+        $this->mergeConfigFrom(__DIR__ . '/../config/larafusion.php', 'larafusion');
+        $this->app->singleton('larafusion',         fn () => new LarafusionManager());
+        $this->app->singleton('larafusion.plugins', fn () => LarafusionManager::plugins());
+        $this->app->singleton('larafusion.theme',   fn () => LarafusionManager::theme());
         $this->app->singleton(TwoFactorManager::class, fn () => new TwoFactorManager());
     }
 
     public function boot(): void
     {
-        $this->loadRoutesFrom(__DIR__ . '/../routes/arcane.php');
+        $this->loadRoutesFrom(__DIR__ . '/../routes/larafusion.php');
 
         // Named rate limiters — actual limits pulled from panel config at request-time
-        RateLimiter::for('arcane-login', function ($request) {
-            $panel    = ArcaneManager::getPanel();
+        RateLimiter::for('larafusion-login', function ($request) {
+            $panel    = LarafusionManager::getPanel();
             $max      = $panel?->getLoginMaxAttempts()  ?? 5;
             $decay    = $panel?->getLoginDecayMinutes() ?? 1;
             $enabled  = $panel?->hasLoginRateLimiting() ?? true;
@@ -46,13 +46,13 @@ class ArcaneServiceProvider extends ServiceProvider
                 : Limit::none();
         });
 
-        RateLimiter::for('arcane-2fa', function ($request) {
+        RateLimiter::for('larafusion-2fa', function ($request) {
             return Limit::perMinute(10)->by($request->ip());
         });
 
         // Register API routes if panel has API enabled
         $this->app->booted(function () {
-            $panel = ArcaneManager::getPanel();
+            $panel = LarafusionManager::getPanel();
             if ($panel && $panel->hasApi()) {
                 $this->registerApiRoutes($panel);
             }
@@ -61,29 +61,29 @@ class ArcaneServiceProvider extends ServiceProvider
         /*
          * Legacy config-based registration — only used when the application
          * has NOT registered a PanelProvider. The PanelProvider's register()
-         * runs before boot() and calls ArcaneManager::registerPanel(), which
+         * runs before boot() and calls LarafusionManager::registerPanel(), which
          * already handles resources/plugins. We skip the config fallback when
          * a panel is present to avoid double-registration.
          */
-        if (ArcaneManager::getPanel() === null) {
-            $resources = config('arcane.resources', []);
+        if (LarafusionManager::getPanel() === null) {
+            $resources = config('larafusion.resources', []);
             if (!empty($resources)) {
-                ArcaneManager::register($resources);
+                LarafusionManager::register($resources);
             }
 
-            $plugins = config('arcane.plugins', []);
+            $plugins = config('larafusion.plugins', []);
             if (!empty($plugins)) {
-                ArcaneManager::plugins()->register($plugins);
+                LarafusionManager::plugins()->register($plugins);
             }
         }
 
         Inertia::share([
-            'arcane' => fn () => [
-                'navigation' => ArcaneManager::getNavigation(),
-                'theme'      => ArcaneManager::theme()->toArray(),
-                'plugins'    => ArcaneManager::plugins()->toArray(),
-                'assets'     => ArcaneManager::plugins()->assets(),
-                'panel'      => ArcaneManager::getPanel()?->toArray() ?? [],
+            'larafusion' => fn () => [
+                'navigation' => LarafusionManager::getNavigation(),
+                'theme'      => LarafusionManager::theme()->toArray(),
+                'plugins'    => LarafusionManager::plugins()->toArray(),
+                'assets'     => LarafusionManager::plugins()->assets(),
+                'panel'      => LarafusionManager::getPanel()?->toArray() ?? [],
             ],
             'auth' => fn () => [
                 'user' => $this->resolveAuthUser(),
@@ -92,8 +92,8 @@ class ArcaneServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/arcane.php' => config_path('arcane.php'),
-            ], 'arcane-config');
+                __DIR__ . '/../config/larafusion.php' => config_path('larafusion.php'),
+            ], 'larafusion-config');
 
             $panelJs         = __DIR__ . '/../resources/js';
             $formsJs         = __DIR__ . '/../../forms/resources/js';
@@ -103,7 +103,7 @@ class ArcaneServiceProvider extends ServiceProvider
             $notificationsJs = __DIR__ . '/../../notifications/resources/js';
 
             $publish = [
-                "{$panelJs}/pages/Arcane" => resource_path('js/Pages/Arcane'),
+                "{$panelJs}/pages/Larafusion" => resource_path('js/Pages/Larafusion'),
                 "{$panelJs}/components"   => resource_path('js/components'),
             ];
 
@@ -126,11 +126,11 @@ class ArcaneServiceProvider extends ServiceProvider
                 $publish["{$notificationsJs}/components"] = resource_path('js/components/ui');
             }
 
-            $this->publishes($publish, 'arcane-components');
+            $this->publishes($publish, 'larafusion-components');
 
             $this->publishes([
-                __DIR__ . '/../stubs/example' => base_path('stubs/arcane'),
-            ], 'arcane-stubs');
+                __DIR__ . '/../stubs/example' => base_path('stubs/larafusion'),
+            ], 'larafusion-stubs');
 
             $this->commands([
                 InstallCommand::class,
@@ -147,18 +147,18 @@ class ArcaneServiceProvider extends ServiceProvider
 
     /**
      * Resolve the current user for Inertia's auth.user prop.
-     * Respects the panel's auth guard and the HasArcaneAvatar / HasArcaneName contracts.
+     * Respects the panel's auth guard and the HasLarafusionAvatar / HasLarafusionName contracts.
      */
     protected function resolveAuthUser(): ?array
     {
-        $panel = ArcaneManager::getPanel();
+        $panel = LarafusionManager::getPanel();
         $guard = $panel ? $panel->getAuthGuard() : 'web';
         $user  = Auth::guard($guard)->user();
 
         if (!$user) return null;
 
-        $name   = $user instanceof HasArcaneName  ? $user->getArcaneName()      : $user->name;
-        $avatar = $user instanceof HasArcaneAvatar ? $user->getArcaneAvatarUrl() : null;
+        $name   = $user instanceof HasLarafusionName  ? $user->getLarafusionName()      : $user->name;
+        $avatar = $user instanceof HasLarafusionAvatar ? $user->getLarafusionAvatarUrl() : null;
 
         return [
             'id'         => $user->getKey(),
@@ -173,15 +173,15 @@ class ArcaneServiceProvider extends ServiceProvider
     {
         Route::prefix($panel->getApiPrefix())
             ->middleware($panel->getApiMiddleware())
-            ->name('arcane.api.')
+            ->name('larafusion.api.')
             ->group(function () {
-                Route::get   ('/{resource}',        [\Arcane\Http\Controllers\Api\ResourceApiController::class, 'index'])  ->name('index');
-                Route::post  ('/{resource}',        [\Arcane\Http\Controllers\Api\ResourceApiController::class, 'store'])  ->name('store');
-                Route::get   ('/{resource}/schema', [\Arcane\Http\Controllers\Api\ResourceApiController::class, 'schema']) ->name('schema');
-                Route::get   ('/{resource}/{id}',   [\Arcane\Http\Controllers\Api\ResourceApiController::class, 'show'])   ->name('show');
-                Route::put   ('/{resource}/{id}',   [\Arcane\Http\Controllers\Api\ResourceApiController::class, 'update']) ->name('update');
-                Route::patch ('/{resource}/{id}',   [\Arcane\Http\Controllers\Api\ResourceApiController::class, 'update']) ->name('update.patch');
-                Route::delete('/{resource}/{id}',   [\Arcane\Http\Controllers\Api\ResourceApiController::class, 'destroy'])->name('destroy');
+                Route::get   ('/{resource}',        [\Larafusion\Http\Controllers\Api\ResourceApiController::class, 'index'])  ->name('index');
+                Route::post  ('/{resource}',        [\Larafusion\Http\Controllers\Api\ResourceApiController::class, 'store'])  ->name('store');
+                Route::get   ('/{resource}/schema', [\Larafusion\Http\Controllers\Api\ResourceApiController::class, 'schema']) ->name('schema');
+                Route::get   ('/{resource}/{id}',   [\Larafusion\Http\Controllers\Api\ResourceApiController::class, 'show'])   ->name('show');
+                Route::put   ('/{resource}/{id}',   [\Larafusion\Http\Controllers\Api\ResourceApiController::class, 'update']) ->name('update');
+                Route::patch ('/{resource}/{id}',   [\Larafusion\Http\Controllers\Api\ResourceApiController::class, 'update']) ->name('update.patch');
+                Route::delete('/{resource}/{id}',   [\Larafusion\Http\Controllers\Api\ResourceApiController::class, 'destroy'])->name('destroy');
             });
     }
 }

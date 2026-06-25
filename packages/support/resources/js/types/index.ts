@@ -30,7 +30,7 @@ export interface GridSchemaType {
     fields: FormSchemaItem[];
 }
 
-export type FormSchemaItem = ArcaneField | SectionSchemaType | TabsSchemaType | GridSchemaType;
+export type FormSchemaItem = LarafusionField | SectionSchemaType | TabsSchemaType | GridSchemaType;
 
 // ─── Field Types ──────────────────────────────────────────────────────────────
 
@@ -263,7 +263,7 @@ export interface BuilderBlockSchema {
     key:    string;
     label:  string;
     icon:   string | null;
-    fields: ArcaneField[];
+    fields: LarafusionField[];
 }
 
 export interface BuilderField extends BaseField {
@@ -282,7 +282,7 @@ export interface BuilderField extends BaseField {
 
 export interface MorphToField     extends BaseField { type: 'morph_to';     types: Record<string, string>; labelColumn: string; searchColumn: string; minChars: number; }
 
-export type ArcaneField =
+export type LarafusionField =
     | TextField | EmailField | PasswordField | TextareaField
     | SelectField | NumberField | CheckboxField | ToggleField | DateField
     | HiddenField | RadioField | CheckboxListField | SliderField
@@ -677,9 +677,9 @@ export interface PluginInfo {
 
 // ─── Shared Inertia Props ─────────────────────────────────────────────────────
 
-export interface ArcaneSharedProps {
+export interface LarafusionSharedProps {
     [key: string]: unknown;
-    arcane: {
+    larafusion: {
         navigation: NavigationNode[];
         theme: ThemeConfig;
         plugins: PluginInfo[];
@@ -691,7 +691,7 @@ export interface ArcaneSharedProps {
             id: number;
             name: string;
             email: string;
-            /** Populated when the User model implements HasArcaneAvatar */
+            /** Populated when the User model implements HasLarafusionAvatar */
             avatar: string | null;
         } | null;
     };
@@ -716,7 +716,7 @@ export interface PageHeaderAction {
 
 // ─── Page Props ───────────────────────────────────────────────────────────────
 
-export interface ArcanePageProps {
+export interface LarafusionPageProps {
     [key: string]: unknown;
     resource: ResourceMeta;
     schema: FormSchemaItem[];
@@ -727,7 +727,7 @@ export interface ArcanePageProps {
     record: Record<string, unknown> | null;
 }
 
-export interface IndexPageProps extends ArcanePageProps {
+export interface IndexPageProps extends LarafusionPageProps {
     page: 'index';
     tableConfig?: TableConfig;
     widgets: WidgetData[];

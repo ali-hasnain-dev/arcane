@@ -7,22 +7,22 @@
 Override `table()` on your resource (instead of `columns()`) for the full-featured Filament-style API:
 
 ```php
-// app/Arcane/Resources/Users/Tables/UsersTable.php
-namespace App\Arcane\Resources\Users\Tables;
+// app/Larafusion/Resources/Users/Tables/UsersTable.php
+namespace App\Larafusion\Resources\Users\Tables;
 
-use Arcane\Tables\Table;
-use Arcane\Columns\TextColumn;
-use Arcane\Columns\BadgeColumn;
-use Arcane\Columns\BooleanColumn;
-use Arcane\Columns\DateColumn;
-use Arcane\Columns\ImageColumn;
-use Arcane\Tables\Filters\SelectFilter;
-use Arcane\Tables\Filters\Filter;
-use Arcane\Tables\Actions\Action;
-use Arcane\Tables\Actions\EditAction;
-use Arcane\Tables\Actions\DeleteAction;
-use Arcane\Tables\Actions\BulkActionGroup;
-use Arcane\Tables\Actions\DeleteBulkAction;
+use Larafusion\Tables\Table;
+use Larafusion\Columns\TextColumn;
+use Larafusion\Columns\BadgeColumn;
+use Larafusion\Columns\BooleanColumn;
+use Larafusion\Columns\DateColumn;
+use Larafusion\Columns\ImageColumn;
+use Larafusion\Tables\Filters\SelectFilter;
+use Larafusion\Tables\Filters\Filter;
+use Larafusion\Tables\Actions\Action;
+use Larafusion\Tables\Actions\EditAction;
+use Larafusion\Tables\Actions\DeleteAction;
+use Larafusion\Tables\Actions\BulkActionGroup;
+use Larafusion\Tables\Actions\DeleteBulkAction;
 
 class UsersTable
 {
@@ -139,9 +139,9 @@ public static function table(Table $table): Table
 Control which action buttons appear on each table row. When `recordActions()` is defined, **only** those actions are shown. Omitting `recordActions()` falls back to showing all three built-in actions (View, Edit, Delete) based on the resource's `can.*` permissions.
 
 ```php
-use Arcane\Tables\Actions\EditAction;
-use Arcane\Tables\Actions\DeleteAction;
-use Arcane\Tables\Actions\ViewAction;
+use Larafusion\Tables\Actions\EditAction;
+use Larafusion\Tables\Actions\DeleteAction;
+use Larafusion\Tables\Actions\ViewAction;
 
 ->recordActions([
     ViewAction::make(),      // "View" link → /admin/{resource}/{id}
@@ -180,7 +180,7 @@ The checkbox column and bulk actions toolbar are **hidden automatically** when `
 `Action::make()` is the recommended way to add any server-side or URL-based custom action directly inside `->recordActions()`. It supports the full Filament action API — confirmation dialogs, display modes, visibility conditions, notifications, tooltips, and badges.
 
 ```php
-use Arcane\Tables\Actions\Action;
+use Larafusion\Tables\Actions\Action;
 
 ->recordActions([
     EditAction::make(),
@@ -247,10 +247,10 @@ use Arcane\Tables\Actions\Action;
 Bulk actions appear in a dropdown when the user selects one or more rows. All bulk action types **must** be nested inside `BulkActionGroup::make([...])`:
 
 ```php
-use Arcane\Tables\Actions\BulkActionGroup;
-use Arcane\Tables\Actions\DeleteBulkAction;
-use Arcane\Tables\Actions\ForceDeleteBulkAction;
-use Arcane\Tables\Actions\RestoreBulkAction;
+use Larafusion\Tables\Actions\BulkActionGroup;
+use Larafusion\Tables\Actions\DeleteBulkAction;
+use Larafusion\Tables\Actions\ForceDeleteBulkAction;
+use Larafusion\Tables\Actions\RestoreBulkAction;
 
 ->toolbarActions([
     BulkActionGroup::make([
@@ -281,12 +281,12 @@ RestoreBulkAction::make()->label('Recover selected')
 
 ### Column Classes
 
-All column classes live under `Arcane\Columns\*`.
+All column classes live under `Larafusion\Columns\*`.
 
 #### TextColumn
 
 ```php
-use Arcane\Columns\TextColumn;
+use Larafusion\Columns\TextColumn;
 
 TextColumn::make('title')
     ->sortable()
@@ -308,7 +308,7 @@ TextColumn::make('title')
 Renders values as coloured pill badges. Map values to named colors:
 
 ```php
-use Arcane\Columns\BadgeColumn;
+use Larafusion\Columns\BadgeColumn;
 
 BadgeColumn::make('status')
     ->colors([
@@ -330,7 +330,7 @@ Available color names: `primary` · `success` · `warning` · `danger` · `info`
 #### BooleanColumn
 
 ```php
-use Arcane\Columns\BooleanColumn;
+use Larafusion\Columns\BooleanColumn;
 
 BooleanColumn::make('is_active')
     ->label('Active')
@@ -346,7 +346,7 @@ BooleanColumn::make('is_active')
 #### DateColumn
 
 ```php
-use Arcane\Columns\DateColumn;
+use Larafusion\Columns\DateColumn;
 
 DateColumn::make('created_at')
     ->label('Joined')
@@ -360,7 +360,7 @@ DateColumn::make('created_at')
 #### ImageColumn
 
 ```php
-use Arcane\Columns\ImageColumn;
+use Larafusion\Columns\ImageColumn;
 
 ImageColumn::make('avatar')
     ->circular()          // rounded-full vs rounded-lg
@@ -372,7 +372,7 @@ ImageColumn::make('avatar')
 #### IconColumn
 
 ```php
-use Arcane\Columns\IconColumn;
+use Larafusion\Columns\IconColumn;
 
 // Boolean mode (check / x icons):
 IconColumn::make('is_featured')->boolean()
@@ -422,7 +422,7 @@ TextColumn::make('name')
 The original `Column::*` static factories are fully supported and can be mixed with the new table builder:
 
 ```php
-use Arcane\Columns\Column;
+use Larafusion\Columns\Column;
 
 public static function columns(): array
 {
@@ -453,11 +453,11 @@ protected static array $sortable = ['name', 'created_at', 'price'];
 Define filters independently of columns using the Filter classes. All standalone filters are shown together in the filter panel alongside any column-level filters. The panel position is controlled by `->filtersLayout()` — see [Filter Layout](#filter-layout) for all options.
 
 ```php
-use Arcane\Tables\Filters\Filter;
-use Arcane\Tables\Filters\SelectFilter;
-use Arcane\Tables\Filters\DateRangeFilter;
-use Arcane\Tables\Filters\TernaryFilter;
-use Arcane\Tables\Filters\TrashedFilter;
+use Larafusion\Tables\Filters\Filter;
+use Larafusion\Tables\Filters\SelectFilter;
+use Larafusion\Tables\Filters\DateRangeFilter;
+use Larafusion\Tables\Filters\TernaryFilter;
+use Larafusion\Tables\Filters\TrashedFilter;
 
 ->filters([
     // Boolean toggle — fires a custom query closure when active
@@ -608,7 +608,7 @@ DateRangeFilter::make('created_at')
 Control where and how the filter panel appears using `->filtersLayout()` on the `Table` builder. The filter trigger button uses the **funnel icon** (matching Filament's `heroicons:funnel` design).
 
 ```php
-use Arcane\Tables\Table;
+use Larafusion\Tables\Table;
 
 ->filtersLayout('dropdown')           // Filament-style popover below the filter button
 ->filtersLayout('drawer')             // slide-in panel from the right (default)

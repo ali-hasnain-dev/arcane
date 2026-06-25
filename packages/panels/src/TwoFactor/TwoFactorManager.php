@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\TwoFactor;
+namespace Larafusion\TwoFactor;
 
 /**
  * RFC 6238 TOTP implementation. No external dependencies required.

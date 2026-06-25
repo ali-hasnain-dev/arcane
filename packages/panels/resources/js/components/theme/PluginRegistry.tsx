@@ -1,6 +1,6 @@
 import React, { createContext, useContext, lazy, Suspense } from 'react';
 import { usePage } from '@inertiajs/react';
-import { ArcaneSharedProps } from '../../types';
+import { LarafusionSharedProps } from '../../types';
 
 // ─── Plugin component registry ────────────────────────────────────────────────
 
@@ -13,7 +13,7 @@ const registry: Map<string, React.ComponentType<Record<string, unknown>>> = new 
  * Called by plugin JS bundles on load.
  *
  * Usage in plugin:
- *   import { registerComponent } from '@arcane/core';
+ *   import { registerComponent } from '@larafusion/core';
  *   registerComponent('analytics.DashboardWidget', () => import('./DashboardWidget'));
  */
 export function registerComponent(name: string, factory: ComponentFactory): void {
@@ -67,8 +67,8 @@ export function usePlugins(): PluginInfo[] {
 }
 
 export function PluginProvider({ children }: { children: React.ReactNode }) {
-    const { arcane } = usePage<ArcaneSharedProps>().props;
-    const plugins = (arcane?.plugins as PluginInfo[]) ?? [];
+    const { larafusion } = usePage<LarafusionSharedProps>().props;
+    const plugins = (larafusion?.plugins as PluginInfo[]) ?? [];
 
     return (
         <PluginContext.Provider value={plugins}>

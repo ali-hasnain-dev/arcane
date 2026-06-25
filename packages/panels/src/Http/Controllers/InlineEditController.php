@@ -1,16 +1,16 @@
 <?php
 
-namespace Arcane\Http\Controllers;
+namespace Larafusion\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Arcane\ArcaneManager;
+use Larafusion\LarafusionManager;
 
 class InlineEditController extends Controller
 {
     public function update(Request $request, string $resource, int|string $id)
     {
-        $resourceClass = ArcaneManager::resolve($resource);
+        $resourceClass = LarafusionManager::resolve($resource);
         abort_unless($resourceClass::canEdit(), 403);
 
         $field = $request->input('field');

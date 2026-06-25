@@ -1,14 +1,14 @@
 <?php
 
-namespace Arcane\Plugins;
+namespace Larafusion\Plugins;
 
-use Arcane\Plugins\Contracts\HasNavigation;
-use Arcane\Plugins\Contracts\HasCustomFields;
-use Arcane\Plugins\Contracts\HasHooks;
+use Larafusion\Plugins\Contracts\HasNavigation;
+use Larafusion\Plugins\Contracts\HasCustomFields;
+use Larafusion\Plugins\Contracts\HasHooks;
 
-abstract class ArcanePlugin
+abstract class LarafusionPlugin
 {
-    /** Unique identifier for this plugin e.g. "arcane-analytics" */
+    /** Unique identifier for this plugin e.g. "larafusion-analytics" */
     abstract public static function id(): string;
 
     /** Human-readable name */
@@ -39,12 +39,12 @@ abstract class ArcanePlugin
     public function hooks(): array { return []; }
 
     /**
-     * Middleware to add to Arcane routes.
+     * Middleware to add to Larafusion routes.
      */
     public function middleware(): array { return []; }
 
     /**
-     * Additional config defaults merged into arcane.php.
+     * Additional config defaults merged into larafusion.php.
      */
     public function config(): array { return []; }
 
@@ -55,7 +55,7 @@ abstract class ArcanePlugin
 
     /**
      * React components this plugin exposes.
-     * Return a map of component name → import path (used by Arcane's registry).
+     * Return a map of component name → import path (used by Larafusion's registry).
      */
     public function components(): array { return []; }
 }

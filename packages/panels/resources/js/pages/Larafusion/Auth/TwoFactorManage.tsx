@@ -50,7 +50,7 @@ export default function TwoFactorManage({ enabled, setupUrl }: Props) {
                 </div>
 
                 {!enabled && (
-                    <Link href={setupUrl} className="block w-full text-center px-4 py-2.5 rounded-lg text-sm font-medium bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white transition-opacity">
+                    <Link href={setupUrl} className="block w-full text-center px-4 py-2.5 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-opacity">
                         Enable two-factor authentication
                     </Link>
                 )}
@@ -77,10 +77,10 @@ export default function TwoFactorManage({ enabled, setupUrl }: Props) {
                                     onChange={e => regenForm.setData('password', e.target.value)}
                                     placeholder="Current password"
                                     autoComplete="current-password"
-                                    className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-[var(--arcane-primary,#18181b)]/20"
+                                    className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/20"
                                 />
                                 {regenForm.errors.password && <p className="text-xs text-red-600">{regenForm.errors.password}</p>}
-                                <button type="submit" disabled={regenForm.processing} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--arcane-primary,#18181b)] hover:opacity-90 text-white disabled:opacity-60">
+                                <button type="submit" disabled={regenForm.processing} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white disabled:opacity-60">
                                     {regenForm.processing && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                                     Regenerate
                                 </button>
@@ -120,7 +120,7 @@ export default function TwoFactorManage({ enabled, setupUrl }: Props) {
                 )}
 
                 <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
-                    <Link href={adminPath} className="text-[var(--arcane-primary,#18181b)] dark:text-zinc-300 hover:underline">
+                    <Link href={adminPath} className="text-[var(--larafusion-primary,#18181b)] dark:text-zinc-300 hover:underline">
                         Back to dashboard
                     </Link>
                 </p>

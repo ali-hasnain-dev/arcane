@@ -1,6 +1,6 @@
 <?php
 
-namespace Arcane\Widgets;
+namespace Larafusion\Widgets;
 
 class TableWidget extends Widget
 {
