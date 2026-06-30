@@ -34,10 +34,6 @@
         {
             "type": "path",
             "url": "./packages/panels"
-        },
-        {
-            "type": "path",
-            "url": "./packages/larafusion"
         }
     ],
     "require": {

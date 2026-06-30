@@ -10,8 +10,7 @@
         "packages/infolists",
         "packages/widgets",
         "packages/notifications",
-        "packages/panels",
-        "packages/charts"
+        "packages/panels"
     ],
     "scripts": {
         "dev": "npm run dev   --workspace=packages/panels",
@@ -22,7 +21,6 @@
         "build:widgets": "npm run build --workspace=packages/widgets",
         "build:notifications": "npm run build --workspace=packages/notifications",
         "build:panels": "npm run build --workspace=packages/panels",
-        "build:charts": "npm run build --workspace=packages/charts",
         "typecheck": "npm run typecheck --workspaces --if-present"
     },
     "devDependencies": {
