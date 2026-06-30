@@ -10,7 +10,9 @@ class TableWidget extends Widget
 
     public function __construct()
     {
-        $this->columnSpan = 2;
+        // Default: half-width (1 of 2 columns in the widget grid).
+        // Call ->fullWidth() or ->columnSpan('full') to span the entire row.
+        $this->columnSpan = 1;
     }
 
     public function columns(array $columns): static        { $this->columns = $columns; return $this; }

@@ -306,12 +306,38 @@ export interface StatData {
     backgroundColor?: string | null;
 }
 
+// ── Widget meta (no DB data — comes from DashboardController immediately) ──────
+
+export interface WidgetMeta {
+    widgetClass:     string;
+    type:            'stats_overview' | 'chart' | 'table';
+    heading:         string | null;
+    description:     string | null;
+    columnSpan:      number | string;
+    sort:            number;
+    /** null = polling disabled; e.g. '30s', '5m', '1h' = poll at that interval */
+    pollingInterval: string | null;
+    isLazy:          boolean;
+}
+
+// ── Widget data payloads (returned by GET /_widgets/data) ─────────────────────
+
+export interface StatData {
+    label:                   string;
+    value:                   string | number;
+    description?:            string | null;
+    descriptionIcon?:        string | null;
+    descriptionIconPosition?: 'before' | 'after';
+    descriptionColor?:       string | null;
+    icon?:                   string | null;
+    color?:                  string;
+    trend?:                  number | null;
+    chart?:                  number[];
+    extraAttributes?:        Record<string, string>;
+    backgroundColor?:        string | null;
+}
+
 export interface StatsOverviewWidgetData {
-    type: 'stats_overview';
-    heading: string | null;
-    description: string | null;
-    columnSpan: number;
-    sort?: number;
     stats: StatData[];
 }
 
@@ -322,27 +348,28 @@ export interface ChartDataset {
 }
 
 export interface ChartWidgetData {
-    type: 'chart';
-    heading: string | null;
-    description: string | null;
-    columnSpan: number;
-    sort?: number;
-    chartType: 'line' | 'bar' | 'doughnut';
-    labels: string[];
-    datasets: ChartDataset[];
+    chartType:          'line' | 'bar' | 'doughnut';
+    labels:             string[];
+    datasets:           ChartDataset[];
+    color?:             string;
+    filterOptions?:     Record<string, string>;
+    activeFilter?:      string | null;
+    hasDeferredFilters?: boolean;
+    maxHeight?:         string | null;
+    options?:           Record<string, unknown>;
+    isCollapsible?:     boolean;
+    isCollapsed?:       boolean;
 }
 
 export interface TableWidgetData {
-    type: 'table';
-    heading: string | null;
-    description: string | null;
-    columnSpan: number;
-    sort?: number;
     columns: string[];
-    rows: string[][];
+    rows:    string[][];
 }
 
-export type WidgetData = StatsOverviewWidgetData | ChartWidgetData | TableWidgetData;
+export type WidgetPayload = StatsOverviewWidgetData | ChartWidgetData | TableWidgetData;
+
+/** Full widget state = meta + loaded data payload */
+export type WidgetData = WidgetMeta & Partial<StatsOverviewWidgetData & ChartWidgetData & TableWidgetData>;
 
 // ─── Column Types ─────────────────────────────────────────────────────────────
 
@@ -730,7 +757,7 @@ export interface LarafusionPageProps {
 export interface IndexPageProps extends LarafusionPageProps {
     page: 'index';
     tableConfig?: TableConfig;
-    widgets: WidgetData[];
+    widgetsMeta: WidgetMeta[];
     headerActions: PageHeaderAction[];
     records: {
         data: Record<string, unknown>[];

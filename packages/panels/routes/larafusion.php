@@ -15,6 +15,7 @@ use Larafusion\Http\Controllers\PageController;
 use Larafusion\Http\Controllers\AuthController;
 use Larafusion\Http\Controllers\ProfileController;
 use Larafusion\Http\Controllers\TwoFactorController;
+use Larafusion\Http\Controllers\WidgetController;
 use Larafusion\Http\Middleware\HandlePrecognition;
 use Larafusion\Http\Middleware\EnsureTwoFactorAuthenticated;
 
@@ -58,6 +59,9 @@ Route::prefix(config('larafusion.prefix', 'admin'))
 
         // Dashboard
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Widget data — per-widget JSON endpoint for independent loading and polling
+        Route::get('/_widgets/data', [WidgetController::class, 'data'])->name('widgets.data');
 
         // Profile (enabled via ->profile() on the panel)
         Route::get   ('/profile',          [ProfileController::class, 'show'])           ->name('profile');

@@ -4,9 +4,7 @@ namespace Larafusion\Widgets;
 
 class StatsOverviewWidget extends Widget
 {
-    protected array   $stats           = [];
-    protected ?string $pollingInterval = '5s'; // null = disabled
-    protected bool    $isLazy          = false;
+    protected array $stats  = [];
 
     public function __construct()
     {

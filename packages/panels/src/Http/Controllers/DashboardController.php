@@ -31,9 +31,12 @@ class DashboardController extends Controller
                 ];
             }),
 
-            'widgets' => Inertia::defer(function () {
-                return array_map(fn($w) => $w->toArray(), LarafusionManager::getWidgets());
-            }),
+            // Widget metadata only (no DB queries) — each widget fetches its own
+            // data independently via GET /_widgets/data?class=... and polls at its own interval.
+            'widgetsMeta' => array_map(
+                fn($w) => (is_string($w) ? $w::make() : $w)->toMeta(),
+                LarafusionManager::getWidgets()
+            ),
         ]);
     }
 }

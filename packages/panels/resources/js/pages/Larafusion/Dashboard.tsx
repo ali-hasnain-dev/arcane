@@ -3,12 +3,12 @@ import { usePage, Link, Deferred } from '@inertiajs/react';
 import { usePrefetchProps } from '../../hooks/usePrefetchProps';
 import AdminLayout from '../../components/layout/AdminLayout';
 import WidgetGrid from '../../components/widgets/WidgetGrid';
-import { LarafusionSharedProps, NavigationItem, WidgetData } from '../../types';
+import { LarafusionSharedProps, NavigationItem, WidgetMeta } from '../../types';
 import { ArrowRight, Users, Activity } from 'lucide-react';
 
 type DashboardPageProps = LarafusionSharedProps & {
     stats?: { total: number; counts: Record<string, number> };
-    widgets?: WidgetData[];
+    widgetsMeta?: WidgetMeta[];
 };
 
 // ─── Skeleton shown while deferred stats are loading ─────────────────────────
@@ -23,14 +23,6 @@ function StatsSkeleton() {
             ))}
         </div>
     );
-}
-
-// ─── Deferred child components ────────────────────────────────────────────────
-// Must be separate components — hooks cannot be called inside render callbacks.
-
-function DeferredWidgets() {
-    const { widgets } = usePage<DashboardPageProps>().props;
-    return <WidgetGrid widgets={widgets ?? []} />;
 }
 
 function DeferredStats() {
@@ -60,15 +52,18 @@ function DeferredStats() {
 }
 
 export default function Dashboard() {
-    const { larafusion } = usePage<LarafusionSharedProps>().props;
+    const { larafusion, widgetsMeta } = usePage<DashboardPageProps>().props;
     const prefetchProps = usePrefetchProps();
+
+    // Build the widget data URL from the panel path (e.g. /admin/_widgets/data)
+    const widgetDataUrl = `/${larafusion.panel.path ?? 'admin'}/_widgets/data`;
 
     return (
         <AdminLayout pageTitle="Dashboard">
-            {/* Widgets — deferred; fallback={<></>} renders nothing while loading */}
-            <Deferred data="widgets" fallback={<></>}>
-                <DeferredWidgets />
-            </Deferred>
+            {/* Widgets — each fetches and polls independently; shows skeleton while loading */}
+            {widgetsMeta && widgetsMeta.length > 0 && (
+                <WidgetGrid widgets={widgetsMeta} widgetDataUrl={widgetDataUrl} />
+            )}
 
             {/* Stats — show skeleton while loading, then real counts from the server */}
             <Deferred data="stats" fallback={<StatsSkeleton />}>
