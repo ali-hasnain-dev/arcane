@@ -12,6 +12,13 @@
             "Larafusion\\Actions\\": "src/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Larafusion\\Actions\\ActionsServiceProvider"
+            ]
+        }
+    },
     "minimum-stability": "stable",
     "prefer-stable": true
 }

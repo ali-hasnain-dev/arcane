@@ -12,6 +12,13 @@
             "Larafusion\\": "src/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Larafusion\\Widgets\\WidgetsServiceProvider"
+            ]
+        }
+    },
     "minimum-stability": "stable",
     "prefer-stable": true
 }

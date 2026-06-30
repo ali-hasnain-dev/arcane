@@ -12,6 +12,13 @@
             "Larafusion\\": "src/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Larafusion\\Tables\\TablesServiceProvider"
+            ]
+        }
+    },
     "minimum-stability": "stable",
     "prefer-stable": true
 }

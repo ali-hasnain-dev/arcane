@@ -12,6 +12,13 @@
             "Larafusion\\": "src/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Larafusion\\Schema\\SchemasServiceProvider"
+            ]
+        }
+    },
     "minimum-stability": "stable",
     "prefer-stable": true
 }

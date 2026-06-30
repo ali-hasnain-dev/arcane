@@ -12,6 +12,13 @@
             "Larafusion\\": "src/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Larafusion\\Forms\\FormsServiceProvider"
+            ]
+        }
+    },
     "minimum-stability": "stable",
     "prefer-stable": true
 }
