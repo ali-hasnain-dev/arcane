@@ -4,7 +4,7 @@ import { usePrefetchProps } from '../../hooks/usePrefetchProps';
 import AdminLayout from '../../components/layout/AdminLayout';
 import WidgetGrid from '../../components/widgets/WidgetGrid';
 import { LarafusionSharedProps, NavigationItem, WidgetMeta } from '../../types';
-import { ArrowRight, Github } from 'lucide-react';
+import { ArrowRight, ExternalLink } from 'lucide-react';
 
 type DashboardPageProps = LarafusionSharedProps & {
     widgetsMeta?: WidgetMeta[];
@@ -49,7 +49,7 @@ export default function Dashboard() {
                         <p className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Built with Larafusion</p>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">View the project on GitHub</p>
                     </div>
-                    <Github className="w-5 h-5 text-zinc-400 dark:text-zinc-500 group-hover:text-[var(--larafusion-primary,#18181b)] dark:group-hover:text-zinc-300 transition-colors" />
+                    <ExternalLink className="w-5 h-5 text-zinc-400 dark:text-zinc-500 group-hover:text-[var(--larafusion-primary,#18181b)] dark:group-hover:text-zinc-300 transition-colors" />
                 </a>
             </div>
 

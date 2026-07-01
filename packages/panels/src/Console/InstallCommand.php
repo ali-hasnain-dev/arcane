@@ -201,7 +201,7 @@ TS;
 
         $stub = <<<'JS'
 import { defineConfig } from 'vite';
-import { existsSync } from 'fs';
+import { existsSync, statSync } from 'fs';
 import path from 'path';
 import laravel from 'laravel-vite-plugin';
 import react from '@vitejs/plugin-react';
@@ -231,7 +231,9 @@ const crossPackageMap = [
 ];
 
 function resolveFile(base) {
-    if (existsSync(base)) return base;
+    // existsSync() is true for directories too — only accept it as-is when it's
+    // actually a file, otherwise fall through to the index.* lookup below.
+    if (existsSync(base) && statSync(base).isFile()) return base;
     for (const ext of ['.tsx', '.ts', '.js', '/index.tsx', '/index.ts', '/index.js']) {
         if (existsSync(base + ext)) return base + ext;
     }
@@ -444,14 +446,34 @@ TSX;
             $changed = true;
         }
 
-        // Add vendor larafusion @source so Tailwind scans package component files
+        // Add vendor larafusion @source so Tailwind scans package component files.
+        // This is critical — without it Tailwind never sees any className used inside
+        // vendor/larafusion/*/resources/js, so the whole panel renders unstyled.
         if (!str_contains($content, 'vendor/larafusion')) {
-            $content = preg_replace(
-                "/(@source\s+'[^']*\*\*\/\*\.js';)/",
-                "$1\n@source '../../vendor/larafusion/*/resources/js/**/*.{ts,tsx}';",
-                $content,
-                1
-            );
+            $sourceLine = "@source '../../vendor/larafusion/*/resources/js/**/*.{ts,tsx}';";
+
+            if (preg_match("/@source\s+'[^']*\*\*\/\*\.js';/", $content)) {
+                // Anchor after an existing @source '...**/*.js'; line, if present.
+                $content = preg_replace(
+                    "/(@source\s+'[^']*\*\*\/\*\.js';)/",
+                    "$1\n{$sourceLine}",
+                    $content,
+                    1
+                );
+            } elseif (preg_match("/@import\s+'tailwindcss';/", $content)) {
+                // Fall back to anchoring right after the Tailwind import — this line
+                // is required for Tailwind v4 to work at all, so it's always present.
+                $content = preg_replace(
+                    "/(@import\s+'tailwindcss';)/",
+                    "$1\n{$sourceLine}",
+                    $content,
+                    1
+                );
+            } else {
+                // No recognisable anchor at all — append rather than silently no-op.
+                $content .= "\n{$sourceLine}\n";
+            }
+
             $changed = true;
         }
 
