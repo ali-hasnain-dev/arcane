@@ -1,8 +1,8 @@
 {
-    "name": "larafusion/larafusion",
-    "description": "Larafusion — React-powered admin panel for Laravel. Install this single package to get everything.",
+    "name": "larafusion/panels",
+    "description": "Panels — Admin panel for Laravel",
     "type": "library",
-    "keywords": ["laravel", "react", "admin", "inertia", "crud", "panel"],
+    "keywords": ["laravel", "admin", "inertia", "crud", "panel"],
     "license": "MIT",
     "authors": [
         {
