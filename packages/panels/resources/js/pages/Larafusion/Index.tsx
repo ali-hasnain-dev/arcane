@@ -19,15 +19,45 @@ function DeferredWidgets() {
     return <WidgetGrid widgets={widgets ?? []} />;
 }
 
-/** Plain loading placeholder shown while ->deferLoading()'s initial fetch is in flight. */
-function TableSkeleton() {
+/**
+ * Loading placeholder shown while ->deferLoading()'s initial fetch is in
+ * flight. Sized from data we already have synchronously — real column count
+ * and the resource's configured per-page count — so the page doesn't jump
+ * once the real table swaps in.
+ */
+function TableSkeleton({ columns, perPage }: { columns: Column[]; perPage?: number }) {
+    const rowCount = Math.min(Math.max(perPage ?? 10, 1), 25);
+    const colCount = Math.max(columns.length, 1);
+
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 animate-pulse">
-            <div className="space-y-3">
-                {Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="h-8 bg-zinc-100 dark:bg-zinc-800 rounded" />
-                ))}
-            </div>
+        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+            <table className="w-full">
+                <thead>
+                    <tr className="border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50/80 dark:bg-zinc-800/50">
+                        {/* Column labels are already known synchronously (columns isn't
+                            deferred) — show the real text instead of a skeleton bar. */}
+                        {Array.from({ length: colCount }).map((_, i) => (
+                            <th key={i} className="text-left px-4 py-3.5 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                                {columns[i]?.label ?? ''}
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                    {Array.from({ length: rowCount }).map((_, r) => (
+                        <tr key={r}>
+                            {Array.from({ length: colCount }).map((_, c) => (
+                                <td key={c} className="px-4 py-3.5">
+                                    <div
+                                        className="h-4 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse"
+                                        style={{ width: `${60 + ((r + c) % 3) * 15}%` }}
+                                    />
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 }
@@ -43,7 +73,7 @@ function DeferredTable(props: {
     onModalEdit?: (record: Record<string, unknown>) => void;
 }) {
     const { records } = usePage<IndexPageProps>().props;
-    if (!records) return <TableSkeleton />;
+    if (!records) return <TableSkeleton columns={props.columns} perPage={props.resource.perPage} />;
     return <BasicTable key={props.resource.slug} records={records} {...props} />;
 }
 
@@ -161,7 +191,7 @@ export default function Index(props: IndexPageProps) {
                 // ->deferLoading(): page shell (header, breadcrumb, widgets) renders
                 // immediately; records arrive in a follow-up request and the table
                 // mounts once they land.
-                <Deferred data="records" fallback={<TableSkeleton />}>
+                <Deferred data="records" fallback={<TableSkeleton columns={columns} perPage={resource.perPage} />}>
                     <DeferredTable
                         resource={resource}
                         schema={schema}

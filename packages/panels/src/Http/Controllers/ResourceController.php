@@ -23,6 +23,34 @@ class ResourceController extends Controller
         $model         = $resourceClass::getModelInstance();
         $query         = $model->newQuery();
 
+        // ── Column-narrowed SELECT ──────────────────────────────────────────────
+        // Only fetch the DB columns the configured table columns actually need —
+        // faster query, and stray columns (e.g. `password`) never leave the
+        // database at all. Skipped when any column references a relation (dot
+        // notation, e.g. 'author.name') — safely narrowing the local foreign key
+        // for every relation type is out of scope here, so those tables keep
+        // fetching all columns as before.
+        //
+        // Note: if a record action's ->visibleWhen() closure reads an attribute
+        // that isn't one of the displayed columns, it'll be null here — add that
+        // attribute to the resource's table columns (even ->hidden()) to keep it
+        // in the SELECT.
+        $tableColumns  = $resourceClass::table(Table::make())->getColumns();
+        $columnNames   = array_map(fn ($c) => $c->getName(), $tableColumns);
+        $hasRelationColumn = !empty(array_filter($columnNames, fn ($name) => str_contains($name, '.')));
+
+        if (!empty($columnNames) && !$hasRelationColumn) {
+            $needed = array_values(array_unique(array_filter(array_merge(
+                [$model->getKeyName()],
+                $columnNames,
+                $resourceClass::getInlineEditable(),
+                $resourceClass::softDeletes() ? ['deleted_at'] : [],
+                $resourceClass::getRecordTitleAttribute() ? [$resourceClass::getRecordTitleAttribute()] : [],
+            ))));
+
+            $query->select($needed);
+        }
+
         // ── Multi-tenancy scope ───────────────────────────────────────────────
         $panel = LarafusionManager::getPanel();
         if ($panel && $panel->hasTenancy()) {

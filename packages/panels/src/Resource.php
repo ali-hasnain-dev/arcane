@@ -316,6 +316,16 @@ abstract class Resource
                 'searchable'      => static::getSearchable(),
                 'sortable'        => static::getSortable(),
                 'useModalForms'   => static::useModalForms(),
+                // Lets the index page size a deferLoading skeleton to roughly the
+                // real table's dimensions instead of an arbitrary placeholder.
+                'perPage'         => static::getPerPage(),
+                // Not a permission check (that's being split into its own package,
+                // see the removed `can` object below) — this is a feature toggle:
+                // whether the row-level View link should render at all. Generated
+                // resources override canView() to false when the developer declines
+                // the view-page prompt, so this needs to reach the frontend on its
+                // own rather than living inside the removed `can` object.
+                'showView'        => static::canView(),
                 // hideCreateButton: dropped — never read on the frontend. Its effect
                 // already happens server-side (ResourceController omits the create
                 // action from `headerActions` when it's true).

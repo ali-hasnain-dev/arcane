@@ -788,7 +788,14 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
     const closeConfirm = () => setConfirmState(s => ({ ...s, open: false }));
 
     const schema = flattenFields(rawSchema);
-    const can = resource.can ?? { viewAny: true, create: true, edit: true, delete: true, view: true };
+    // `can` (viewAny/create/edit/delete) falls back permissively since authorization
+    // is moving to its own package. `view` is different — it's `resource.showView`,
+    // a feature toggle set by the generated resource's canView() override based on
+    // whether a view page was scaffolded, not a permission.
+    const can = {
+        ...(resource.can ?? { viewAny: true, create: true, edit: true, delete: true, view: true }),
+        view: resource.showView ?? true,
+    };
     const res = resource as ResourceMeta & { exportable?: boolean; importable?: boolean; softDeletes?: boolean; inlineEditable?: string[] };
     const inlineEditable: string[] = res.inlineEditable ?? [];
 
@@ -1189,10 +1196,8 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                                                     </span>
                                                 </th>
                                             ))}
-                                            {/* Actions */}
-                                            <th className="text-right px-4 py-3.5 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                                                Actions
-                                            </th>
+                                            {/* Actions column — header intentionally left blank */}
+                                            <th className="text-right px-4 py-3.5 text-xs font-semibold text-zinc-500 dark:text-zinc-400" />
                                         </tr>
 
                                     </thead>

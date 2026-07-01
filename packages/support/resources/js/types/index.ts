@@ -577,6 +577,13 @@ export interface ResourceMeta {
     useModalForms?: boolean;
     // hideCreateButton intentionally not serialized — its effect already happens
     // server-side (omitted from headerActions), nothing on the frontend reads it.
+    perPage?: number;
+    /**
+     * Feature toggle, not a permission — whether this resource supports a
+     * View link at all (false when the resource was scaffolded without a
+     * view page). Default true when absent.
+     */
+    showView?: boolean;
 }
 
 export interface NavigationItem {
