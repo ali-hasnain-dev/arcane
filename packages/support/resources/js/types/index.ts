@@ -565,9 +565,13 @@ export interface ResourceMeta {
     navigationLabel: string;
     searchable: string[];
     sortable: string[];
-    can: ResourcePermissions;
+    // No longer sent by the server (authorization is moving to its own package) —
+    // consumers must fall back to permissive defaults when this is absent, as
+    // BasicTable and Show.tsx already do.
+    can?: ResourcePermissions;
     useModalForms?: boolean;
-    hideCreateButton?: boolean;
+    // hideCreateButton intentionally not serialized — its effect already happens
+    // server-side (omitted from headerActions), nothing on the frontend reads it.
 }
 
 export interface NavigationItem {
@@ -746,7 +750,10 @@ export interface PageHeaderAction {
 export interface LarafusionPageProps {
     [key: string]: unknown;
     resource: ResourceMeta;
-    schema: FormSchemaItem[];
+    // Omitted entirely by the server on the index page for resources with no
+    // inline-editable columns (see ResourceController::index()) — always present
+    // on create/edit/show pages, where a real form is rendered.
+    schema?: FormSchemaItem[];
     columns: Column[];
     actions: RecordAction[];
     headerActions?: PageHeaderAction[];

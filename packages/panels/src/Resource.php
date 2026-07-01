@@ -316,14 +316,12 @@ abstract class Resource
                 'searchable'      => static::getSearchable(),
                 'sortable'        => static::getSortable(),
                 'useModalForms'   => static::useModalForms(),
-                'hideCreateButton' => static::getHideCreateButton(),
-                'can'             => [
-                    'viewAny' => static::canViewAny(),
-                    'create'  => static::canCreate(),
-                    'edit'    => static::canEdit(),
-                    'delete'  => static::canDelete(),
-                    'view'    => static::canView(),
-                ],
+                // hideCreateButton: dropped — never read on the frontend. Its effect
+                // already happens server-side (ResourceController omits the create
+                // action from `headerActions` when it's true).
+                // can: dropped — authorization is being split into its own package.
+                // The frontend already falls back to { viewAny, create, edit, delete,
+                // view: true } when `can` is absent, so nothing breaks here yet.
             ],
             'schema'  => static::getFormSchema(),
             'columns' => static::getColumnsSchema(),

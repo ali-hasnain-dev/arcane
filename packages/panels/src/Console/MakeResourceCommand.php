@@ -120,7 +120,7 @@ class MakeResourceCommand extends Command
         File::ensureDirectoryExists("{$baseDir}/Tables");
 
         // Write files
-        File::put($resourcePath,                          $this->resourceStub($name, $plural, $ns, $schema, $icon, $titleAttribute));
+        File::put($resourcePath,                          $this->resourceStub($name, $plural, $ns, $schema, $icon, $titleAttribute, $hasViewPage));
         File::put("{$baseDir}/Schemas/{$name}Form.php",   $this->formStub($name, $plural, $ns, $schema));
         File::put("{$baseDir}/Tables/{$plural}Table.php", $this->tableStub($name, $plural, $ns, $schema));
         File::put("{$baseDir}/Pages/List{$plural}.php",   $this->listPageStub($name, $plural, $ns));
@@ -438,7 +438,7 @@ class MakeResourceCommand extends Command
 
     // ── Stubs ─────────────────────────────────────────────────────────────────
 
-    protected function resourceStub(string $name, string $plural, string $ns, array $schema, string $icon, string $titleAttribute = ''): string
+    protected function resourceStub(string $name, string $plural, string $ns, array $schema, string $icon, string $titleAttribute = '', bool $hasViewPage = false): string
     {
         $model      = "App\\Models\\{$name}";
         $label      = Str::headline($name);
@@ -447,6 +447,20 @@ class MakeResourceCommand extends Command
         $titleAttrLine = $titleAttribute !== ''
             ? "    protected static ?string \$recordTitleAttribute = '{$titleAttribute}';"
             : "    protected static ?string \$recordTitleAttribute = null;";
+
+        // A generic show route always exists regardless of whether a custom
+        // View{$name} page was scaffolded, so canView() must be false here to
+        // actually turn off the row-level "View" link when the developer
+        // declined the view-page prompt — otherwise it'd point at a page
+        // that was never asked for.
+        $canViewOverride = $hasViewPage ? '' : <<<PHP
+
+
+    public static function canView(): bool
+    {
+        return false;
+    }
+PHP;
 
         return <<<PHP
 <?php
@@ -476,6 +490,7 @@ class {$name}Resource extends Resource
     {
         return {$plural}Table::configure(\$table);
     }
+{$canViewOverride}
 }
 PHP;
     }
@@ -529,9 +544,9 @@ PHP;
 
 namespace {$ns}\Schemas;
 
-use Larafusion\Fields\Text;
-use Larafusion\Fields\Email;
 use Larafusion\Layout\Section;
+// use Larafusion\Fields\Text;
+// use Larafusion\Fields\Email;
 
 class {$name}Form
 {
@@ -541,8 +556,9 @@ class {$name}Form
             Section::make('{$sectionLabel}')
                 ->columns(2)
                 ->schema([
-                    Text::make('name')->required()->maxLength(255),
-                    Email::make('email')->required(),
+                    // No fields defined yet — add them here, e.g.:
+                    // Text::make('name')->required()->maxLength(255),
+                    // Email::make('email')->required(),
                 ]),
         ];
     }
@@ -572,7 +588,6 @@ PHP;
         }
 
         $columns = implode("\n", $columnLines);
-        $heading = Str::headline($plural);
 
         return <<<PHP
 <?php
@@ -588,13 +603,17 @@ use Larafusion\Tables\Actions\DeleteBulkAction;
 
 class {$plural}Table
 {
+    // Defaults already applied — chain these onto \$table below if you need
+    // something other than the default:
+    //   ->filtersLayout('drawer')            dropdown (default) | drawer | modal | above | above_collapsible | below
+    //   ->defaultSort('created_at', 'desc')  defaults to id, ascending
+    //   ->heading('{$plural}')               defaults to the resource's navigation label
     public static function configure(Table \$table): Table
     {
         return \$table
             ->columns([
 {$columns}
             ])
-            ->filtersLayout()
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -603,9 +622,7 @@ class {$plural}Table
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ])
-            ->defaultSort('created_at', 'desc')
-            ->heading('{$heading}');
+            ]);
     }
 }
 PHP;
@@ -613,15 +630,14 @@ PHP;
 
     protected function genericTableStub(string $name, string $plural, string $ns): string
     {
-        $heading = Str::headline($plural);
         return <<<PHP
 <?php
 
 namespace {$ns}\Tables;
 
 use Larafusion\Tables\Table;
-use Larafusion\Columns\TextColumn;
-use Larafusion\Columns\DateColumn;
+// use Larafusion\Columns\TextColumn;
+// use Larafusion\Columns\DateColumn;
 use Larafusion\Tables\Actions\EditAction;
 use Larafusion\Tables\Actions\DeleteAction;
 use Larafusion\Tables\Actions\BulkActionGroup;
@@ -629,14 +645,19 @@ use Larafusion\Tables\Actions\DeleteBulkAction;
 
 class {$plural}Table
 {
+    // Defaults already applied — chain these onto \$table below if you need
+    // something other than the default:
+    //   ->filtersLayout('drawer')            dropdown (default) | drawer | modal | above | above_collapsible | below
+    //   ->defaultSort('created_at', 'desc')  defaults to id, ascending
+    //   ->heading('{$plural}')               defaults to the resource's navigation label
     public static function configure(Table \$table): Table
     {
         return \$table
             ->columns([
-                TextColumn::make('name')->sortable()->weight('semibold'),
-                DateColumn::make('created_at')->sortable()->since(),
+                // No columns defined yet — add them here, e.g.:
+                // TextColumn::make('name')->sortable()->weight('semibold'),
+                // DateColumn::make('created_at')->sortable()->since(),
             ])
-            ->filtersLayout()
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -645,9 +666,7 @@ class {$plural}Table
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ])
-            ->defaultSort('created_at', 'desc')
-            ->heading('{$heading}');
+            ]);
     }
 }
 PHP;

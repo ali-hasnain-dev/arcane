@@ -19,7 +19,10 @@ function DeferredWidgets() {
 }
 
 export default function Index(props: IndexPageProps) {
-    const { resource, schema, columns, records, actions = [], tableConfig, headerActions = [] } = props;
+    // schema is omitted entirely by the server for resources with no inline-editable
+    // columns (see ResourceController::index()) — default to [] so flattenFields()
+    // downstream doesn't choke on undefined.
+    const { resource, schema = [], columns, records, actions = [], tableConfig, headerActions = [] } = props;
     const [modalMode, setModalMode]     = useState<'create' | 'edit' | null>(null);
     const [editRecord, setEditRecord]   = useState<Record<string, unknown> | null>(null);
     const [editRecordId, setEditRecordId] = useState<string | number | null>(null);

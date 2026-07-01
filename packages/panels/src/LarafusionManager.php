@@ -37,8 +37,10 @@ class LarafusionManager
             static::registerPages($panel->getPages());
         }
 
-        if (!empty($panel->getWidgets())) {
-            static::registerWidgets($panel->getWidgets());
+        // getRealWidgets() strips DefaultDashboardCards::class — that's a dashboard
+        // display toggle, not a real widget, and must never reach WidgetGrid.
+        if (!empty($panel->getRealWidgets())) {
+            static::registerWidgets($panel->getRealWidgets());
         }
 
         if (!empty($panel->getPlugins())) {

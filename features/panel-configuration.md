@@ -158,7 +158,7 @@ See [Themes](themes.md) for all CSS variable names, auto-derivation details, and
 
 ```php
 ->topNavigation()               // horizontal topbar instead of sidebar
-->sidebarCollapsibleOnDesktop() // sidebar can collapse to icon-only mode
+->sidebarCollapsibleOnDesktop() // sidebar can collapse to icon-only mode (default: false)
 ->sidebarWidth('18rem')         // expanded sidebar width
 ->collapsedSidebarWidth('4rem') // icon-only sidebar width
 ->maxContentWidth('90rem')      // max-width of the main content area

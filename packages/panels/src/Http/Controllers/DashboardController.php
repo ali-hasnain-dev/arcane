@@ -22,9 +22,9 @@ class DashboardController extends Controller
                 LarafusionManager::getWidgets()
             ),
 
-            // Default greeting/GitHub placeholder cards — shown only while ->widgets([])
-            // is present but empty. Remove that call, or add real widgets, to turn them off.
-            'showDefaultCards' => $panel?->showsDefaultDashboardCards() ?? false,
+            // Default greeting/GitHub placeholder cards — controlled by whether
+            // DefaultDashboardCards::class is present in ->widgets([...]).
+            'showDefaultCards' => $panel?->hasDefaultDashboardCards() ?? false,
         ]);
     }
 }

@@ -1172,7 +1172,17 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                                     </thead>
 
                                     <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                                        {records.data.length === 0 ? (
+                                        {visibleFields.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={totalCols} className="text-center py-16 text-zinc-400 dark:text-zinc-500">
+                                                    <div className="flex flex-col items-center gap-2">
+                                                        <Search className="w-8 h-8 text-zinc-200" />
+                                                        <span className="text-sm font-medium">No columns configured yet</span>
+                                                        <span className="text-xs">Add columns in this resource's Table class, or fields in its Form class.</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ) : records.data.length === 0 ? (
                                             <tr>
                                                 <td colSpan={totalCols} className="text-center py-16 text-zinc-400 dark:text-zinc-500">
                                                     <div className="flex flex-col items-center gap-2">

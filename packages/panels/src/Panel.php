@@ -33,7 +33,7 @@ class Panel
 
     // ── Layout ────────────────────────────────────────────────────────────────
     protected bool    $topNavigation             = false;
-    protected bool    $sidebarCollapsibleOnDesktop = true;
+    protected bool    $sidebarCollapsibleOnDesktop = false;
     protected string  $sidebarWidth              = '16rem';
     protected string  $collapsedSidebarWidth      = '4rem';
     protected ?string $maxContentWidth            = null;
@@ -118,14 +118,6 @@ class Panel
     protected array    $widgets          = [];
     protected array    $plugins          = [];
     protected array    $navigationItems  = [];
-
-    /**
-     * Whether ->widgets() has been called at all, even with an empty array.
-     * Distinguishes "no widgets configured yet" from "developer removed the
-     * widgets() call entirely" — used to decide whether the dashboard shows
-     * its default placeholder cards. See PanelProvider stub / getWidgets().
-     */
-    protected bool $widgetsConfigured = false;
 
     // ── Hooks ─────────────────────────────────────────────────────────────────
     protected ?\Closure $bootUsing = null;
@@ -704,8 +696,7 @@ class Panel
 
     public function widgets(array $classes): static
     {
-        $this->widgets           = array_merge($this->widgets, $classes);
-        $this->widgetsConfigured = true;
+        $this->widgets = array_merge($this->widgets, $classes);
         return $this;
     }
 
@@ -870,18 +861,29 @@ class Panel
     public function getResources(): array             { return $this->resources; }
     public function getPages(): array                 { return $this->pages; }
     public function getWidgets(): array               { return $this->widgets; }
-    public function widgetsWereConfigured(): bool     { return $this->widgetsConfigured; }
 
     /**
-     * True when the dashboard's default placeholder cards (greeting + GitHub
-     * link) should show: ->widgets([]) is present in the PanelProvider but
-     * no real widgets have been added yet. Removing the ->widgets() call
-     * entirely, or supplying real widget classes, both turn this off.
+     * True when DefaultDashboardCards::class is present in ->widgets([...]) —
+     * this is what actually toggles the dashboard's greeting + GitHub cards.
+     * See DefaultDashboardCards for the full explanation.
      */
-    public function showsDefaultDashboardCards(): bool
+    public function hasDefaultDashboardCards(): bool
     {
-        return $this->widgetsConfigured && empty($this->widgets);
+        return in_array(DefaultDashboardCards::class, $this->widgets, true);
     }
+
+    /**
+     * Real widgets only — strips DefaultDashboardCards::class so it never
+     * gets treated as an actual widget (WidgetGrid, ::make(), etc).
+     */
+    public function getRealWidgets(): array
+    {
+        return array_values(array_filter(
+            $this->widgets,
+            fn ($w) => $w !== DefaultDashboardCards::class,
+        ));
+    }
+
     public function getPlugins(): array               { return $this->plugins; }
     public function getNavigationItems(): array       { return $this->navigationItems; }
 

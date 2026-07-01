@@ -111,12 +111,17 @@ class ResourceController extends Controller
             // So the "don't re-send on filter/sort/paginate" guarantee is preserved
             // without needing Inertia::once(), which breaks same-component navigation.
             'resource' => fn () => array_merge($resourceClass::getPageProps('index')['resource'], [
-                'exportable'     => $resourceClass::exportable(),
-                'importable'     => $resourceClass::importable(),
                 'softDeletes'    => $resourceClass::softDeletes(),
                 'inlineEditable' => $resourceClass::getInlineEditable(),
             ]),
-            'schema'        => fn () => $resourceClass::getFormSchema(),
+            // Only needed for type-aware cell rendering when inline editing is on
+            // (Select labels, boolean/date formatting, edit inputs) — the prop is
+            // omitted entirely otherwise rather than sent as an empty schema, so the
+            // index page doesn't ship a full form schema for resources that don't
+            // use inline editing at all.
+            ...($resourceClass::getInlineEditable() ? [
+                'schema' => fn () => $resourceClass::getFormSchema(),
+            ] : []),
             'columns'       => fn () => $resourceClass::getColumnsSchema(),
             'tableConfig'   => fn () => $tableConfig,
             'actions'       => fn () => $resourceClass::getActionsSchema(),

@@ -192,7 +192,7 @@ The user can switch between Light / Dark / System at any time via the avatar dro
 // Sidebar (default mode)
 ->sidebarWidth('16rem')
 ->collapsedSidebarWidth('4rem')
-->sidebarCollapsibleOnDesktop()
+->sidebarCollapsibleOnDesktop()  // default: false — call this to enable it
 
 // Switch to horizontal top navigation bar
 ->topNavigation()
@@ -427,7 +427,7 @@ return $panel
 
     // Layout
     ->sidebarWidth('16rem')
-    ->sidebarCollapsibleOnDesktop()
+    ->sidebarCollapsibleOnDesktop()  // default: false — call this to enable it
     ->maxContentWidth('90rem')
     ->breadcrumbs()
 

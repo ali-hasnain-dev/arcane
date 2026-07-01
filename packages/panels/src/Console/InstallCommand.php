@@ -97,6 +97,7 @@ class InstallCommand extends Command
 
 namespace App\Providers\Larafusion;
 
+use Larafusion\DefaultDashboardCards;
 use Larafusion\Panel;
 use Larafusion\PanelProvider;
 
@@ -111,10 +112,10 @@ class {$panelClass} extends PanelProvider
             ->brand('{$appName}')
             ->theme('neutral')
             ->defaultThemeMode('light')
-            // Dashboard shows a greeting + GitHub card while this stays empty.
-            // Add your own widget classes here, or remove this line entirely,
-            // to turn the default cards off.
-            ->widgets([]);
+            // Shows a greeting + GitHub card on the dashboard. Remove this
+            // entry (or replace it with your own widget classes) to turn
+            // the default cards off.
+            ->widgets([DefaultDashboardCards::class]);
         // Font defaults to Inter — override with ->font('DM Sans') if desired.
         // Resources in app/Larafusion/ are auto-discovered — no need to list them here.
     }
