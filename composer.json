@@ -1,7 +1,7 @@
 {
     "name": "larafusion/larafusion",
     "description": "Larafusion — JS powered admin panel for Laravel",
-    "type": "project",
+    "type": "library",
     "repositories": [
         {
             "type": "path",
@@ -37,7 +37,14 @@
         }
     ],
     "require": {
-        "larafusion/larafusion": "*"
+        "php": "^8.2",
+        "larafusion/support": "@dev",
+        "larafusion/actions": "@dev",
+        "larafusion/forms": "@dev",
+        "larafusion/tables": "@dev",
+        "larafusion/schemas": "@dev",
+        "larafusion/widgets": "@dev",
+        "larafusion/panels": "@dev"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

@@ -86,13 +86,19 @@ resolves the rest transitively from each package's own `require` block.
 
 ### Full admin panel (everything)
 
-`larafusion/panels` requires `actions`, `forms`, `tables`, `widgets`,
-`schemas`, and `support`, so listing just `panels` plus its dependencies
-covers a full install:
+The root `composer.json` in this repo (`larafusion/larafusion`) is itself an
+umbrella/meta package — the same pattern Filament uses with `filament/filament`.
+It requires `support`, `actions`, `forms`, `tables`, `schemas`, `widgets`, and
+`panels` together, so a consumer who wants the whole thing only needs one
+`require` line instead of naming `panels` and its six dependencies separately.
+Composer still needs a `repositories` entry for every package in that require
+chain (including this `arcane` repo itself, since that's where
+`larafusion/larafusion` lives), but the install command becomes just:
 
 ```json
 {
     "repositories": [
+        { "type": "vcs", "url": "https://github.com/ali-hasnain-dev/arcane.git" },
         { "type": "vcs", "url": "https://github.com/ali-hasnain-dev/larafusion-support.git" },
         { "type": "vcs", "url": "https://github.com/ali-hasnain-dev/larafusion-actions.git" },
         { "type": "vcs", "url": "https://github.com/ali-hasnain-dev/larafusion-forms.git" },
@@ -101,18 +107,21 @@ covers a full install:
         { "type": "vcs", "url": "https://github.com/ali-hasnain-dev/larafusion-schemas.git" },
         { "type": "vcs", "url": "https://github.com/ali-hasnain-dev/larafusion-panels.git" }
     ],
-    "require": {
-        "larafusion/panels": "dev-main"
-    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
 ```
 
 ```bash
-composer require larafusion/panels
+composer require larafusion/larafusion
 php artisan larafusion:install
 ```
+
+If you'd rather not add the `arcane` repository entry (e.g. you only want to
+depend on the split packages, not the monorepo itself), `composer require
+larafusion/panels` works exactly the same way — same six sub-package
+repository entries, just requiring `panels` directly instead of the
+umbrella package, and skip the `arcane.git` entry.
 
 ### Tables only (no admin panel)
 
@@ -143,10 +152,13 @@ consumer constraints to normal semver ranges, e.g. `"^0.1"`.
 
 ## Notes
 
-- This workflow doesn't touch the root `composer.json` in this repo — that
-  file stays a local-dev-only shell with `path` repositories, per
-  `CLAUDE.md`. Don't `composer require larafusion/larafusion` from an
-  external project; it was never meant to be installed that way.
+- The root `composer.json` (`larafusion/larafusion`) is now a real umbrella
+  package — it requires all seven sub-packages so a consumer can install
+  the whole thing with one `composer require`. It still keeps its `path`
+  repositories for local monorepo development; those are only used when
+  Composer runs from inside this repo, not when a consumer installs it via
+  VCS. The split workflow doesn't touch this file — it only splits
+  `packages/*` subdirectories into their own repos.
 - The npm/React side of each package (`@larafusion/support`,
   `@larafusion/tables`, etc.) is a separate concern — this split only
   covers the PHP/Composer packages. React packages currently still need to
