@@ -706,6 +706,11 @@ export interface PanelConfig {
     forgotPasswordSlug: string;
     /** Global simple pagination setting; individual table setting takes precedence. */
     simplePagination?: boolean;
+    /**
+     * Animate the data inside dashboard widgets on first load (numbers count up,
+     * chart lines draw in, bars grow up). Off by default.
+     */
+    widgetAnimation?: boolean;
 }
 
 // ─── Plugin (Phase 7) ─────────────────────────────────────────────────────────

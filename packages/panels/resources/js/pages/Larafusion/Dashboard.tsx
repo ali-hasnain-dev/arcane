@@ -24,7 +24,11 @@ export default function Dashboard() {
             {/* Widgets — each fetches and polls independently; shows skeleton while loading.
                 Empty by default until the developer registers widgets on the panel. */}
             {widgetsMeta && widgetsMeta.length > 0 && (
-                <WidgetGrid widgets={widgetsMeta} widgetDataUrl={widgetDataUrl} />
+                <WidgetGrid
+                    widgets={widgetsMeta}
+                    widgetDataUrl={widgetDataUrl}
+                    animate={larafusion.panel.widgetAnimation ?? false}
+                />
             )}
 
             {/* Static default dashboard content — no deferral, no server round trip.

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { usePage, Deferred } from '@inertiajs/react';
+import { Search } from 'lucide-react';
 import AdminLayout from '../../components/layout/AdminLayout';
 import Breadcrumb from '../../components/ui/Breadcrumb';
 import PageHeaderActions from '../../components/ui/PageHeaderActions';
@@ -24,13 +25,33 @@ function DeferredWidgets() {
  * flight. Sized from data we already have synchronously — real column count
  * and the resource's configured per-page count — so the page doesn't jump
  * once the real table swaps in.
+ *
+ * The toolbar (search bar) is rendered for real, not skeletonized: only the
+ * rows *below the table headers* get the shimmer. This keeps the search input
+ * visible and stable while the deferred records request is in flight.
  */
-function TableSkeleton({ columns, perPage }: { columns: Column[]; perPage?: number }) {
+function TableSkeleton({ resource, columns, perPage }: { resource: ResourceMeta; columns: Column[]; perPage?: number }) {
     const rowCount = Math.min(Math.max(perPage ?? 10, 1), 25);
     const colCount = Math.max(columns.length, 1);
+    const hasSearch = resource.searchable.length > 0;
 
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
+            {/* Real toolbar — the search bar stays put; only the rows are skeletonized. */}
+            {hasSearch && (
+                <div className="px-4 py-2.5 border-b border-zinc-100 dark:border-zinc-800 flex items-center gap-3 h-[55px]">
+                    <div className="flex-1" />
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                        <input
+                            type="text"
+                            disabled
+                            placeholder="Search…"
+                            className="pl-9 pr-4 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg outline-none w-48 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
+                        />
+                    </div>
+                </div>
+            )}
             <table className="w-full">
                 <thead>
                     <tr className="border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50/80 dark:bg-zinc-800/50">
@@ -73,7 +94,7 @@ function DeferredTable(props: {
     onModalEdit?: (record: Record<string, unknown>) => void;
 }) {
     const { records } = usePage<IndexPageProps>().props;
-    if (!records) return <TableSkeleton columns={props.columns} perPage={props.resource.perPage} />;
+    if (!records) return <TableSkeleton resource={props.resource} columns={props.columns} perPage={props.resource.perPage} />;
     return <BasicTable key={props.resource.slug} records={records} {...props} />;
 }
 
@@ -191,7 +212,7 @@ export default function Index(props: IndexPageProps) {
                 // ->deferLoading(): page shell (header, breadcrumb, widgets) renders
                 // immediately; records arrive in a follow-up request and the table
                 // mounts once they land.
-                <Deferred data="records" fallback={<TableSkeleton columns={columns} perPage={resource.perPage} />}>
+                <Deferred data="records" fallback={<TableSkeleton resource={resource} columns={columns} perPage={resource.perPage} />}>
                     <DeferredTable
                         resource={resource}
                         schema={schema}

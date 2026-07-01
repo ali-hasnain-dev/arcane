@@ -3,6 +3,7 @@ import StatsOverview from './StatsOverview';
 import ChartWidgetComponent from './ChartWidget';
 import TableWidgetComponent from './TableWidget';
 import type { WidgetMeta, WidgetData } from '../types';
+import { WidgetAnimationStyles } from '../lib/animations';
 
 // ── Polling interval parser ───────────────────────────────────────────────────
 function parseMs(value: string | null | undefined): number | null {
@@ -153,10 +154,12 @@ function WidgetPollSkeleton({ type, meta, count }: { type: string; meta: WidgetM
 
 // ── Widget renderer ───────────────────────────────────────────────────────────
 
-function WidgetContent({ widget }: { widget: WidgetData }) {
+function WidgetContent({ widget, animated }: { widget: WidgetData; animated: boolean }) {
     switch (widget.type) {
-        case 'stats_overview': return <StatsOverview widget={widget as any} />;
-        case 'chart':          return <ChartWidgetComponent widget={widget as any} />;
+        // `animated` flows into the data itself: stat numbers count up, chart
+        // lines draw in / bars grow. The card is never animated as a whole.
+        case 'stats_overview': return <StatsOverview widget={widget as any} animated={animated} />;
+        case 'chart':          return <ChartWidgetComponent widget={widget as any} animated={animated} />;
         case 'table':          return <TableWidgetComponent widget={widget as any} />;
         default:               return null;
     }
@@ -164,11 +167,18 @@ function WidgetContent({ widget }: { widget: WidgetData }) {
 
 // ── Per-widget card ───────────────────────────────────────────────────────────
 
-function WidgetCard({ meta, widgetDataUrl }: { meta: WidgetMeta; widgetDataUrl: string }) {
+function WidgetCard({ meta, widgetDataUrl, animate }: {
+    meta: WidgetMeta;
+    widgetDataUrl: string;
+    animate: boolean;
+}) {
     const [data, setData]           = useState<WidgetData | null>(null);
     const [loading, setLoading]     = useState(true);
     // Track actual stat count from first payload so skeleton always matches.
     const [statCount, setStatCount] = useState<number>(3);
+    // Data animations play once, the first time real content is revealed — not
+    // on polling refreshes (which would make numbers re-count / lines redraw).
+    const [entered, setEntered]     = useState(false);
     const wrapperRef                = useRef<HTMLDivElement>(null);
     const lockedHeight              = useRef<number | null>(null);
     const abortRef                  = useRef<AbortController | null>(null);
@@ -209,6 +219,15 @@ function WidgetCard({ meta, widgetDataUrl }: { meta: WidgetMeta; widgetDataUrl: 
         return () => abortRef.current?.abort();
     }, [fetchData]);
 
+    // Mark the data animation as spent once it has had time to play, so polling
+    // refreshes re-render without replaying it. The delay comfortably covers the
+    // count-up (~0.9s) and chart draw (~0.9s).
+    useEffect(() => {
+        if (!animate || entered || !data) return;
+        const t = setTimeout(() => setEntered(true), 1300);
+        return () => clearTimeout(t);
+    }, [animate, entered, data]);
+
     // Polling — snapshot height just before replacing content with skeleton
     useEffect(() => {
         if (!meta.pollingInterval) return;
@@ -229,6 +248,10 @@ function WidgetCard({ meta, widgetDataUrl }: { meta: WidgetMeta; widgetDataUrl: 
     // heading text from disappearing mid-refresh.
     const isPolling = loading && hasLoadedOnce.current;
 
+    // Animate the data only on the first reveal (entered stays false until the
+    // timer above fires), never on polling refreshes.
+    const animateNow = animate && !entered;
+
     return (
         <div
             ref={wrapperRef}
@@ -241,7 +264,7 @@ function WidgetCard({ meta, widgetDataUrl }: { meta: WidgetMeta; widgetDataUrl: 
                     ? <WidgetPollSkeleton type={meta.type} meta={meta} count={statCount} />
                     : <WidgetFullSkeleton type={meta.type} count={statCount} />
                 : data
-                    ? <WidgetContent widget={data} />
+                    ? <WidgetContent widget={data} animated={animateNow} />
                     : null
             }
         </div>
@@ -250,21 +273,26 @@ function WidgetCard({ meta, widgetDataUrl }: { meta: WidgetMeta; widgetDataUrl: 
 
 // ── Grid ──────────────────────────────────────────────────────────────────────
 
-export default function WidgetGrid({ widgets, widgetDataUrl }: {
+export default function WidgetGrid({ widgets, widgetDataUrl, animate = false }: {
     widgets: WidgetMeta[];
     widgetDataUrl: string;
+    /** Animate the data inside each widget on first load. Off by default. */
+    animate?: boolean;
 }) {
     if (!widgets || widgets.length === 0) return null;
 
     const sorted = [...widgets].sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-            {sorted.map((meta, i) => (
-                <div key={meta.widgetClass ?? i} className={colSpanClass(meta.columnSpan)}>
-                    <WidgetCard meta={meta} widgetDataUrl={widgetDataUrl} />
-                </div>
-            ))}
-        </div>
+        <>
+            {animate && <WidgetAnimationStyles />}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                {sorted.map((meta, i) => (
+                    <div key={meta.widgetClass ?? i} className={colSpanClass(meta.columnSpan)}>
+                        <WidgetCard meta={meta} widgetDataUrl={widgetDataUrl} animate={animate} />
+                    </div>
+                ))}
+            </div>
+        </>
     );
 }

@@ -300,3 +300,46 @@ All widgets inherit these options from the `Widget` base class:
 
 ---
 
+### Widget Animations
+
+Dashboard widgets can animate their **data** as it first loads — the numbers count up,
+chart lines draw themselves in, and bars grow up from the baseline. The card itself is
+never animated; only the values inside it move. Animations are **opt-in** and configured
+once on the panel — **off by default**. Enable them in your `PanelProvider`:
+
+```php
+use Larafusion\Panel;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        ->widgetAnimations();        // enable data animations
+    // ->widgetAnimations(false);    // explicitly off (the default)
+}
+```
+
+**What animates, per widget type:**
+
+| Widget type          | Animation                                                                        |
+| -------------------- | -------------------------------------------------------------------------------- |
+| Stats overview       | Each metric **counts up** from zero; its sparkline **draws itself in**           |
+| Line / area chart    | The series **wipes in left → right**; the points **pop** in just behind the edge |
+| Bar chart            | Bars **grow up** from the baseline, one after another                            |
+| Pie / doughnut       | Slices **sweep around like a clock**; the doughnut centre total counts up in sync |
+| Radar / polar area   | The plot **grows out from the centre** to its true shape                         |
+| Scatter / bubble     | Points **pop** in with a short stagger                                           |
+| Table                | No animation (rows render immediately)                                           |
+
+Notes:
+
+- **Numbers keep their formatting.** Count-up preserves any prefix/suffix and thousands
+  grouping — `$1,234`, `98%`, and `4.2k` all animate their numeric part correctly.
+- **Tuned, not flashy.** Durations sit around 0.7–1s with gentle easing (and a little
+  spring on the pop-in points) so the data feels alive without getting in the way.
+- **Plays once.** The animation runs the first time a widget reveals its data. It does
+  **not** replay on polling refreshes, so auto-refreshing widgets don't flicker or
+  re-count.
+- **Accessibility.** Animations are fully disabled — both the CSS and the JS-driven
+  reveals — for users who have `prefers-reduced-motion: reduce` set.
+
+---

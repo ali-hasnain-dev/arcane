@@ -279,6 +279,21 @@ When enabled, all sidebar nav links, table row action links (View, Edit), Show p
 ->simplePagination(false)   // explicit false; numbered pagination everywhere (default)
 ```
 
+### Dashboard Widget Animations
+
+Off by default. When enabled, the **data inside** each dashboard widget animates on first
+load — stat numbers count up, line charts wipe in, bars grow up, and pie/doughnut slices
+sweep around. It plays once (never on polling refreshes) and respects
+`prefers-reduced-motion`.
+
+```php
+->widgetAnimations()        // enable data animations
+->widgetAnimations(false)   // explicitly off (the default)
+```
+
+See the [Widget Animations](widgets.md#widget-animations) section for exactly what animates
+per widget type.
+
 ### Navigation Items
 
 Add custom navigation items not tied to any resource:

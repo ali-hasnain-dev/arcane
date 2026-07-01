@@ -2,6 +2,8 @@
 
 This file is the operating contract for Claude Code when working in this repository. Read it before editing code. Larafusion is not a normal Laravel app and not a normal React app: it is a Laravel package monorepo that ships PHP APIs and compiled React/Inertia UI packages.
 
+**Before starting work, also read `MEMORY.md`** in the repo root — it's a running status file of recent session work (distribution/split-repo setup, install-flow bugs already found and fixed, Dashboard/resource-scaffold/table-config changes, and anything still open). It exists so context isn't rebuilt from scratch every session. Keep it updated as you go.
+
 ## Product Context
 
 Larafusion is a Filament-style admin panel package for Laravel 11 and newer. Developers define PHP resources, fields, tables, actions, widgets, panels, and plugins. Larafusion serializes those PHP definitions into Inertia props and renders the admin UI with React 19, Inertia React v3, lucide icons, Tailwind/shadcn-style primitives, and local Larafusion React packages.

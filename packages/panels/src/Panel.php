@@ -96,6 +96,11 @@ class Panel
     protected int   $pagination            = 15;
     protected bool  $simplePagination      = false;
 
+    // ── Dashboard widget data animations ──────────────────────────────────────
+    // Off by default. When on, the *data inside* each widget animates on first
+    // load (numbers count up, chart lines draw in, bars grow up).
+    protected bool $widgetAnimation = false;
+
     // ── Domain ────────────────────────────────────────────────────────────────
     protected ?string $domain = null;
 
@@ -680,6 +685,19 @@ class Panel
         return $this;
     }
 
+    /**
+     * Enable (or disable) data animations for dashboard widgets.
+     *
+     * When enabled, the data inside each widget animates as it first loads:
+     * stat numbers count up, line/area charts draw in, and bar charts grow up.
+     * The animation plays once and never replays on polling refreshes.
+     */
+    public function widgetAnimations(bool $enabled = true): static
+    {
+        $this->widgetAnimation = $enabled;
+        return $this;
+    }
+
     // ── Resources / Pages / Widgets / Plugins ─────────────────────────────────
 
     public function resources(array $classes): static
@@ -825,6 +843,7 @@ class Panel
     public function hasStrictAuthorization(): bool    { return $this->strictAuthorization; }
     public function getPagination(): int              { return $this->pagination; }
     public function getSimplePagination(): bool       { return $this->simplePagination; }
+    public function getWidgetAnimation(): bool         { return $this->widgetAnimation; }
 
     // Rate Limiting
     public function hasLoginRateLimiting(): bool  { return $this->loginRateLimiting; }
@@ -933,6 +952,7 @@ class Panel
             'realtimeChannel'             => $this->realtimeChannel,
             'api'                         => $this->apiEnabled,
             'simplePagination'            => $this->simplePagination,
+            'widgetAnimation'             => $this->widgetAnimation,
         ];
     }
 }

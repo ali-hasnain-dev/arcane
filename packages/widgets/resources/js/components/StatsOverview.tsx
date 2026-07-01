@@ -1,6 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useCountUp } from '../lib/animations';
+
+// ── Animated numeric value ─────────────────────────────────────────────────────
+// Counts the numeric part of a stat value up from zero on first load. Any
+// prefix/suffix (currency symbol, %, "k", etc.) and thousands grouping are
+// preserved; non-numeric values render as-is with no animation.
+
+function splitNumber(value: string | number): { prefix: string; num: number; suffix: string; decimals: number; grouped: boolean } | null {
+    if (typeof value === 'number') {
+        if (!isFinite(value)) return null;
+        const decimals = Number.isInteger(value) ? 0 : (String(value).split('.')[1]?.length ?? 0);
+        return { prefix: '', num: value, suffix: '', decimals, grouped: false };
+    }
+    const m = value.match(/^(\D*?)(-?[\d,]*\.?\d+)(\D*)$/);
+    if (!m) return null;
+    const cleaned = m[2].replace(/,/g, '');
+    const num = parseFloat(cleaned);
+    if (!isFinite(num)) return null;
+    return {
+        prefix: m[1],
+        num,
+        suffix: m[3],
+        decimals: cleaned.includes('.') ? cleaned.split('.')[1].length : 0,
+        grouped: m[2].includes(','),
+    };
+}
+
+function AnimatedStatValue({ value, animated }: { value: string | number; animated: boolean }) {
+    const parsed = splitNumber(value);
+    const current = useCountUp(parsed ? parsed.num : 0, animated && !!parsed);
+    if (!parsed) return <>{value}</>;
+    const formatted = current.toLocaleString(undefined, {
+        minimumFractionDigits: parsed.decimals,
+        maximumFractionDigits: parsed.decimals,
+        useGrouping: parsed.grouped,
+    });
+    return <>{parsed.prefix}{formatted}{parsed.suffix}</>;
+}
 
 // ── Dark-mode detection ────────────────────────────────────────────────────────
 // Watches the `dark` class on <html> so custom backgroundColor is suppressed
@@ -52,7 +90,7 @@ const descColorMap: Record<string, string> = {
 
 // ── Sparkline ─────────────────────────────────────────────────────────────────
 
-function Sparkline({ data, color }: { data: number[]; color: string }) {
+function Sparkline({ data, color, animated }: { data: number[]; color: string; animated: boolean }) {
     if (!data || data.length < 2) return null;
 
     const W = 80, H = 28;
@@ -74,8 +112,14 @@ function Sparkline({ data, color }: { data: number[]; color: string }) {
 
     return (
         <svg viewBox={`0 0 ${W} ${H}`} className="w-20 h-7 flex-shrink-0" preserveAspectRatio="none">
-            <polygon points={fillPts} fill={color} opacity="0.12" />
-            <polyline points={pts} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
+            <polygon points={fillPts} fill={color} opacity="0.12"
+                {...(animated ? { 'data-lf-anim': '', style: { animation: 'lf-fade-in .6s ease-out .35s both' } } : {})} />
+            <polyline points={pts} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round"
+                {...(animated ? {
+                    pathLength: 1,
+                    'data-lf-anim': '',
+                    style: { strokeDasharray: 1, strokeDashoffset: 1, animation: 'lf-draw .8s ease-out forwards' },
+                } : {})} />
         </svg>
     );
 }
@@ -127,7 +171,7 @@ interface StatsOverviewWidgetData {
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
 
-function StatCard({ stat }: { stat: StatData }) {
+function StatCard({ stat, animated }: { stat: StatData; animated: boolean }) {
     const isDark = useDarkMode();
     const color = stat.color ?? 'default';
     const dotColor = dotMap[color] ?? dotMap.default;
@@ -174,9 +218,11 @@ function StatCard({ stat }: { stat: StatData }) {
             <div className="min-w-0 flex-1">
                 <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate">{stat.label}</p>
                 <div className="flex items-end justify-between gap-2 mt-0.5">
-                    <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 leading-none">{stat.value}</p>
+                    <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 leading-none tabular-nums">
+                        <AnimatedStatValue value={stat.value} animated={animated} />
+                    </p>
                     {stat.chart && stat.chart.length >= 2 && (
-                        <Sparkline data={stat.chart} color={sparkColor} />
+                        <Sparkline data={stat.chart} color={sparkColor} animated={animated} />
                     )}
                 </div>
 
@@ -218,7 +264,10 @@ function StatCard({ stat }: { stat: StatData }) {
 
 // ── Main export ───────────────────────────────────────────────────────────────
 
-export default function StatsOverview({ widget }: { widget: StatsOverviewWidgetData }) {
+export default function StatsOverview({ widget, animated = false }: {
+    widget: StatsOverviewWidgetData;
+    animated?: boolean;
+}) {
     return (
         <div className="col-span-full">
             {(widget.heading || widget.description) && (
@@ -235,7 +284,7 @@ export default function StatsOverview({ widget }: { widget: StatsOverviewWidgetD
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {widget.stats.map((stat, i) => (
-                    <StatCard key={i} stat={stat} />
+                    <StatCard key={i} stat={stat} animated={animated} />
                 ))}
             </div>
         </div>

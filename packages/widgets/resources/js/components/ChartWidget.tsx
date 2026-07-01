@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, ChevronDown as SelectArrow } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useReveal } from '../lib/animations';
 
 // ── Color palette ─────────────────────────────────────────────────────────────
 
@@ -69,7 +70,7 @@ function smoothPath(points: [number, number][]): string {
 
 // ── Cartesian chart (line / bar) ──────────────────────────────────────────────
 
-function CartesianChart({ widget, color }: { widget: ChartWidgetData; color: string }) {
+function CartesianChart({ widget, color, animated }: { widget: ChartWidgetData; color: string; animated: boolean }) {
     const W = 480, H = 200;
     const PAD = { top: 12, right: 12, bottom: 32, left: 40 };
     const innerW = W - PAD.left - PAD.right;
@@ -145,7 +146,16 @@ function CartesianChart({ widget, color }: { widget: ChartWidgetData; color: str
                                 const bx = xPos(i) + offsetX - barW / 2;
                                 return (
                                     <rect key={i} x={bx} y={by} width={barW} height={bh}
-                                        fill={c} rx="3" opacity="0.9" />
+                                        fill={c} rx="3" opacity="0.9"
+                                        {...(animated ? {
+                                            'data-lf-anim': '',
+                                            style: {
+                                                transformBox: 'fill-box',
+                                                transformOrigin: 'center bottom',
+                                                animation: 'lf-grow-up .7s cubic-bezier(.21,1.02,.73,1) both',
+                                                animationDelay: `${i * 40}ms`,
+                                            },
+                                        } : {})} />
                                 );
                             })}
                         </g>
@@ -157,14 +167,40 @@ function CartesianChart({ widget, color }: { widget: ChartWidgetData; color: str
                 const areaPath = linePath
                     + ` L${pts[pts.length - 1][0]},${baseY} L${pts[0][0]},${baseY} Z`;
 
+                // The line + area are clipped by a rect that wipes open left→right,
+                // so the whole series appears to grow across the chart. Points then
+                // pop in just behind the leading edge for a polished finish.
+                const clipId = `wipe-${di}`;
                 return (
                     <g key={di}>
-                        <path d={areaPath} fill={`url(#cg-${di})`} />
-                        <path d={linePath} fill="none" stroke={c} strokeWidth="2"
-                            strokeLinecap="round" strokeLinejoin="round" />
+                        {animated && (
+                            <clipPath id={clipId}>
+                                <rect x={PAD.left} y="0" width={innerW} height={H}
+                                    data-lf-anim=""
+                                    style={{
+                                        transformBox: 'fill-box',
+                                        transformOrigin: 'left',
+                                        animation: 'lf-wipe 1s cubic-bezier(.22,.61,.36,1) both',
+                                    }} />
+                            </clipPath>
+                        )}
+                        <g clipPath={animated ? `url(#${clipId})` : undefined}>
+                            <path d={areaPath} fill={`url(#cg-${di})`} />
+                            <path d={linePath} fill="none" stroke={c} strokeWidth="2"
+                                strokeLinecap="round" strokeLinejoin="round" />
+                        </g>
                         {pts.map(([cx, cy], i) => (
                             <circle key={i} cx={cx} cy={cy} r="3"
-                                fill="white" stroke={c} strokeWidth="2" className="dark:fill-zinc-900" />
+                                fill="white" stroke={c} strokeWidth="2" className="dark:fill-zinc-900"
+                                {...(animated ? {
+                                    'data-lf-anim': '',
+                                    style: {
+                                        transformBox: 'fill-box',
+                                        transformOrigin: 'center',
+                                        animation: 'lf-pop .32s cubic-bezier(.34,1.56,.64,1) both',
+                                        animationDelay: `${(i / Math.max(pts.length - 1, 1)) * 0.9}s`,
+                                    },
+                                } : {})} />
                         ))}
                     </g>
                 );
@@ -175,7 +211,7 @@ function CartesianChart({ widget, color }: { widget: ChartWidgetData; color: str
 
 // ── Doughnut / Pie ─────────────────────────────────────────────────────────────
 
-function PieChart({ widget, color, isDoughnut }: { widget: ChartWidgetData; color: string; isDoughnut: boolean }) {
+function PieChart({ widget, color, isDoughnut, animated }: { widget: ChartWidgetData; color: string; isDoughnut: boolean; animated: boolean }) {
     const cx = 100, cy = 100, R = 75, r = isDoughnut ? 44 : 0;
     const data = widget.datasets.map((ds, i) => ({
         label: ds.label ?? `Series ${i + 1}`,
@@ -208,16 +244,25 @@ function PieChart({ widget, color, isDoughnut }: { widget: ChartWidgetData; colo
         return `M${x1} ${y1} A${R} ${R} 0 ${large} 1 ${x2} ${y2} L${ix1} ${iy1} A${r} ${r} 0 ${large} 0 ${ix2} ${iy2} Z`;
     };
 
+    // Slices sweep around clockwise together: a single revealed angle grows from
+    // the 12-o'clock start to a full turn, and each slice draws only the portion
+    // that has been reached. The doughnut centre total counts up in lock-step.
+    const progress = useReveal(animated);
+    const startBase = -Math.PI / 2;
+    const revealedEnd = startBase + progress * 2 * Math.PI;
+
     return (
         <div className="flex items-center gap-6">
             <svg viewBox="0 0 200 200" className="w-36 h-36 flex-shrink-0">
-                {slices.map((s, i) => (
-                    <path key={i} d={arc(cx, cy, R, r, s.start, s.sweep)} fill={s.color} />
-                ))}
+                {slices.map((s, i) => {
+                    const drawn = Math.max(0, Math.min(s.sweep, revealedEnd - s.start));
+                    if (drawn <= 0.0001) return null;
+                    return <path key={i} d={arc(cx, cy, R, r, s.start, drawn)} fill={s.color} />;
+                })}
                 {isDoughnut && (
                     <text x={cx} y={cy + 5} textAnchor="middle" fontSize="13" fontWeight="bold"
                         className="fill-zinc-900 dark:fill-zinc-50">
-                        {total}
+                        {Math.round(total * progress)}
                     </text>
                 )}
             </svg>
@@ -238,13 +283,16 @@ function PieChart({ widget, color, isDoughnut }: { widget: ChartWidgetData; colo
 
 // ── Radar chart ───────────────────────────────────────────────────────────────
 
-function RadarChart({ widget, color }: { widget: ChartWidgetData; color: string }) {
+function RadarChart({ widget, color, animated }: { widget: ChartWidgetData; color: string; animated: boolean }) {
     const cx = 110, cy = 110, R = 85;
     const axes = widget.labels.length || 5;
+    // Grow the plotted series out from the centre — the grid/axes stay put while
+    // the data polygon expands to its true radius.
+    const progress = useReveal(animated);
     const points = (values: number[], max: number) =>
         Array.from({ length: axes }, (_, i) => {
             const angle = (i / axes) * 2 * Math.PI - Math.PI / 2;
-            const r = ((values[i] ?? 0) / max) * R;
+            const r = ((values[i] ?? 0) / max) * R * progress;
             return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)] as [number, number];
         });
 
@@ -301,7 +349,7 @@ function RadarChart({ widget, color }: { widget: ChartWidgetData; color: string 
 
 // ── Polar area chart ──────────────────────────────────────────────────────────
 
-function PolarAreaChart({ widget, color }: { widget: ChartWidgetData; color: string }) {
+function PolarAreaChart({ widget, color, animated }: { widget: ChartWidgetData; color: string; animated: boolean }) {
     const cx = 100, cy = 100;
     const data = widget.datasets.flatMap((ds, di) =>
         (ds.data as number[]).map((v, i) => ({
@@ -312,6 +360,8 @@ function PolarAreaChart({ widget, color }: { widget: ChartWidgetData; color: str
     );
     const maxVal = Math.max(...data.map(d => d.value), 1);
     const n = data.length;
+    // Wedges grow out from the centre to their real radius.
+    const progress = useReveal(animated);
 
     return (
         <div className="flex items-center gap-4">
@@ -319,7 +369,7 @@ function PolarAreaChart({ widget, color }: { widget: ChartWidgetData; color: str
                 {data.map((d, i) => {
                     const startAngle = (i / n) * 2 * Math.PI - Math.PI / 2;
                     const endAngle = ((i + 1) / n) * 2 * Math.PI - Math.PI / 2;
-                    const R = (d.value / maxVal) * 80;
+                    const R = (d.value / maxVal) * 80 * progress;
                     const x1 = cx + R * Math.cos(startAngle);
                     const y1 = cy + R * Math.sin(startAngle);
                     const x2 = cx + R * Math.cos(endAngle);
@@ -347,7 +397,7 @@ function PolarAreaChart({ widget, color }: { widget: ChartWidgetData; color: str
 
 // ── Bubble / Scatter chart ────────────────────────────────────────────────────
 
-function ScatterChart({ widget, color, isBubble }: { widget: ChartWidgetData; color: string; isBubble: boolean }) {
+function ScatterChart({ widget, color, isBubble, animated }: { widget: ChartWidgetData; color: string; isBubble: boolean; animated: boolean }) {
     const W = 480, H = 220;
     const PAD = { top: 16, right: 16, bottom: 36, left: 44 };
     const innerW = W - PAD.left - PAD.right;
@@ -383,7 +433,16 @@ function ScatterChart({ widget, color, isBubble }: { widget: ChartWidgetData; co
                     <circle key={`${di}-${pi}`}
                         cx={xPos(pt.x)} cy={yPos(pt.y)}
                         r={isBubble ? Math.max(3, (pt.r ?? 5)) : 4}
-                        fill={c} fillOpacity="0.7" stroke="white" strokeWidth="1" />
+                        fill={c} fillOpacity="0.7" stroke="white" strokeWidth="1"
+                        {...(animated ? {
+                            'data-lf-anim': '',
+                            style: {
+                                transformBox: 'fill-box',
+                                transformOrigin: 'center',
+                                animation: 'lf-pop .4s cubic-bezier(.34,1.56,.64,1) both',
+                                animationDelay: `${(pi % 20) * 30}ms`,
+                            },
+                        } : {})} />
                 ));
             })}
         </svg>
@@ -445,7 +504,7 @@ function FilterSelect({
 
 // ── Main export ───────────────────────────────────────────────────────────────
 
-export default function ChartWidgetComponent({ widget }: { widget: ChartWidgetData }) {
+export default function ChartWidgetComponent({ widget, animated = false }: { widget: ChartWidgetData; animated?: boolean }) {
     const [collapsed, setCollapsed] = useState(widget.isCollapsed ?? false);
     const [activeFilter, setActiveFilter] = useState<string | null>(widget.activeFilter ?? null);
 
@@ -458,20 +517,20 @@ export default function ChartWidgetComponent({ widget }: { widget: ChartWidgetDa
     function renderChart() {
         switch (chartType) {
             case 'doughnut':
-                return <PieChart widget={widget} color={mainColor} isDoughnut={true} />;
+                return <PieChart widget={widget} color={mainColor} isDoughnut={true} animated={animated} />;
             case 'pie':
-                return <PieChart widget={widget} color={mainColor} isDoughnut={false} />;
+                return <PieChart widget={widget} color={mainColor} isDoughnut={false} animated={animated} />;
             case 'radar':
-                return <RadarChart widget={widget} color={mainColor} />;
+                return <RadarChart widget={widget} color={mainColor} animated={animated} />;
             case 'polar-area':
             case 'polarArea':
-                return <PolarAreaChart widget={widget} color={mainColor} />;
+                return <PolarAreaChart widget={widget} color={mainColor} animated={animated} />;
             case 'bubble':
-                return <ScatterChart widget={widget} color={mainColor} isBubble={true} />;
+                return <ScatterChart widget={widget} color={mainColor} isBubble={true} animated={animated} />;
             case 'scatter':
-                return <ScatterChart widget={widget} color={mainColor} isBubble={false} />;
+                return <ScatterChart widget={widget} color={mainColor} isBubble={false} animated={animated} />;
             default:
-                return <CartesianChart widget={widget} color={mainColor} />;
+                return <CartesianChart widget={widget} color={mainColor} animated={animated} />;
         }
     }
 

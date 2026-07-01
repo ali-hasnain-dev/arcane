@@ -165,7 +165,8 @@ class ResourceController extends Controller
                         'type'  => 'create',
                         'label' => 'New ' . $resourceClass::getRecordLabel(),
                         'color' => 'primary',
-                        'icon'  => 'plus',
+                        // No default icon — the create button is icon-free unless the
+                        // developer adds one (e.g. CreateAction::make()->icon('plus')).
                         'href'  => '/admin/' . $resourceClass::getSlug() . '/create',
                     ]];
                 }

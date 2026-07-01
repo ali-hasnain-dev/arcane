@@ -10,7 +10,8 @@ namespace Larafusion\Pages\Actions;
 class CreateAction extends PageAction
 {
     protected string  $color = 'primary';
-    protected ?string $icon  = 'plus';
+    // No default icon — add one explicitly with ->icon('plus') if desired.
+    protected ?string $icon  = null;
 
     public function toArray(string $resourceSlug, mixed $record = null, string $resourceClass = ''): ?array
     {

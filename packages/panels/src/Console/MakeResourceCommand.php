@@ -603,11 +603,6 @@ use Larafusion\Tables\Actions\DeleteBulkAction;
 
 class {$plural}Table
 {
-    // Defaults already applied — chain these onto \$table below if you need
-    // something other than the default:
-    //   ->filtersLayout('drawer')            dropdown (default) | drawer | modal | above | above_collapsible | below
-    //   ->defaultSort('created_at', 'desc')  defaults to id, ascending
-    //   ->heading('{$plural}')               defaults to the resource's navigation label
     public static function configure(Table \$table): Table
     {
         return \$table
@@ -645,11 +640,6 @@ use Larafusion\Tables\Actions\DeleteBulkAction;
 
 class {$plural}Table
 {
-    // Defaults already applied — chain these onto \$table below if you need
-    // something other than the default:
-    //   ->filtersLayout('drawer')            dropdown (default) | drawer | modal | above | above_collapsible | below
-    //   ->defaultSort('created_at', 'desc')  defaults to id, ascending
-    //   ->heading('{$plural}')               defaults to the resource's navigation label
     public static function configure(Table \$table): Table
     {
         return \$table
