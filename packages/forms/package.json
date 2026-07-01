@@ -22,7 +22,7 @@
         "react-dom": "^19.0.0",
         "@inertiajs/react": "^3.0.0",
         "@larafusion/support": "*",
-        "laravel-precognition-react-inertia": "^1.0.0"
+        "laravel-precognition-react-inertia": "^0.8.0"
     },
     "devDependencies": {
         "@types/react": "^19.0.0",

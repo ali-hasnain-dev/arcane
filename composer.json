@@ -1,6 +1,6 @@
 {
-    "name": "larafusion/monorepo",
-    "description": "Larafusion monorepo — React-powered admin panel for Laravel",
+    "name": "larafusion/larafusion",
+    "description": "Larafusion — JS powered admin panel for Laravel",
     "type": "project",
     "repositories": [
         {
