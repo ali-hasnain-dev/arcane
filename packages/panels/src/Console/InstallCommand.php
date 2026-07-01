@@ -56,13 +56,9 @@ class InstallCommand extends Command
         // 8. Install required npm packages
         $this->installNpmPackages();
 
-        // 9. Create example UserResource
-        $this->createExampleResource();
-
-        // 10. Ensure app/Larafusion directory structure exists
-        File::ensureDirectoryExists(app_path('Larafusion/Resources'));
-        File::ensureDirectoryExists(app_path('Larafusion/Pages'));
-        File::ensureDirectoryExists(app_path('Larafusion/Plugins'));
+        // Resources/Pages/Plugins/Widgets folders are intentionally not scaffolded here —
+        // `larafusion:resource`, `larafusion:page`, `larafusion:plugin`, and `larafusion:widget`
+        // each create their own directory (and app/Larafusion/*) on demand when actually used.
 
         $this->newLine();
         $this->info('Larafusion installed successfully!');
@@ -242,9 +238,24 @@ function resolveFile(base) {
     return null;
 }
 
+// Vendor source also uses bare `@larafusion/x` imports directly (not just
+// relative cross-package imports), e.g. panels' components/ui/Card.tsx does
+// `import { Card } from '@larafusion/support'`. These aren't real npm
+// packages — resolve them straight to each vendor package's entry file.
+const bareVendorMap = {
+    '@larafusion/support': supportJs,
+    '@larafusion/forms':   formsJs,
+    '@larafusion/tables':  tablesJs,
+    '@larafusion/widgets': widgetsJs,
+};
+
 const larafusionResolve = {
     name: 'larafusion-cross-package-resolve',
     resolveId(id, importer) {
+        if (Object.prototype.hasOwnProperty.call(bareVendorMap, id)) {
+            return resolveFile(bareVendorMap[id]);
+        }
+
         if (!importer) return null;
         if (!id.startsWith('.')) return null;
         if (!allVendorPackages.some(pkg => importer.startsWith(pkg))) return null;
@@ -545,200 +556,4 @@ CSS;
         $this->line('  ✅ npm packages installed');
     }
 
-    protected function createExampleResource(): void
-    {
-        $base = app_path('Larafusion/Resources/Users');
-        $ns   = 'App\\Larafusion\\Resources\\Users';
-
-        if (File::exists("{$base}/UserResource.php")) {
-            $this->line('  ✅ Example resource exists → <comment>app/Larafusion/Resources/Users/</comment>');
-            return;
-        }
-
-        File::ensureDirectoryExists("{$base}/Pages");
-        File::ensureDirectoryExists("{$base}/Schemas");
-        File::ensureDirectoryExists("{$base}/Tables");
-
-        File::put("{$base}/UserResource.php",          $this->exampleResourceStub($ns));
-        File::put("{$base}/Schemas/UserForm.php",      $this->exampleFormStub($ns));
-        File::put("{$base}/Tables/UsersTable.php",     $this->exampleTableStub($ns));
-        File::put("{$base}/Pages/ListUsers.php",       $this->exampleListPageStub($ns));
-        File::put("{$base}/Pages/CreateUser.php",      $this->exampleCreatePageStub($ns));
-        File::put("{$base}/Pages/EditUser.php",        $this->exampleEditPageStub($ns));
-
-        $this->line('  ✅ Example resource created → <comment>app/Larafusion/Resources/Users/</comment>');
-    }
-
-    protected function exampleResourceStub(string $ns): string
-    {
-        return <<<PHP
-<?php
-
-namespace {$ns};
-
-use App\Models\User;
-use Larafusion\Resource;
-use {$ns}\Schemas\UserForm;
-use {$ns}\Tables\UsersTable;
-
-class UserResource extends Resource
-{
-    protected static string \$model          = User::class;
-    protected static ?string \$navigationIcon = 'users';
-    protected static string \$recordLabel    = 'User';
-    protected static array  \$searchable     = ['name', 'email'];
-    protected static array  \$sortable       = ['id', 'name', 'email', 'created_at'];
-
-    public static function form(): array
-    {
-        return UserForm::fields();
-    }
-
-    public static function columns(): array
-    {
-        return UsersTable::columns();
-    }
-
-    public static function actions(): array
-    {
-        return UsersTable::actions();
-    }
-}
-PHP;
-    }
-
-    protected function exampleFormStub(string $ns): string
-    {
-        return <<<PHP
-<?php
-
-namespace {$ns}\Schemas;
-
-use Larafusion\Fields\Text;
-use Larafusion\Fields\Email;
-use Larafusion\Fields\Password;
-use Larafusion\Fields\Select;
-use Larafusion\Fields\Toggle;
-use Larafusion\Fields\Textarea;
-
-class UserForm
-{
-    public static function fields(): array
-    {
-        return [
-            Text::make('name')->required()->maxLength(255)->placeholder('John Doe'),
-            Email::make('email')->required()->unique('users', 'email'),
-            Password::make('password')->required()->minLength(8),
-
-            Select::make('role')
-                ->required()
-                ->options(['admin' => 'Administrator', 'editor' => 'Editor', 'viewer' => 'Viewer']),
-
-            Toggle::make('is_active')->label('Active')->default(true),
-            Textarea::make('bio')->maxLength(500)->rows(3),
-        ];
-    }
-}
-PHP;
-    }
-
-    protected function exampleTableStub(string $ns): string
-    {
-        return <<<PHP
-<?php
-
-namespace {$ns}\Tables;
-
-use Larafusion\Columns\Column;
-use Larafusion\Actions\ButtonAction;
-
-class UsersTable
-{
-    public static function columns(): array
-    {
-        return [
-            Column::text('name')->sortable()->filterable('text'),
-            Column::text('email')->sortable()->filterable('text'),
-            Column::boolean('is_active')->label('Active')->filterable('boolean'),
-            Column::date('created_at')->label('Joined')->sortable()->filterable('date_range'),
-        ];
-    }
-
-    public static function actions(): array
-    {
-        return [
-            ButtonAction::make('activate')
-                ->label('Activate')
-                ->icon('check')
-                ->color('success')
-                ->button()
-                ->visibleWhen(fn (\$record) => ! \$record->is_active)
-                ->using(fn (\$record) => \$record->update(['is_active' => true]))
-                ->successMessage('User activated.'),
-
-            ButtonAction::make('deactivate')
-                ->label('Deactivate')
-                ->icon('x')
-                ->color('warning')
-                ->textOnly()
-                ->confirm('Deactivate this user? They will lose access immediately.')
-                ->visibleWhen(fn (\$record) => (bool) \$record->is_active)
-                ->using(fn (\$record) => \$record->update(['is_active' => false]))
-                ->successMessage('User deactivated.'),
-        ];
-    }
-}
-PHP;
-    }
-
-    protected function exampleListPageStub(string $ns): string
-    {
-        return <<<PHP
-<?php
-
-namespace {$ns}\Pages;
-
-use Larafusion\Pages\ListPage;
-use {$ns}\UserResource;
-
-class ListUsers extends ListPage
-{
-    protected static string \$resource = UserResource::class;
-}
-PHP;
-    }
-
-    protected function exampleCreatePageStub(string $ns): string
-    {
-        return <<<PHP
-<?php
-
-namespace {$ns}\Pages;
-
-use Larafusion\Pages\CreatePage;
-use {$ns}\UserResource;
-
-class CreateUser extends CreatePage
-{
-    protected static string \$resource = UserResource::class;
-}
-PHP;
-    }
-
-    protected function exampleEditPageStub(string $ns): string
-    {
-        return <<<PHP
-<?php
-
-namespace {$ns}\Pages;
-
-use Larafusion\Pages\EditPage;
-use {$ns}\UserResource;
-
-class EditUser extends EditPage
-{
-    protected static string \$resource = UserResource::class;
-}
-PHP;
-    }
 }

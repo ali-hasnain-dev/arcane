@@ -67,8 +67,8 @@ The install command automatically:
 - Patches `.env` — appends `INERTIA_USE_SCRIPT_ELEMENT_FOR_INITIAL_PAGE=true`
 - Patches `resources/css/app.css` — adds `@custom-variant dark` for Tailwind v4 dark mode and `@source '../../vendor/larafusion/*/resources/js/**/*.{ts,tsx}'` so Tailwind scans vendor component files
 - Installs npm packages — production: `@inertiajs/react`, `@vitejs/plugin-react`, `react`, `react-dom`, `lucide-react`, `clsx`; dev: `@types/react`, `@types/react-dom`
-- Scaffolds `app/Larafusion/Resources/Users/` with all 6 resource files as a working example
-- Creates `app/Larafusion/{Resources,Pages,Plugins}/` directory structure
+
+No example resource is scaffolded and no `app/Larafusion/*` folders are pre-created — `larafusion:resource`, `larafusion:page`, `larafusion:plugin`, and `larafusion:widget` each create their own directory (and `app/Larafusion/` itself) the first time you run them.
 
 ### 3. Register the provider
 
