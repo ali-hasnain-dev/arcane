@@ -17,6 +17,16 @@ import { cn } from '../lib/utils';
 
 type LinkProps = React.ComponentProps<typeof Link>;
 
+/** Parse '30s' / '1m' / '2h' / '500ms' (bare numbers default to seconds) into milliseconds. */
+function parsePollingInterval(value: string): number {
+    const match = /^(\d+(?:\.\d+)?)(ms|s|m|h)?$/.exec(value.trim());
+    if (!match) return 0;
+    const amount = parseFloat(match[1]);
+    const unit = match[2] ?? 's';
+    const multiplier = { ms: 1, s: 1000, m: 60_000, h: 3_600_000 }[unit] ?? 1000;
+    return amount * multiplier;
+}
+
 function usePrefetchProps(): Partial<LinkProps> {
     const { larafusion } = usePage<LarafusionSharedProps>().props;
     const config = larafusion?.panel?.prefetch;
@@ -670,7 +680,10 @@ const legacyRecordActions: BuiltinRecordAction[] = [
 interface BasicTableProps {
     resource: ResourceMeta;
     schema: FormSchemaItem[];
-    records: IndexPageProps['records'];
+    // BasicTable itself always expects records to be loaded — Index.tsx is
+    // responsible for not rendering this component until that's true (either
+    // immediately, or after a deferred fetch completes via <Deferred>).
+    records: NonNullable<IndexPageProps['records']>;
     actions?: RecordAction[];
     columns?: Column[];
     tableConfig?: TableConfig;
@@ -681,11 +694,24 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
     const prefetchProps = usePrefetchProps();
     const { larafusion } = usePage<LarafusionSharedProps>().props;
     const striped = tableConfig?.striped ?? false;
-    // Table-level setting wins; fall back to panel-level; default false.
-    const simplePagination = tableConfig?.simplePagination !== undefined
-        ? tableConfig.simplePagination
-        : (larafusion?.panel?.simplePagination ?? false);
-    const disablePagination = tableConfig?.disablePagination ?? false;
+    // Table-level ->pagination(...) wins when explicitly set; otherwise fall back
+    // to the panel-level simplePagination default. 'full' / 'simple' / false.
+    const paginationMode = tableConfig?.pagination
+        ?? (larafusion?.panel?.simplePagination ? 'simple' : 'full');
+    const simplePagination  = paginationMode === 'simple';
+    const disablePagination = paginationMode === false;
+
+    // ─── Polling: auto-refresh records at the configured interval ───────────────
+    useEffect(() => {
+        if (!tableConfig?.polling) return;
+        const ms = parsePollingInterval(tableConfig.polling);
+        if (!ms) return;
+        const id = setInterval(() => {
+            router.reload({ only: ['records'] });
+        }, ms);
+        return () => clearInterval(id);
+    }, [tableConfig?.polling]);
+
     const params = new URLSearchParams(window.location.search);
     const sortField = params.get('sort') ?? (tableConfig?.defaultSort?.field ?? 'id');
     const sortDir = params.get('direction') ?? (tableConfig?.defaultSort?.dir ?? 'asc');
@@ -1191,7 +1217,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                                                     </div>
                                                 </td>
                                             </tr>
-                                        ) : records.data.map(record => {
+                                        ) : records.data.map((record, rowIndex) => {
                                             const id = (record as FormValues).id as string | number;
                                             const trashed = !!(record as FormValues).deleted_at;
                                             const isSelected = selectedIds.has(id);
@@ -1203,8 +1229,8 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                                                         'group transition-colors',
                                                         isSelected
                                                             ? 'bg-[var(--larafusion-primary,#18181b)]/5'
-                                                            : striped && records.data.indexOf(record) % 2 !== 0
-                                                                ? 'bg-zinc-50/60 dark:bg-zinc-800/20 hover:bg-zinc-50/80 dark:hover:bg-zinc-800/50'
+                                                            : striped && rowIndex % 2 !== 0
+                                                                ? 'bg-zinc-100/80 dark:bg-zinc-800/40 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
                                                                 : 'hover:bg-zinc-50/80 dark:hover:bg-zinc-800/50',
                                                         trashed && 'opacity-60',
                                                     )}>

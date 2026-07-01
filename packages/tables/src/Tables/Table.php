@@ -25,7 +25,7 @@ class Table
     protected ?string $emptyStateHeading    = null;
     protected ?string $emptyStateDescription = null;
     protected ?string $emptyStateIcon       = null;
-    protected ?string $poll                 = null;
+    protected ?string $polling               = null;
     protected bool    $deferLoading         = false;
     protected bool    $reorderable          = false;
     protected ?string $reorderColumn        = null;
@@ -132,15 +132,22 @@ class Table
         return $this;
     }
 
-    public function simplePagination(bool $simple = true): static
+    /**
+     * Control pagination mode.
+     *   ->pagination()          full numbered pagination (default)
+     *   ->pagination('simple')  Prev/Next buttons only
+     *   ->pagination(false)     disable pagination entirely
+     */
+    public function pagination(string|false $mode = 'full'): static
     {
-        $this->simplePagination = $simple;
-        return $this;
-    }
+        if ($mode === false) {
+            $this->disablePagination = true;
+            $this->simplePagination  = null;
+            return $this;
+        }
 
-    public function disablePagination(bool $disable = true): static
-    {
-        $this->disablePagination = $disable;
+        $this->disablePagination = false;
+        $this->simplePagination  = $mode === 'simple';
         return $this;
     }
 
@@ -166,9 +173,10 @@ class Table
 
     // ── Behaviour ─────────────────────────────────────────────────────────────
 
-    public function poll(string $interval): static
+    /** Auto-refresh the table every $interval (e.g. '30s', '1m'). */
+    public function polling(string $interval): static
     {
-        $this->poll = $interval;
+        $this->polling = $interval;
         return $this;
     }
 
@@ -225,15 +233,23 @@ class Table
     public function toConfig(): array
     {
         $config = ['striped' => $this->striped];
-        if ($this->simplePagination !== null) $config['simplePagination'] = $this->simplePagination;
-        if ($this->disablePagination)         $config['disablePagination'] = true;
-        if ($this->contentWidth)              $config['contentWidth']         = $this->contentWidth;
+
+        // Single 'pagination' key: 'full' | 'simple' | false. Only emitted when
+        // ->pagination(...) was actually called — absence lets the frontend fall
+        // back to the panel-level default instead of assuming 'full'.
+        if ($this->disablePagination) {
+            $config['pagination'] = false;
+        } elseif ($this->simplePagination !== null) {
+            $config['pagination'] = $this->simplePagination ? 'simple' : 'full';
+        }
+
+        if ($this->contentWidth)          $config['contentWidth']         = $this->contentWidth;
         if ($this->heading)               $config['heading']              = $this->heading;
         if ($this->description)           $config['description']          = $this->description;
         if ($this->emptyStateHeading)     $config['emptyStateHeading']    = $this->emptyStateHeading;
         if ($this->emptyStateDescription) $config['emptyStateDescription'] = $this->emptyStateDescription;
         if ($this->emptyStateIcon)        $config['emptyStateIcon']       = $this->emptyStateIcon;
-        if ($this->poll)                  $config['poll']                 = $this->poll;
+        if ($this->polling)               $config['polling']              = $this->polling;
         if ($this->deferLoading)          $config['deferLoading']         = true;
         if ($this->reorderable)           $config['reorderable']          = $this->reorderColumn;
 

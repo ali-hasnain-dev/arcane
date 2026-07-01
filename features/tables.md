@@ -234,18 +234,19 @@ use Larafusion\Tables\Actions\ForceDeleteBulkAction;
 ### Pagination
 
 ```php
-->simplePagination()        // show only Prev/Next + "X / Y" instead of page numbers
-->simplePagination(false)   // force full numbered pagination even when the panel default is simple
+->pagination()              // full numbered pagination (default)
+->pagination('simple')      // show only Prev/Next + "X / Y" instead of page numbers
+->pagination(false)         // disable pagination — all records on one page
 ```
 
-Per-table setting always wins over the panel-level `->simplePagination()` default. If neither is set, numbered pagination is shown.
+Per-table setting always wins over the panel-level `->simplePagination()` default. If `->pagination()` is never called, numbered pagination is shown.
 
 ---
 
 ### Behaviour
 
 ```php
-->poll('5s')          // auto-refresh every 5 seconds (passes to Inertia router.reload)
+->polling('5s')       // auto-refresh every 5 seconds (reloads just the records prop)
 ->deferLoading()      // show skeleton first, load data asynchronously
 ->reorderable('sort') // enable drag-to-reorder; 'sort' is the column name
 ```
@@ -291,7 +292,7 @@ public static function table(Table $table): Table
         ->defaultSort('published_at', 'desc')
         ->striped()
         ->emptyState('No posts found', 'Try adjusting your filters.')
-        ->poll('30s');
+        ->polling('30s');
 }
 ```
 

@@ -507,7 +507,10 @@ export interface TableConfig {
     emptyStateHeading?: string;
     emptyStateDescription?: string;
     emptyStateIcon?: string;
-    poll?: string;
+    /** Auto-refresh interval, e.g. '30s', '1m'. Reloads just the records prop. */
+    polling?: string;
+    /** Defers the *initial* records fetch — page shell renders first, records
+     *  arrive in a follow-up request. Subsequent reloads work as normal. */
     deferLoading?: boolean;
     reorderable?: string;
     standaloneFilters?: StandaloneFilter[];
@@ -529,10 +532,12 @@ export interface TableConfig {
     hideFilterIndicators?: boolean;
     /** When set to 'full', removes the default max-w-7xl constraint on the index page. */
     contentWidth?: 'full';
-    /** Show only Prev/Next buttons instead of numbered page links. Overrides the panel-level setting when explicitly set. */
-    simplePagination?: boolean;
-    /** When true, all records are returned on a single page and pagination controls are hidden. */
-    disablePagination?: boolean;
+    /**
+     * Pagination mode: 'full' (numbered pages) | 'simple' (Prev/Next only) | false (disabled).
+     * Only present when ->pagination(...) was explicitly called on the Table builder —
+     * absent means "use the panel-level default".
+     */
+    pagination?: 'full' | 'simple' | false;
 }
 
 // ─── Record Actions ───────────────────────────────────────────────────────────
@@ -766,7 +771,10 @@ export interface IndexPageProps extends LarafusionPageProps {
     tableConfig?: TableConfig;
     widgetsMeta: WidgetMeta[];
     headerActions: PageHeaderAction[];
-    records: {
+    // Optional only while tableConfig.deferLoading is on and the initial deferred
+    // fetch hasn't landed yet — see ResourceController::index(). Otherwise always
+    // present as a regular, partial-reloadable prop.
+    records?: {
         data: Record<string, unknown>[];
         current_page: number;
         last_page: number;

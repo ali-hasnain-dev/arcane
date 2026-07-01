@@ -6,6 +6,7 @@ import PageHeaderActions from '../../components/ui/PageHeaderActions';
 import WidgetGrid from '../../components/widgets/WidgetGrid';
 import FormModal from '../../components/form/FormModal';
 import { IndexPageProps } from '../../types';
+import type { ResourceMeta, FormSchemaItem, Column, RecordAction, TableConfig } from '@larafusion/support';
 
 // @larafusion/table is an optional add-on package; null = use built-in BasicTable
 const AdvancedTableComponent: React.ComponentType<Record<string, unknown>> | null = null;
@@ -16,6 +17,34 @@ import BasicTable from '../../components/table/BasicTable';
 function DeferredWidgets() {
     const { widgets } = usePage<IndexPageProps>().props;
     return <WidgetGrid widgets={widgets ?? []} />;
+}
+
+/** Plain loading placeholder shown while ->deferLoading()'s initial fetch is in flight. */
+function TableSkeleton() {
+    return (
+        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 animate-pulse">
+            <div className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="h-8 bg-zinc-100 dark:bg-zinc-800 rounded" />
+                ))}
+            </div>
+        </div>
+    );
+}
+
+// Separate component so it can re-read `records` fresh once the deferred fetch
+// lands, without calling hooks inside <Deferred>'s render callback.
+function DeferredTable(props: {
+    resource: ResourceMeta;
+    schema: FormSchemaItem[];
+    columns: Column[];
+    actions: RecordAction[];
+    tableConfig?: TableConfig;
+    onModalEdit?: (record: Record<string, unknown>) => void;
+}) {
+    const { records } = usePage<IndexPageProps>().props;
+    if (!records) return <TableSkeleton />;
+    return <BasicTable key={props.resource.slug} records={records} {...props} />;
 }
 
 export default function Index(props: IndexPageProps) {
@@ -128,6 +157,20 @@ export default function Index(props: IndexPageProps) {
                     selectable
                     createUrl={`/admin/${resource.slug}/create`}
                 />
+            ) : tableConfig?.deferLoading ? (
+                // ->deferLoading(): page shell (header, breadcrumb, widgets) renders
+                // immediately; records arrive in a follow-up request and the table
+                // mounts once they land.
+                <Deferred data="records" fallback={<TableSkeleton />}>
+                    <DeferredTable
+                        resource={resource}
+                        schema={schema}
+                        columns={columns}
+                        actions={actions}
+                        tableConfig={tableConfig}
+                        onModalEdit={resource.useModalForms ? openEdit : undefined}
+                    />
+                </Deferred>
             ) : (
                 // Core only: basic table.
                 // key={resource.slug} forces a full remount when the user navigates
@@ -137,7 +180,7 @@ export default function Index(props: IndexPageProps) {
                     resource={resource}
                     schema={schema}
                     columns={columns}
-                    records={records}
+                    records={records!}
                     actions={actions}
                     tableConfig={tableConfig}
                     onModalEdit={resource.useModalForms ? openEdit : undefined}

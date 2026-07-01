@@ -121,11 +121,12 @@ public static function table(Table $table): Table
 | `->heading('...')`                            | Title displayed above the table card                                 |
 | `->description('...')`                        | Subtitle below the heading                                           |
 | `->emptyState('heading', 'description')`      | Custom empty state message                                           |
-| `->poll('30s')`                               | Auto-refresh interval                                                |
+| `->polling('30s')`                            | Auto-refresh interval — reloads just the records prop                |
 | `->deferLoading()`                            | Load records asynchronously on first visit                           |
 | `->reorderable('sort')`                       | Enable drag-to-reorder using the named column                        |
-| `->simplePagination()`                        | Show only Prev/Next buttons instead of numbered page links; overrides the panel-level default |
-| `->simplePagination(false)`                   | Force full numbered pagination even when the panel default is simple |
+| `->pagination()`                              | Full numbered pagination (default)                                   |
+| `->pagination('simple')`                      | Show only Prev/Next buttons instead of numbered page links; overrides the panel-level default |
+| `->pagination(false)`                         | Disable pagination — all records returned on one page                |
 | `->filtersLayout('dropdown')`                 | Where/how the filter panel appears (`dropdown` · `drawer` · `modal` · `above` · `above_collapsible` · `below` · `before_content` · `before_content_collapsible` · `after_content` · `after_content_collapsible`) |
 | `->filtersFormColumns(2)`                     | Grid columns inside the filter form (default: 1)                     |
 | `->filtersFormWidth('24rem')`                 | Max-width of the drawer/modal panel                                  |

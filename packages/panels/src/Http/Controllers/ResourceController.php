@@ -94,8 +94,9 @@ class ResourceController extends Controller
         }
 
         $perPage = min(max((int) $request->get('per_page', $resourceClass::getPerPage()), 5), 100);
-        $tableConfig     = $resourceClass::getTableConfig();
-        $disablePagination = $tableConfig['disablePagination'] ?? false;
+        $tableConfig       = $resourceClass::getTableConfig();
+        $disablePagination = ($tableConfig['pagination'] ?? null) === false;
+        $deferLoading      = $tableConfig['deferLoading'] ?? false;
 
         // Evaluate widgets once here so we can branch without calling widgets() twice.
         $widgetData = $resourceClass::widgets();
@@ -145,18 +146,25 @@ class ResourceController extends Controller
             'page'   => 'index',
             'record' => null,
 
-            // ── Regular prop ──────────────────────────────────────────────────────
+            // ── Regular prop (or deferred on first load) ──────────────────────────
             // Always fresh; refreshed via only:['records'] on sort / filter / paginate.
-            'records' => (function () use ($query, $request, $perPage, $disablePagination) {
-                if ($disablePagination) {
-                    $items = $query->get();
-                    $total = $items->count();
-                    return new LengthAwarePaginator(
-                        $items, $total, max($total, 1), 1,
-                        ['path' => $request->url(), 'query' => $request->query()]
-                    );
-                }
-                return $query->paginate($perPage)->withQueryString();
+            // ->deferLoading() defers only the *initial* fetch (page shell renders
+            // first, records arrive in a follow-up request) — once loaded it's a
+            // normal prop again, so partial reloads keep working exactly as before.
+            'records' => (function () use ($query, $request, $perPage, $disablePagination, $deferLoading) {
+                $build = function () use ($query, $request, $perPage, $disablePagination) {
+                    if ($disablePagination) {
+                        $items = $query->get();
+                        $total = $items->count();
+                        return new LengthAwarePaginator(
+                            $items, $total, max($total, 1), 1,
+                            ['path' => $request->url(), 'query' => $request->query()]
+                        );
+                    }
+                    return $query->paginate($perPage)->withQueryString();
+                };
+
+                return $deferLoading ? Inertia::defer($build) : $build();
             })(),
 
             // ── Widgets: defer only when widgets exist ────────────────────────────
