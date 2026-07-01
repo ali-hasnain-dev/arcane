@@ -21,9 +21,20 @@ a consumer project points Composer at the split repos.
 
 ## 1. Create the target repositories
 
-Create one **empty** GitHub repo per package under your account (or org).
-The split action pushes into these — do not initialize them with a README,
-license, or `.gitignore`; the split action expects to own the full history.
+Create one GitHub repo per package under your account (or org), and give
+each one an **initial commit on `main`** — the easiest way is to click
+"Add a README file" on GitHub's empty-repo quick-setup page (or create any
+file directly on `main` through the web UI).
+
+This matters because of how `danharrin/monorepo-split-github-action` bootstraps
+a branch: if the target repo has zero commits at all, `git checkout -b main`
+creates a branch name with nothing for it to point to, and the action's own
+`git push origin main` right after that fails with `src refspec main does
+not match any` — there's genuinely nothing to push yet. Giving the repo one
+commit up front (a README is fine) means `git checkout main` succeeds on the
+first try, and everything after that is a normal fast-forward commit+push —
+not a conflict, since it's added on top of existing history rather than
+pushing divergent history.
 
 | `packages/` directory | Target repo (suggested name) | Composer package name |
 |---|---|---|
