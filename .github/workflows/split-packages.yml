@@ -1,0 +1,69 @@
+name: 'Split Packages'
+
+# Splits each packages/<name> directory into its own standalone repository
+# on every push to main and on every tag, so consumers can
+# `composer require larafusion/<package>` independently (e.g. just
+# larafusion/tables) instead of always pulling the whole monorepo.
+#
+# Requires a one-time manual setup — see docs/monorepo-split.md.
+
+on:
+    push:
+        branches:
+            - main
+        tags:
+            - '*'
+
+env:
+    GITHUB_TOKEN: ${{ secrets.SPLIT_TOKEN }}
+
+jobs:
+    packages_split:
+        # Skip on forks — they won't have the SPLIT_TOKEN secret.
+        if: github.repository_owner == 'ali-hasnain-dev'
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+                package:
+                    - local_path: 'support'
+                      split_repository: 'larafusion-support'
+                    - local_path: 'actions'
+                      split_repository: 'larafusion-actions'
+                    - local_path: 'forms'
+                      split_repository: 'larafusion-forms'
+                    - local_path: 'tables'
+                      split_repository: 'larafusion-tables'
+                    - local_path: 'schemas'
+                      split_repository: 'larafusion-schemas'
+                    - local_path: 'infolists'
+                      split_repository: 'larafusion-infolists'
+                    - local_path: 'widgets'
+                      split_repository: 'larafusion-widgets'
+                    - local_path: 'panels'
+                      split_repository: 'larafusion-panels'
+
+        steps:
+            - uses: actions/checkout@v4
+
+            # Regular commits on main
+            - if: "!startsWith(github.ref, 'refs/tags/')"
+              uses: danharrin/monorepo-split-github-action@v2.4.0
+              with:
+                  package_directory: 'packages/${{ matrix.package.local_path }}'
+                  repository_organization: 'ali-hasnain-dev'
+                  repository_name: '${{ matrix.package.split_repository }}'
+                  user_name: 'ali-hasnain-dev'
+                  user_email: 'testingemail8076@gmail.com'
+
+            # Tagged releases — keeps tags in sync across all split repos
+            - if: "startsWith(github.ref, 'refs/tags/')"
+              uses: danharrin/monorepo-split-github-action@v2.4.0
+              with:
+                  tag: ${GITHUB_REF#refs/tags/}
+                  package_directory: 'packages/${{ matrix.package.local_path }}'
+                  repository_organization: 'ali-hasnain-dev'
+                  repository_name: '${{ matrix.package.split_repository }}'
+                  user_name: 'ali-hasnain-dev'
+                  user_email: 'testingemail8076@gmail.com'
