@@ -1,9 +1,5 @@
 # Claude AI tooling
 .claude/
-CLAUDE.md
-
-# Feature planning / internal docs
-features/
 
 # Node
 node_modules/
