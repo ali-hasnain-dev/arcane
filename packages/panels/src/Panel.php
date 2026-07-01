@@ -119,6 +119,14 @@ class Panel
     protected array    $plugins          = [];
     protected array    $navigationItems  = [];
 
+    /**
+     * Whether ->widgets() has been called at all, even with an empty array.
+     * Distinguishes "no widgets configured yet" from "developer removed the
+     * widgets() call entirely" — used to decide whether the dashboard shows
+     * its default placeholder cards. See PanelProvider stub / getWidgets().
+     */
+    protected bool $widgetsConfigured = false;
+
     // ── Hooks ─────────────────────────────────────────────────────────────────
     protected ?\Closure $bootUsing = null;
 
@@ -696,7 +704,8 @@ class Panel
 
     public function widgets(array $classes): static
     {
-        $this->widgets = array_merge($this->widgets, $classes);
+        $this->widgets           = array_merge($this->widgets, $classes);
+        $this->widgetsConfigured = true;
         return $this;
     }
 
@@ -861,6 +870,18 @@ class Panel
     public function getResources(): array             { return $this->resources; }
     public function getPages(): array                 { return $this->pages; }
     public function getWidgets(): array               { return $this->widgets; }
+    public function widgetsWereConfigured(): bool     { return $this->widgetsConfigured; }
+
+    /**
+     * True when the dashboard's default placeholder cards (greeting + GitHub
+     * link) should show: ->widgets([]) is present in the PanelProvider but
+     * no real widgets have been added yet. Removing the ->widgets() call
+     * entirely, or supplying real widget classes, both turn this off.
+     */
+    public function showsDefaultDashboardCards(): bool
+    {
+        return $this->widgetsConfigured && empty($this->widgets);
+    }
     public function getPlugins(): array               { return $this->plugins; }
     public function getNavigationItems(): array       { return $this->navigationItems; }
 

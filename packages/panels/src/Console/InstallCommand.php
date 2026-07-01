@@ -110,7 +110,11 @@ class {$panelClass} extends PanelProvider
             ->login()
             ->brand('{$appName}')
             ->theme('neutral')
-            ->defaultThemeMode('light');
+            ->defaultThemeMode('light')
+            // Dashboard shows a greeting + GitHub card while this stays empty.
+            // Add your own widget classes here, or remove this line entirely,
+            // to turn the default cards off.
+            ->widgets([]);
         // Font defaults to Inter — override with ->font('DM Sans') if desired.
         // Resources in app/Larafusion/ are auto-discovered — no need to list them here.
     }

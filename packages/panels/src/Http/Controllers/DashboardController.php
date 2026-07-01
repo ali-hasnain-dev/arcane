@@ -10,6 +10,8 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $panel = LarafusionManager::getPanel();
+
         return Inertia::render('Larafusion/Dashboard', [
             'navigation' => LarafusionManager::getNavigation(),
 
@@ -19,6 +21,10 @@ class DashboardController extends Controller
                 fn($w) => (is_string($w) ? $w::make() : $w)->toMeta(),
                 LarafusionManager::getWidgets()
             ),
+
+            // Default greeting/GitHub placeholder cards — shown only while ->widgets([])
+            // is present but empty. Remove that call, or add real widgets, to turn them off.
+            'showDefaultCards' => $panel?->showsDefaultDashboardCards() ?? false,
         ]);
     }
 }
