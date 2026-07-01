@@ -25,8 +25,6 @@ class DateColumn extends Column
         return $this;
     }
 
-    public function searchable(): static { return $this->filterable('date_range'); }
-
     public function toArray(): array
     {
         $arr = parent::toArray();

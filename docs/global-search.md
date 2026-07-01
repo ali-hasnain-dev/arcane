@@ -9,8 +9,9 @@ Every Larafusion panel can expose a global search bar (⌘/Ctrl+K). Enable it in
 ## Resource configuration
 
 ```php
-// Define which columns are searched
-protected static array $searchable = ['title', 'slug', 'body'];
+// Which columns are searched is inferred from ->searchable() on your table
+// columns (see Tables → Global Search). The legacy static array still works:
+// protected static array $searchable = ['title', 'slug', 'body'];
 
 // Customise result display
 public static function getGlobalSearchTitle(Model $record): string

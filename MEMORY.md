@@ -260,3 +260,44 @@ type-consistent by inspection; run `npm run typecheck` + `npm run build:widgets`
 
 Also removed the stale "Defaults already applied …" comment block from both
 table stubs in `MakeResourceCommand.php` (earlier in this session).
+
+---
+
+## 8. Session: column-driven table config (2026-07-01)
+
+Filament-style move — the `table()->columns([...])` list is now the single source
+of truth for search, inline-edit, relationship display, and what the query fetches.
+
+- **`->searchable()` decoupled from filters.** `Column::searchable(bool)` now sets a
+  real `$searchable` flag (global search), NOT `filterable()`. Removed the
+  `searchable()` overrides in TextColumn/BooleanColumn/BadgeColumn/DateColumn that
+  aliased to `filterable(<type>)`. **Behaviour change:** use `->filterable('boolean'|
+  'select'|'date_range')` for per-column filters now. Added `Column::isSearchable()`.
+- **`->inlineEditable()`** added on Column (+ `isInlineEditable()`). PHP method names
+  are case-insensitive so `->inlineeditable()` also works.
+- **Table builder** exposes `getSearchableColumnNames()` / `getInlineEditableColumnNames()`
+  (mirrors existing `getSortableColumnNames()`).
+- **Resource** `getSearchable()` = static `$searchable` ∪ column `->searchable()`;
+  `getInlineEditable()` now derives from column `->inlineEditable()` (was `[]`).
+  Both still overridable.
+- **Relationship columns (dot notation, e.g. `category.name`) now work:**
+  - ResourceController eager-loads relation paths (`->with(...)`, nested ok).
+  - Base-table SELECT narrowed to local cols + key + inline + deleted_at + title +
+    belongsTo FKs; skips narrowing for nested (`a.b.c`) → selects all base cols.
+  - Search: dotted searchable cols use `orWhereHas(relation, attr like)`.
+  - Sort: single-level belongsTo via correlated subquery `orderBy(Builder,...)`
+    (no join); other relation types render but don't sort. Guarded in try/catch.
+  - Frontend `BasicTable.tsx`: `resolveCellValue(record, 'category.name')` walks the
+    dotted path (relation eager-loaded → `record.category.name`). Column label
+    humanizes dots too → "Category Name".
+  - `import BelongsTo` added to ResourceController.
+- **Column-scoped fetch** = speed + security: undisplayed cols (e.g. `password`)
+  never leave the DB.
+- Scaffold: `MakeResourceCommand` drops `$searchable` from the resource stub, adds
+  `->searchable()` to generated text columns, removed now-dead `buildSearchableArray()`,
+  updated generic table-stub example comment.
+- Docs: tables.md (Global Search / Inline Editing / Relationship Columns /
+  Column-scoped queries sections + `->searchable()` semantics note), inline-editing.md,
+  resources.md table, global-search.md.
+- AdvancedTable.tsx (inactive phase-3 component) NOT updated for dotted paths — note
+  if it's ever activated.

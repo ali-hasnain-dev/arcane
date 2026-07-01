@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Inertia\Inertia;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Larafusion\LarafusionManager;
 use Larafusion\Tables\Table;
 use Larafusion\Fields\FileUpload;
@@ -23,13 +24,12 @@ class ResourceController extends Controller
         $model         = $resourceClass::getModelInstance();
         $query         = $model->newQuery();
 
-        // ── Column-narrowed SELECT ──────────────────────────────────────────────
-        // Only fetch the DB columns the configured table columns actually need —
-        // faster query, and stray columns (e.g. `password`) never leave the
-        // database at all. Skipped when any column references a relation (dot
-        // notation, e.g. 'author.name') — safely narrowing the local foreign key
-        // for every relation type is out of scope here, so those tables keep
-        // fetching all columns as before.
+        // ── Columns → eager loads + narrowed SELECT ─────────────────────────────
+        // The configured table columns drive exactly what leaves the database.
+        // Relationship columns (dot notation, e.g. 'category.name') are split off
+        // and eager-loaded; the base table SELECT is narrowed to only the local
+        // attributes the columns need, so faster queries AND stray columns like
+        // `password` never leave the DB.
         //
         // Note: if a record action's ->visibleWhen() closure reads an attribute
         // that isn't one of the displayed columns, it'll be null here — add that
@@ -37,18 +37,57 @@ class ResourceController extends Controller
         // in the SELECT.
         $tableColumns  = $resourceClass::table(Table::make())->getColumns();
         $columnNames   = array_map(fn ($c) => $c->getName(), $tableColumns);
-        $hasRelationColumn = !empty(array_filter($columnNames, fn ($name) => str_contains($name, '.')));
+        $localColumns  = array_values(array_filter($columnNames, fn ($n) => !str_contains($n, '.')));
+        $relationCols  = array_values(array_filter($columnNames, fn ($n) => str_contains($n, '.')));
 
-        if (!empty($columnNames) && !$hasRelationColumn) {
-            $needed = array_values(array_unique(array_filter(array_merge(
+        // Eager-load every relationship a column reads (supports nested paths like
+        // 'author.company.name'), avoiding N+1 queries. The whole relation is
+        // loaded via its own (cheap, separate) query rather than risk breaking
+        // hydration by under-selecting the related table's keys.
+        $relationPaths = array_values(array_unique(array_map(
+            fn ($n) => implode('.', array_slice(explode('.', $n), 0, -1)),
+            $relationCols
+        )));
+        if (!empty($relationPaths)) {
+            $query->with($relationPaths);
+        }
+
+        if (!empty($columnNames)) {
+            $needed = array_merge(
                 [$model->getKeyName()],
-                $columnNames,
+                $localColumns,
                 $resourceClass::getInlineEditable(),
                 $resourceClass::softDeletes() ? ['deleted_at'] : [],
                 $resourceClass::getRecordTitleAttribute() ? [$resourceClass::getRecordTitleAttribute()] : [],
-            ))));
+            );
 
-            $query->select($needed);
+            // For single-level belongsTo relations, add the local foreign key so
+            // the eager load can resolve. Nested relations (a.b.c) can't be safely
+            // narrowed here, so we skip narrowing and fetch all base columns.
+            $canNarrow = true;
+            foreach ($relationCols as $name) {
+                $segments = explode('.', $name);
+                if (count($segments) > 2) { $canNarrow = false; break; }
+                try {
+                    $relation = $model->{$segments[0]}();
+                } catch (\Throwable $e) {
+                    $canNarrow = false;
+                    break;
+                }
+                if ($relation instanceof BelongsTo) {
+                    $needed[] = $relation->getForeignKeyName();
+                }
+            }
+
+            if ($canNarrow) {
+                // Guard: only local columns belong in the base SELECT — a dotted
+                // name (relationship column) would be an invalid column here.
+                $select = array_filter(
+                    array_unique($needed),
+                    fn ($c) => $c !== null && $c !== '' && !str_contains((string) $c, '.'),
+                );
+                $query->select(array_values($select));
+            }
         }
 
         // ── Multi-tenancy scope ───────────────────────────────────────────────
@@ -63,7 +102,18 @@ class ResourceController extends Controller
         if ($search && !empty($searchable)) {
             $query->where(function ($q) use ($searchable, $search) {
                 foreach ($searchable as $col) {
-                    $q->orWhere($col, 'like', "%{$search}%");
+                    if (str_contains($col, '.')) {
+                        // Relationship column (e.g. 'author.name') → search the
+                        // related table via whereHas on the relation path.
+                        $segments = explode('.', $col);
+                        $attr     = array_pop($segments);
+                        $relation = implode('.', $segments);
+                        $q->orWhereHas($relation, function ($rq) use ($attr, $search) {
+                            $rq->where($attr, 'like', "%{$search}%");
+                        });
+                    } else {
+                        $q->orWhere($col, 'like', "%{$search}%");
+                    }
                 }
             });
         }
@@ -111,7 +161,35 @@ class ResourceController extends Controller
         $sortField = $request->get('sort', $defaultSortField);
         $sortDir   = $request->get('direction', $defaultSortDir);
         if (in_array($sortField, array_merge($resourceClass::getSortable(), ['id']))) {
-            $query->orderBy($sortField, $sortDir);
+            if (str_contains($sortField, '.')) {
+                // Relationship sort — single-level belongsTo via a correlated
+                // subquery (no join, no ambiguous column names). Other relation
+                // types are left unsorted rather than throwing.
+                $segments = explode('.', $sortField);
+                if (count($segments) === 2) {
+                    [$rel, $attr] = $segments;
+                    try {
+                        $relation = $model->{$rel}();
+                        if ($relation instanceof BelongsTo) {
+                            $related = $relation->getRelated();
+                            $query->orderBy(
+                                $related->newQuery()
+                                    ->select($attr)
+                                    ->whereColumn(
+                                        $related->getTable() . '.' . $relation->getOwnerKeyName(),
+                                        $model->getTable() . '.' . $relation->getForeignKeyName()
+                                    )
+                                    ->limit(1),
+                                $sortDir
+                            );
+                        }
+                    } catch (\Throwable $e) {
+                        // Unsupported relationship sort — keep default order.
+                    }
+                }
+            } else {
+                $query->orderBy($sortField, $sortDir);
+            }
         }
 
         // Soft-delete trashed filter

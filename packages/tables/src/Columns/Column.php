@@ -8,6 +8,8 @@ class Column
     protected string  $label;
     protected string  $type          = 'text';
     protected bool    $sortable      = false;
+    protected bool    $searchable    = false;
+    protected bool    $inlineEditable = false;
     protected bool    $filterable    = false;
     protected string  $filterType    = 'text';
     protected array   $filterOptions = [];
@@ -20,7 +22,9 @@ class Column
     public function __construct(string $name)
     {
         $this->name  = $name;
-        $this->label = ucwords(str_replace(['_', '-'], ' ', $name));
+        // Dot-notation relationship columns (e.g. 'category.name') humanize the
+        // full path so the header reads "Category Name" rather than "Category.name".
+        $this->label = ucwords(str_replace(['_', '-', '.'], ' ', $name));
     }
 
     // ── Factories (backward-compatible shortcuts) ─────────────────────────────
@@ -60,9 +64,29 @@ class Column
         return $this;
     }
 
-    public function searchable(): static
+    /**
+     * Mark this column for the table's global search box (Filament-style).
+     * The resource auto-collects every searchable column into its search set —
+     * no separate `$searchable` array needed. Works on relationship columns too
+     * (e.g. TextColumn::make('author.name')->searchable() searches via the
+     * related table). This is search, not filtering — use ->filterable() for
+     * a per-column filter control.
+     */
+    public function searchable(bool $v = true): static
     {
-        return $this->filterable('text');
+        $this->searchable = $v;
+        return $this;
+    }
+
+    /**
+     * Allow this column to be edited inline in the index table. The resource
+     * auto-collects inline-editable columns — no separate array needed. Only
+     * makes sense for plain (non-relationship) columns backed by a form field.
+     */
+    public function inlineEditable(bool $v = true): static
+    {
+        $this->inlineEditable = $v;
+        return $this;
     }
 
     public function toggleable(bool $hiddenByDefault = false): static
@@ -73,8 +97,10 @@ class Column
     }
 
     // ── Getters ───────────────────────────────────────────────────────────────
-    public function getName(): string  { return $this->name; }
-    public function isSortable(): bool { return $this->sortable; }
+    public function getName(): string        { return $this->name; }
+    public function isSortable(): bool       { return $this->sortable; }
+    public function isSearchable(): bool     { return $this->searchable; }
+    public function isInlineEditable(): bool { return $this->inlineEditable; }
 
     public function toArray(): array
     {

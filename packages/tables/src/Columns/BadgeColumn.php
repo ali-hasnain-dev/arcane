@@ -83,8 +83,6 @@ class BadgeColumn extends Column
         return $this;
     }
 
-    public function searchable(): static { return $this->filterable('select'); }
-
     public function toArray(): array
     {
         $arr = parent::toArray();

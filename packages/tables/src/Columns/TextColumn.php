@@ -71,11 +71,6 @@ class TextColumn extends Column
         return $this;
     }
 
-    public function searchable(): static
-    {
-        return $this->filterable('text');
-    }
-
     public function toArray(): array
     {
         $arr = parent::toArray();

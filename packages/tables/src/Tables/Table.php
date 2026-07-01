@@ -228,6 +228,36 @@ class Table
     }
 
     /**
+     * Column names declared ->searchable(). Used by Resource::getSearchable()
+     * so the global search set is inferred from the columns instead of a
+     * separate static $searchable array.
+     */
+    public function getSearchableColumnNames(): array
+    {
+        $names = [];
+        foreach ($this->columns as $col) {
+            if (method_exists($col, 'isSearchable') && $col->isSearchable()) {
+                $names[] = $col->getName();
+            }
+        }
+        return $names;
+    }
+
+    /**
+     * Column names declared ->inlineEditable(). Used by Resource::getInlineEditable().
+     */
+    public function getInlineEditableColumnNames(): array
+    {
+        $names = [];
+        foreach ($this->columns as $col) {
+            if (method_exists($col, 'isInlineEditable') && $col->isInlineEditable()) {
+                $names[] = $col->getName();
+            }
+        }
+        return $names;
+    }
+
+    /**
      * Serialise non-column table config for the React frontend.
      */
     public function toConfig(): array

@@ -84,13 +84,30 @@ abstract class Resource
     public static function softDeletes(): bool { return false; }
 
     // ── Inline Editing ────────────────────────────────────────────────────────
-    /** Return field names that are editable inline in the index table. */
-    public static function getInlineEditable(): array { return []; }
+    /**
+     * Column names editable inline in the index table. Inferred from any table
+     * column declared ->inlineEditable(); override to set them explicitly.
+     */
+    public static function getInlineEditable(): array
+    {
+        return static::table(Table::make())->getInlineEditableColumnNames();
+    }
 
     // ── Getters ───────────────────────────────────────────────────────────────
     public static function getModel(): string           { return static::$model; }
     public static function getPerPage(): int            { return static::$perPage; }
-    public static function getSearchable(): array       { return static::$searchable; }
+
+    /**
+     * All searchable field names: the legacy static $searchable array PLUS any
+     * table column declared ->searchable(). Lets you drop the $searchable array
+     * entirely and mark columns instead (relationship columns supported).
+     */
+    public static function getSearchable(): array
+    {
+        $fromClass = static::$searchable;
+        $fromTable = static::table(Table::make())->getSearchableColumnNames();
+        return array_values(array_unique(array_merge($fromClass, $fromTable)));
+    }
 
     /**
      * Returns all sortable field names: the static $sortable array PLUS any

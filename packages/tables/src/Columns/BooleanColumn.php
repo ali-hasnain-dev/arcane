@@ -23,8 +23,6 @@ class BooleanColumn extends Column
     public function trueLabel(string $l): static     { $this->trueLabel  = $l;     return $this; }
     public function falseLabel(string $l): static    { $this->falseLabel = $l;     return $this; }
 
-    public function searchable(): static { return $this->filterable('boolean'); }
-
     public function toArray(): array
     {
         return array_merge(parent::toArray(), array_filter([

@@ -9,6 +9,53 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) conventions
 
 ### Added
 
+#### Column-driven table configuration (Filament-style)
+- **`->searchable()` on columns** — mark any table column searchable and the resource
+  collects them automatically; the `$searchable` array is no longer required.
+  ```php
+  ->columns([
+      TextColumn::make('title')->searchable(),
+      TextColumn::make('author.name')->searchable(),   // searches the related table
+  ])
+  ```
+  The legacy `protected static array $searchable` still works and is merged in if present.
+- **`->inlineEditable()` on columns** — opt a column into inline editing directly on the
+  column; `Resource::getInlineEditable()` auto-detects them (still overridable). Method
+  names are case-insensitive, so `->inlineeditable()` also works.
+- **Relationship columns (dot notation)** — `TextColumn::make('category.name')` now renders.
+  The relation is eager-loaded (no N+1), searched via `whereHas`, and sorted (single-level
+  `belongsTo`) via a correlated subquery. The frontend resolves the dotted path and the
+  header humanizes it ("Category Name").
+- **Column-scoped `SELECT`** — the index query only fetches the local columns the table
+  declares (plus key, inline-editable, soft-delete, record-title, and `belongsTo` foreign
+  keys). Faster queries, and undisplayed columns (e.g. `password`) never leave the DB.
+  Deeply nested relations (`a.b.c`) safely fall back to selecting all base columns.
+
+#### Dashboard widget data animations
+- **`->widgetAnimations(bool $enabled = true)`** on `Panel` — off by default. When enabled,
+  the **data inside** each dashboard widget animates on first load (once, never on polling):
+  stat numbers count up (with sparkline draw-in), line/area charts wipe in left→right,
+  bars grow up, pie/doughnut slices sweep around (with the centre total counting up), and
+  radar/polar plots grow from the centre. Fully disabled under `prefers-reduced-motion`.
+
+### Changed
+
+- **`Column::searchable()` now means global search, not filtering.** Previously it (and the
+  per-type overrides on Text/Boolean/Badge/Date columns) aliased to `->filterable(<type>)`.
+  Use `->filterable('select'|'boolean'|'date_range')` for a per-column filter; use
+  `->searchable()` for the shared search box (matches Filament).
+- **Create button has no default icon.** `CreateAction` and the fallback header action no
+  longer inject a `plus` icon — add one explicitly with `CreateAction::make()->icon('plus')`.
+- **`->deferLoading()` skeleton keeps the search bar.** The loading placeholder now renders
+  the real search toolbar and only skeletonizes the rows below the table headers.
+- `Resource::getSearchable()` and `getInlineEditable()` are derived from `table()` columns
+  (merged with the legacy arrays where present).
+
+### Removed
+
+- Stale "Defaults already applied …" comment block from the generated `*Table` stubs
+  (`larafusion:resource`).
+
 #### Simple Pagination
 - **`->simplePagination(bool $simple = true)`** on both `Table` builder and `Panel`:
   - Table-level setting always takes precedence over the panel-level default.

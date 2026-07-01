@@ -21,7 +21,6 @@ class UserResource extends Resource
     protected static string $model          = User::class;
     protected static string $navigationIcon = 'users';
     protected static string $recordLabel    = 'User';
-    protected static array  $searchable     = ['name', 'email'];
 
     public static function form(): array
     {
@@ -73,7 +72,7 @@ To opt in to **explicit control** (skips auto-discovery):
 | `$slug`                               | auto       | URL slug (auto: model name + 's')                                                          |
 | `$recordLabel`                        | `'Record'` | Label used in flash messages                                                               |
 | `$perPage`                            | `10`       | Default pagination size                                                                    |
-| `$searchable`                         | `[]`       | Column names used for the global search box                                                |
+| `$searchable`                         | `[]`       | Legacy global-search columns — optional; prefer `->searchable()` on columns (auto-merged)  |
 | `$sortable`                           | `[]`       | Column names sortable server-side (auto-merged from `table()` columns with `->sortable()`) |
 | `form()`                              | —          | Field definitions (required)                                                               |
 | `table(Table $table): Table`          | delegates  | Filament-style table builder (columns, filters, record/bulk actions, sort)                 |
@@ -84,7 +83,7 @@ To opt in to **explicit control** (skips auto-discovery):
 | `importable()`                        | `false`    | Enable CSV import wizard                                                                   |
 | `softDeletes()`                       | `false`    | Show Trashed tab + restore/force-delete                                                    |
 | `useModalForms()`                     | `false`    | Open create/edit in a modal instead of a new page                                          |
-| `getInlineEditable()`                 | `[]`       | Field names editable inline in the table                                                   |
+| `getInlineEditable()`                 | auto       | Inline-editable columns — auto-detected from `->inlineEditable()`; override to set manually |
 | `getNavigationBadge()`                | `null`     | Badge count shown on the sidebar item                                                      |
 | `getGlobalSearchTitle($record)`       | auto       | Primary line in global search results                                                      |
 | `getGlobalSearchDescription($record)` | auto       | Secondary line in global search results                                                    |

@@ -70,6 +70,11 @@
 - [x] `->filtersFormColumns()`, `->filtersFormWidth()`, `->filtersFormMaxHeight()`, `->hiddenFilterIndicators()` all wired to the React frontend
 - [x] Filter query closures now correctly applied via `applyToQuery()` — `->attribute()` and `->query()` are respected server-side
 - [x] Auto-merge of sortable from table builder into server-side sort allowlist
+- [x] **Column-driven search** — `->searchable()` on columns; resource auto-collects them (no `$searchable` array); `->searchable()` now means global search, not a per-column filter
+- [x] **Column-driven inline editing** — `->inlineEditable()` on columns; `getInlineEditable()` auto-detects them
+- [x] **Relationship columns** — dot notation (e.g. `category.name`): eager-loaded, searchable via `whereHas`, `belongsTo` sortable via correlated subquery, dotted-path resolved on the frontend
+- [x] **Column-scoped `SELECT`** — index query fetches only declared local columns (+ key, inline, soft-delete, title, `belongsTo` FKs); undisplayed columns like `password` never leave the DB
+- [x] `->deferLoading()` skeleton keeps the search toolbar; only rows below the header are skeletonized
 - [x] Legacy `Column::*` factories fully backward-compatible
 - [x] Built-in record actions: `->recordActions([EditAction, DeleteAction, ViewAction])` — opt-in, only defined actions shown
 - [x] **`Action::make()`** — Filament-style custom action inside `recordActions()`: server callback, URL navigation, confirmation modal (`requiresConfirmation`, `modalHeading`, `modalDescription`, `modalSubmitActionLabel`), display modes, visibility, success/failure notifications, tooltip, badge
@@ -126,6 +131,7 @@
 - [x] Inertia v3: `once()`, `defer()`, `only:[]`, optimistic updates, `<Link prefetch>`
 - [x] Plugins — navigation items, layout slots, lifecycle hooks
 - [x] Widgets — StatsOverview, Chart (pure SVG), Table
+- [x] **Widget data animations** — `->widgetAnimations()` on Panel (off by default): numbers count up, sparklines/lines draw in, bars grow, pie/doughnut sweep, radar/polar grow from centre; plays once, respects `prefers-reduced-motion`
 - [x] Authorization — `canViewAny`, `canCreate`, `canEdit`, `canDelete`, `canView`
 
 ---

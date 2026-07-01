@@ -50,6 +50,18 @@ function badgeClasses(color?: string) {
 import FilterPanel, { SideFilterSidebar } from './BasicFilterPanel';
 import type { StandaloneFilter } from './BasicFilterPanel';
 
+// ─── Read a (possibly dotted) column value from a record ───────────────────────
+// Relationship columns use dot notation (e.g. 'category.name'); the backend
+// eager-loads the relation so `record.category.name` is present. Walk the path
+// safely so a missing/null relation yields undefined (rendered as an em dash).
+function resolveCellValue(record: Record<string, unknown>, name: string): unknown {
+    if (!name.includes('.')) return record[name];
+    return name.split('.').reduce<unknown>(
+        (acc, key) => (acc == null ? undefined : (acc as Record<string, unknown>)[key]),
+        record,
+    );
+}
+
 // ─── Flatten layout items to fields ───────────────────────────────────────────
 function flattenFields(items: FormSchemaItem[]): LarafusionField[] {
     const out: LarafusionField[] = [];
@@ -1264,7 +1276,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                                                             <td key={col.name} className="px-4 py-3.5">
                                                                 {inlineEditable.includes(col.name) && !trashed && field
                                                                     ? <InlineCell field={field} value={(record as FormValues)[col.name]} resourceSlug={resource.slug} id={id} />
-                                                                    : <CellValue col={col} field={field} value={(record as FormValues)[col.name]} />
+                                                                    : <CellValue col={col} field={field} value={resolveCellValue(record as Record<string, unknown>, col.name)} />
                                                                 }
                                                             </td>
                                                         );

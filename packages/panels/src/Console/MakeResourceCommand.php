@@ -386,6 +386,9 @@ class MakeResourceCommand extends Command
         } else {
             $extra = '->sortable()';
         }
+        // varchar columns feed the global search box — mark them ->searchable()
+        // so the resource auto-detects them (no separate $searchable array).
+        $extra .= '->searchable()';
         if ($col === 'email' || str_ends_with($col, '_email')) {
             $extra .= '->copyable()';
         }
@@ -408,41 +411,12 @@ class MakeResourceCommand extends Command
         return array_unique($classes);
     }
 
-    // ── Searchable array ──────────────────────────────────────────────────────
-
-    protected function buildSearchableArray(array $schema): string
-    {
-        $cols = [];
-        foreach ($schema as $col => $rawType) {
-            if (in_array($col, self::SKIP_TABLE))          continue; // system fields
-            if (str_ends_with($col, '_id'))                continue; // FKs
-            if ($this->isBoolean($col, $rawType))          continue; // booleans
-            if ($this->isJsonColumn($col))                 continue; // JSON
-            // Skip enum-like names — use filters, not search
-            $base = preg_replace('/^.+_/', '', $col);
-            if (in_array($col, self::ENUM_NAMES) || in_array($base, self::ENUM_NAMES)) continue;
-            // Skip image/file/color/url-type columns
-            if (preg_match('/(_image|_photo|_avatar|_icon|_thumb|_url|_path|_color|_colour|_token)$/', $col)) continue;
-            if (in_array($col, ['avatar', 'photo', 'image', 'thumbnail', 'icon'])) continue;
-
-            $type = $this->normaliseType($rawType);
-            // Only varchar columns make sense for LIKE search; text is slow and rarely useful
-            if ($type !== 'varchar')  continue;
-
-            $cols[] = $col;
-        }
-        if (empty($cols)) return "['name']";
-        $quoted = array_map(fn($c) => "'{$c}'", $cols);
-        return '[' . implode(', ', $quoted) . ']';
-    }
-
     // ── Stubs ─────────────────────────────────────────────────────────────────
 
     protected function resourceStub(string $name, string $plural, string $ns, array $schema, string $icon, string $titleAttribute = '', bool $hasViewPage = false): string
     {
         $model      = "App\\Models\\{$name}";
         $label      = Str::headline($name);
-        $searchable = $schema ? $this->buildSearchableArray($schema) : "['name']";
 
         $titleAttrLine = $titleAttribute !== ''
             ? "    protected static ?string \$recordTitleAttribute = '{$titleAttribute}';"
@@ -479,7 +453,6 @@ class {$name}Resource extends Resource
     protected static ?string \$navigationIcon      = '{$icon}';
     protected static string  \$recordLabel         = '{$label}';
 {$titleAttrLine}
-    protected static array   \$searchable          = {$searchable};
 
     public static function form(): array
     {
@@ -645,7 +618,8 @@ class {$plural}Table
         return \$table
             ->columns([
                 // No columns defined yet — add them here, e.g.:
-                // TextColumn::make('name')->sortable()->weight('semibold'),
+                // TextColumn::make('name')->sortable()->searchable()->inlineEditable()->weight('semibold'),
+                // TextColumn::make('category.name')->label('Category')->sortable()->searchable(), // relationship column
                 // DateColumn::make('created_at')->sortable()->since(),
             ])
             ->recordActions([

@@ -291,7 +291,8 @@ use Larafusion\Columns\TextColumn;
 
 TextColumn::make('title')
     ->sortable()
-    ->searchable()      // adds per-column filter input
+    ->searchable()      // include this column in the table's global search box
+    ->inlineEditable()  // edit this cell inline in the index table
     ->copyable()        // click-to-copy button
     ->limit(80)         // truncate at N characters
     ->wrap()            // allow text to wrap across lines
@@ -400,6 +401,8 @@ All column classes extend the base `Column` and share these methods:
 TextColumn::make('name')
     ->label('Full Name')   // override auto-generated label
     ->sortable()           // show sort icon; enables server-side sorting
+    ->searchable()         // include in the table's global search box
+    ->inlineEditable()     // allow editing the value inline in the table
     ->hidden()             // hide from table
     ->align('right')       // 'left' | 'center' | 'right'
     ->width('200px')       // fixed column width
@@ -415,6 +418,75 @@ TextColumn::make('name')
     ->toggleable()                   // user can show/hide this column
     ->toggleable(hiddenByDefault: true)  // hidden by default, user can enable
 ```
+
+> `->searchable()` is **search**, not filtering — it adds the column to the shared
+> search box at the top of the table. `->filterable()` is separate and adds a
+> per-column filter control. (Earlier versions aliased `->searchable()` to a filter;
+> it now means global search, matching Filament.)
+
+---
+
+### Global Search (column-driven)
+
+Mark any column `->searchable()` and the resource collects them automatically — there
+is **no `$searchable` array to maintain**. The search box appears in the toolbar as
+soon as at least one column is searchable, and typing runs a `LIKE` across every
+searchable column.
+
+```php
+->columns([
+    TextColumn::make('title')->searchable(),
+    TextColumn::make('slug')->searchable(),
+    TextColumn::make('author.name')->searchable(),   // searches the related table
+])
+```
+
+Relationship columns (dot notation) are searched via `whereHas` on the relation, so
+`author.name` matches against the related model's `name`. The legacy
+`protected static array $searchable = [...]` still works and is merged in if present,
+but you no longer need it.
+
+### Inline Editing (column-driven)
+
+Mark a column `->inlineEditable()` to let users edit that cell directly in the table
+(the column must be backed by a form field of the same name). The resource collects
+inline-editable columns automatically — no separate array needed.
+
+```php
+->columns([
+    TextColumn::make('title')->inlineEditable(),
+])
+```
+
+### Relationship Columns
+
+Use dot notation to display a value from a related model. The relation is eager-loaded
+(no N+1), so the value renders correctly:
+
+```php
+->columns([
+    TextColumn::make('category.name')->label('Category')->sortable()->searchable(),
+])
+```
+
+- **Display** — the frontend resolves the dotted path (`record.category.name`).
+- **Search** — handled via `whereHas` when the column is `->searchable()`.
+- **Sort** — supported for single-level `belongsTo` relations via a correlated
+  subquery (no joins). Other relation types render but aren't click-sortable.
+
+### Column-scoped queries (fast & safe by default)
+
+The index query only `SELECT`s the local columns your table actually declares (plus the
+primary key, any inline-editable columns, the soft-delete column, the record-title
+attribute, and the foreign keys needed for `belongsTo` relationship columns). This means
+smaller, faster queries and — importantly — columns you don't display (e.g. `password`)
+never leave the database. Relationship columns are eager-loaded separately. Narrowing is
+skipped only for deeply nested relations (`a.b.c`), which safely fall back to selecting
+all base columns.
+
+> If a record-action `->visibleWhen()` closure reads an attribute that isn't one of your
+> displayed columns, include that attribute as a column (even `->hidden()`) so it stays
+> in the `SELECT`.
 
 ---
 
