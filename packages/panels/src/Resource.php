@@ -165,7 +165,7 @@ abstract class Resource
      */
     public static function getTableConfig(): array
     {
-        return static::table(Table::make())->toConfig();
+        return static::table(Table::make())->forModel(static::getModel())->toConfig();
     }
 
     /** Actions schema — strips hidden actions and serializes to arrays. */

@@ -2,10 +2,13 @@
 
 namespace Larafusion\Tables;
 
+use Larafusion\Tables\Filters\SelectFilter;
+
 class Table
 {
     protected array   $columns              = [];
     protected array   $filters              = [];
+    protected ?string $model                = null;
     protected ?array  $recordActions        = null;
     protected ?array  $toolbarActions       = null;
     protected ?string $defaultSortField     = null;
@@ -57,6 +60,18 @@ class Table
         $this->filters = $filters;
         return $this;
     }
+
+    /**
+     * Provide the resource model class so relationship-backed filters can resolve
+     * their options during serialization. Set by Resource::getTableConfig().
+     */
+    public function forModel(?string $model): static
+    {
+        $this->model = $model;
+        return $this;
+    }
+
+    public function getModel(): ?string { return $this->model; }
 
     // ── Filter layout ─────────────────────────────────────────────────────────
 
@@ -283,9 +298,16 @@ class Table
         if ($this->deferLoading)          $config['deferLoading']         = true;
         if ($this->reorderable)           $config['reorderable']          = $this->reorderColumn;
 
-        // Serialize standalone filters for React
+        // Serialize standalone filters for React. Relationship-backed SelectFilters
+        // resolve their option map here, where the resource model is known.
         if (!empty($this->filters)) {
-            $config['standaloneFilters'] = array_map(fn($f) => $f->toArray(), $this->filters);
+            $config['standaloneFilters'] = array_map(function ($f) {
+                $arr = $f->toArray();
+                if ($f instanceof SelectFilter && $f->hasRelationship()) {
+                    $arr['options'] = $f->resolveOptions($this->model);
+                }
+                return $arr;
+            }, $this->filters);
         }
 
         // Filter layout config

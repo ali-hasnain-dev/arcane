@@ -607,11 +607,97 @@ SelectFilter::make('status')
 | Method | Description |
 | ------ | ----------- |
 | `->options([...])` | `'value' => 'Label'` map of selectable options |
+| `->options(MyEnum::class)` | Auto-populate from a BackedEnum's cases |
+| `->relationship('rel', 'name')` | Populate options from a related model and filter through the relationship |
 | `->multiple()` | Allow selecting multiple values at once |
 | `->searchable()` | Show a search box inside the option list |
 | `->attribute('column')` | DB column override |
 | `->default($value)` | Pre-selected value or array |
 | `->query(fn($q, $v) => ...)` | Custom query; receives the selected value(s) |
+
+##### Relationship options
+
+Populate the option list from an Eloquent relationship on the resource model.
+Options become `relatedKey => titleAttribute`, and filtering runs through the
+relationship (`whereHas`), so it works for `belongsTo`, `hasMany`, and
+`belongsToMany`:
+
+```php
+SelectFilter::make('Category')
+    ->relationship('category', 'name')   // relationship method, title column
+    ->multiple()                          // selecting several categories
+    ->searchable();                       // search box in the option list
+```
+
+Scope the option query with an optional third closure argument:
+
+```php
+SelectFilter::make('Author')
+    ->relationship('author', 'name', fn ($query) => $query->where('is_active', true))
+    ->searchable();
+```
+
+Options are resolved server-side when the table config is serialized (the
+resource model is known there) and sent to the client, so no extra request is
+needed. `->preload()` is accepted for Filament compatibility but is a no-op —
+options are always preloaded.
+
+##### Enum options (label, color, icon, description)
+
+Pass a `BackedEnum` to `->options()` and the filter automatically picks up each
+case's label, color, icon, and description from the `HasLabel` / `HasColor` /
+`HasIcon` / `HasDescription` contracts — the same ones `BadgeColumn::enum()`
+uses — so options render as coloured, icon-badged rows that match the table:
+
+```php
+SelectFilter::make('status')
+    ->options(PostStatus::class)   // enum implementing HasLabel/HasColor/HasIcon
+    ->multiple()
+    ->searchable();
+```
+
+You can also set the metadata manually for a plain array of options:
+
+```php
+SelectFilter::make('priority')
+    ->options(['low' => 'Low', 'high' => 'High'])
+    ->colors(['low' => 'gray', 'high' => 'danger'])
+    ->icons(['high' => 'flame'])
+    ->descriptions(['high' => 'Needs attention now']);
+```
+
+Rendering rules on the client:
+
+- **Multiple**, **searchable**, or **any option metadata present** → the rich
+  dropdown (chips, search box, coloured/icon option rows, descriptions),
+  matching the form `Select` field with `->native(false)`.
+- Plain single select with no metadata → a lightweight native `<select>`.
+
+###### Opting out of enum metadata
+
+The enum may define colors/icons/descriptions, but a given filter can suppress
+any or all of them — without changing the enum:
+
+```php
+SelectFilter::make('status')->options(PostStatus::class)->withoutIcons();
+SelectFilter::make('status')->options(PostStatus::class)->withoutColors();
+SelectFilter::make('status')->options(PostStatus::class)->withoutDescriptions();
+
+// Labels only — no color, icon, or description:
+SelectFilter::make('status')->options(PostStatus::class)->plain();
+```
+
+| Method | Effect |
+| ------ | ------ |
+| `->withoutColors()` | Neutral chips/labels instead of coloured ones |
+| `->withoutIcons()` | Hide the per-option icon |
+| `->withoutDescriptions()` | Hide the helper description under each option |
+| `->plain()` | All of the above — labels only |
+
+Each accepts an optional boolean condition (e.g. `->withoutIcons($isCompact)`),
+and the toggles are order-independent — they work whether called before or after
+`->options()`. With `->plain()` on a non-searchable single select, the control
+falls back to the lightweight native `<select>`.
 
 ---
 

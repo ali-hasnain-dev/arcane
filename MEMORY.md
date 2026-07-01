@@ -301,3 +301,145 @@ of truth for search, inline-edit, relationship display, and what the query fetch
   resources.md table, global-search.md.
 - AdvancedTable.tsx (inactive phase-3 component) NOT updated for dotted paths — note
   if it's ever activated.
+
+---
+
+## 9. Session: test-app frontend sync + vite.config Vite-8 fix (2026-07-01)
+
+Goal was "rebuild + reinstall so the consumer app (`arcane-test-v2`) reflects
+current package state." Findings + what changed:
+
+- **Consumer's `vite.config.js` had drifted from the InstallCommand generator.**
+  The hand-edited consumer copy used `resolve.alias` pointing at
+  `vendor/<base>/<pkg>/resources/js/index` **without an extension**. Vite 8
+  (rolldown-vite, what the consumer now has) does NOT auto-append `.ts` to alias
+  targets, so every `@larafusion/*` import failed (`UNLOADABLE_DEPENDENCY` /
+  `Rolldown failed to resolve import "@larafusion/forms"`). The **generator in
+  `InstallCommand.php` was already correct** — it resolves bare `@larafusion/*`
+  via a `bareVendorMap` + `resolveFile()` (which appends `/index.ts`), no alias.
+  Fix: rewrote the consumer `vite.config.js` to use the generator's
+  `larafusionResolve` plugin (bareVendorMap + resolveFile) **plus** the
+  `vendor/larafusion`→`vendor/arcane` fallback detection (generator hardcodes
+  `vendor/larafusion`; consumer still on legacy `vendor/arcane` until composer
+  update). No generator change needed. `npm run build` then passes clean
+  (all pages compiled; fresh `public/build`).
+- **Consumer PHP is live but composer-stale.** `vendor/composer/installed.json`
+  still lists packages as `arcane/*` (old names) but `autoload_psr4.php` maps
+  `Larafusion\*` → `vendor/arcane/*/src` (live symlinks to
+  `packages/*`), so current PHP changes ARE reflected. Not yet reconciled to the
+  `larafusion/*` rename: `composer.json` now requires `larafusion/larafusion`,
+  `vendor/larafusion` doesn't exist, `infolists` is absent from autoload (not
+  referenced by the demo app), and `config/larafusion.php` isn't published.
+  Full reconcile needs, on the user's machine:
+  `composer update` → `php artisan larafusion:install` (idempotency guards skip
+  the already-fixed vite.config/app.tsx/app.css) → `php artisan optimize:clear`
+  → `npm run build`. After composer creates `vendor/larafusion`, the consumer
+  vite.config auto-switches to it via the fallback detection.
+- Note: could not run composer/php/artisan in the work sandbox (no php runtime);
+  node was provisioned manually to run the JS build. `vendor/*` symlinks use
+  absolute `/home/...` paths, so the build only resolves when that path exists.
+
+---
+
+## 10. Session: SelectFilter ->relationship() (2026-07-01)
+
+Filament-style relationship-backed select filter. **No React changes** —
+`BasicFilterPanel.tsx` already renders `type:'select'` with
+`options: Record<string,string>` + `multiple`/`searchable`; only the option map
+was missing for relationship filters.
+
+- `SelectFilter` (`packages/tables/src/Tables/Filters/SelectFilter.php`):
+  - `relationship(string $name, string $titleAttribute = 'name', ?Closure $modifyQueryUsing = null)`
+    stores rel + title col + optional options-query scope.
+  - `resolveOptions(?string $modelClass)`: `new $model; $model->{rel}();
+    $relation->getRelated()->newQuery()->pluck($title, $keyName)`, values cast to
+    string; wrapped in try/catch → falls back to static `->options()` (or `[]`).
+  - `applyToQuery()` rewritten around a `normalizeValues()` helper (array /
+    comma-string / scalar → clean list). Relationship set → `whereHas($rel,
+    fn($q) => $q->whereKey($values))` (works for belongsTo/hasMany/belongsToMany,
+    single or multiple). Non-relationship keeps old where/whereIn behaviour.
+    Empty value = no-op. `->query()` closure still wins.
+  - `preload()` added as an accepted no-op (Filament compat; options always
+    preloaded/serialized).
+- **Model context for option resolution:** `Table` got `protected ?string
+  $model` + `forModel(?string)` + `getModel()`; `Table::toConfig()` now resolves
+  relationship options for each `SelectFilter` (`use
+  Larafusion\Tables\Filters\SelectFilter`). `Resource::getTableConfig()` passes
+  `static::getModel()` via `->forModel(...)`. Query-side filter application in
+  `ResourceController` already calls `applyToQuery` on the live query, so no
+  controller change needed.
+- Verified with static php 8.3: `php -l` clean on all 3 files; ran isolated
+  mock tests of `applyToQuery` (all branches) and `resolveOptions` (rel map,
+  static fallback, missing-rel/null-model fallback). Frontend `npm run build`
+  still green.
+- Demo already present in the test app: `PostsTable` uses
+  `SelectFilter::make('category')->relationship('category','name')->multiple()->searchable()`
+  (Post `belongsTo` Category) — was a runtime error before, now works.
+  `UsersTable` still passes a Model class to `->options()` (yields `[]`, a
+  pre-existing demo quirk; User has no category relation) — left as-is.
+- Docs: `docs/tables.md` SelectFilter section (relationship options subsection +
+  table rows).
+- **Follow-up: multi-select filter now mirrors the form Select field UI.**
+  `BasicFilterPanel.tsx` — removed the always-open `ChecklistOptions` and the
+  first-pass `MultiSelectDropdown`; added `SearchableSelect`, a self-contained
+  component that replicates the forms package `CustomSelect`
+  (`SelectField.tsx`, `->native(false)->searchable()`): pill chips for selected
+  values (primary/10 bg, removable X), position-aware open direction (openUp via
+  getBoundingClientRect), search box with a `Search` icon (auto-focus),
+  checkmarked option rows, clear-all X, and an empty/"No results" state.
+  Supports `multiple` (default) and single. Used for the standalone
+  `SelectFilter->multiple()` control (search from `filter.searchable`) and the
+  column-level select filter (search auto-enabled when >8 options). Single
+  standalone select still uses the native `<select>`.
+  - **Why duplicated, not imported from forms:** `tables` and `forms` are
+    sibling packages (both depend on `support`); `tables → forms` would violate
+    the layering. A future refactor could hoist a generic `SearchableSelect`
+    into `@larafusion/support` and have both forms + tables consume it.
+  - tsc clean for the file (only pre-existing peer-dep module-resolution errors
+    remain); test-app `npm run build` green.
+- **Follow-up 2: popover portaled to `<body>` (was clipped by the panel).**
+  Inside the icon-triggered `dropdown` layout the panel body is
+  `overflow-y-auto` (max-h 28rem), which clipped/cramped the inner popover and
+  made it collide with the "Apply filters" footer (user screenshot). Fixed:
+  `SearchableSelect` now renders its popover via `createPortal(..., document.body)`
+  with `position: fixed` coords computed from the trigger's `getBoundingClientRect`
+  (`computePosition`), flips above when `spaceBelow < 240` & more room above,
+  and clamps the list height to available space. Repositions on `scroll`
+  (capture) + `resize` while open. Popover tagged `data-lf-portal`; the filter
+  panel's own outside-click handler now early-returns on
+  `target.closest('[data-lf-portal]')` so selecting an option doesn't close the
+  whole panel. `react-dom` is a declared dep of `packages/tables`.
+- **Follow-up 3: enum metadata (label/color/icon/description) on SelectFilter.**
+  Reuses the existing `EnumOptions::toColors/toIcons/toDescriptions` +
+  `HasColor`/`HasIcon`/`HasDescription` contracts (same as `BadgeColumn::enum()`).
+  - PHP `SelectFilter`: `options(EnumClass)` now also fills `$optionColors`,
+    `$optionIcons`, `$optionDescriptions`; manual setters `colors()`, `icons()`,
+    `descriptions()` (merge over enum-derived). `toArray()` emits the three maps
+    only when non-empty. Verified via static-php mock (enum + manual merge).
+  - Shared colours: extracted `COLOR_CLASSES` + `badgeClasses` (+ new
+    `colorClass()`) out of `BasicTable.tsx` into
+    `packages/tables/resources/js/lib/colors.ts`; `BasicTable` now imports them
+    (removed its local copy) so table badges and filter chips share one palette.
+  - React `BasicFilterPanel`: `StandaloneFilter` type gained
+    `optionColors/optionIcons/optionDescriptions`; new `OptionMeta` type +
+    `buildOptionMeta()` merger. `SearchableSelect` takes `optionMeta` and renders
+    per-option icon (coloured via `colorClass`), label, and description, plus
+    colour-tinted selected chips (falls back to primary). `resolveIcon` imported
+    from `../lib/icons`.
+  - Routing in `StandaloneFilterControl`: select is `multiple` **or** searchable
+    **or** has metadata → `SearchableSelect`; otherwise a plain native `<select>`.
+    Column select filters (`ColumnFilterControl`) also pass `buildOptionMeta(col.colors, col.icons)`.
+  - Verified: static-php lint + mock; test-app `npm run build` green; tsc adds no
+    new errors in the changed files (the 3 remaining `BasicTable.tsx` implicit-any
+    errors are pre-existing, just line-shifted from removing the colour block).
+  - Docs: `docs/tables.md` (SelectFilter → "Enum options" subsection + rendering rules).
+- **Follow-up 4: opt out of enum metadata per-filter.** `SelectFilter` got three
+  bool flags (`$showColors/$showIcons/$showDescriptions`, default true) + methods
+  `withoutColors()`, `withoutIcons()`, `withoutDescriptions()`, and `plain()`
+  (all three). Each takes an optional `bool $condition = true`. Flags are checked
+  in `toArray()` (gate the `optionColors/optionIcons/optionDescriptions` maps), so
+  they're **order-independent** vs `options()`. No React change — the client
+  already renders each piece only when its map is present; suppressing server-side
+  is enough (and `plain()` on a non-searchable single select → native `<select>`).
+  Verified via static-php mock (full / withoutIcons / withoutColors / plain /
+  plain-before-options / withoutDescriptions(false)). Docs updated.

@@ -1,8 +1,41 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { router } from '@inertiajs/react';
-import { X, Filter, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Filter, RotateCcw, ChevronDown, ChevronUp, Check, Search } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { colorClass } from '../lib/colors';
+import { resolveIcon } from '../lib/icons';
 import { Column } from '../types';
+
+// Per-option metadata (icon / color / description) — populated from an enum's
+// HasColor / HasIcon / HasDescription contracts, or from manual maps.
+export interface OptionMeta {
+    color?: string;
+    icon?: string;
+    description?: string;
+}
+
+// Merge separate value→color / value→icon / value→description maps into a single
+// value→{color,icon,description} lookup. Returns undefined when there's nothing,
+// so callers can cheaply tell "plain options" from "enum-style options".
+function buildOptionMeta(
+    colors?: Record<string, string>,
+    icons?: Record<string, string>,
+    descriptions?: Record<string, string>,
+): Record<string, OptionMeta> | undefined {
+    if (!colors && !icons && !descriptions) return undefined;
+    const out: Record<string, OptionMeta> = {};
+    const add = (map: Record<string, string> | undefined, key: keyof OptionMeta) => {
+        if (!map) return;
+        for (const [v, val] of Object.entries(map)) {
+            (out[v] ??= {})[key] = val;
+        }
+    };
+    add(colors, 'color');
+    add(icons, 'icon');
+    add(descriptions, 'description');
+    return Object.keys(out).length ? out : undefined;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -11,6 +44,9 @@ export interface StandaloneFilter {
     label: string;
     type: 'boolean' | 'select' | 'date_range' | 'ternary' | 'trashed' | string;
     options?: Record<string, string>;
+    optionColors?: Record<string, string>;
+    optionIcons?: Record<string, string>;
+    optionDescriptions?: Record<string, string>;
     multiple?: boolean;
     searchable?: boolean;
     trueLabel?: string;
@@ -282,34 +318,243 @@ function BooleanButtons({ value, onChange, labels }: { value: string; onChange: 
     );
 }
 
-function ChecklistOptions({
-    options, value, onChange, searchable,
+// Searchable select dropdown for filters — mirrors the form Select field
+// (`->native(false)->searchable()`): trigger shows selected values as pill chips
+// (or a single label), opening a position-aware popover with a search box and a
+// checkmarked option list. Supports single and multiple selection.
+function SearchableSelect({
+    options, value, onChange, searchable, multiple = true, placeholder = 'All', optionMeta,
 }: {
     options: { label: string; value: string }[];
-    value: string[];
-    onChange: (v: string[]) => void;
+    value: string[] | string;
+    onChange: (v: string[] | string) => void;
     searchable?: boolean;
+    multiple?: boolean;
+    placeholder?: string;
+    optionMeta?: Record<string, OptionMeta>;
 }) {
+    const metaOf = (v: string): OptionMeta | undefined => optionMeta?.[v];
+    const [open, setOpen] = useState(false);
     const [search, setSearch] = useState('');
-    const visible = searchable
-        ? options.filter(o => o.label.toLowerCase().includes(search.toLowerCase()))
+    // Fixed-position coords for the portaled popover (escapes the filter panel's
+    // overflow-y-auto clipping instead of being trapped inside it).
+    const [coords, setCoords] = useState<{
+        left: number; width: number; top?: number; bottom?: number; listMax: number;
+    } | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const popoverRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const selected: string[] = multiple
+        ? (Array.isArray(value) ? value : value ? [value as string] : [])
+        : (value ? [value as string] : []);
+
+    const computePosition = useCallback(() => {
+        const el = containerRef.current;
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const gap = 6;
+        const spaceBelow = window.innerHeight - r.bottom - gap;
+        const spaceAbove = r.top - gap;
+        const openUp = spaceBelow < 240 && spaceAbove > spaceBelow;
+        const avail = Math.max(140, Math.min(320, (openUp ? spaceAbove : spaceBelow) - 8));
+        const searchH = searchable ? 52 : 0;
+        setCoords({
+            left: r.left,
+            width: r.width,
+            top: openUp ? undefined : r.bottom + gap,
+            bottom: openUp ? window.innerHeight - r.top + gap : undefined,
+            listMax: Math.max(96, avail - searchH),
+        });
+    }, [searchable]);
+
+    // Reposition while open (the filter panel itself scrolls).
+    useEffect(() => {
+        if (!open) return;
+        computePosition();
+        const id = setTimeout(() => inputRef.current?.focus(), 30);
+        const reflow = () => computePosition();
+        window.addEventListener('scroll', reflow, true);
+        window.addEventListener('resize', reflow);
+        return () => {
+            clearTimeout(id);
+            window.removeEventListener('scroll', reflow, true);
+            window.removeEventListener('resize', reflow);
+        };
+    }, [open, computePosition]);
+
+    // Outside-click: ignore clicks on the trigger and inside the portaled popover.
+    useEffect(() => {
+        if (!open) return;
+        const handler = (e: MouseEvent) => {
+            const t = e.target as Node;
+            if (containerRef.current?.contains(t)) return;
+            if (popoverRef.current?.contains(t)) return;
+            setOpen(false);
+            setSearch('');
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [open]);
+
+    const visible = search
+        ? options.filter(o =>
+            o.label.toLowerCase().includes(search.toLowerCase()) ||
+            o.value.toLowerCase().includes(search.toLowerCase()))
         : options;
-    const toggle = (v: string) => onChange(value.includes(v) ? value.filter(x => x !== v) : [...value, v]);
+
+    const isSelected = (v: string) => selected.includes(v);
+
+    const toggle = (v: string) => {
+        if (multiple) {
+            onChange(selected.includes(v) ? selected.filter(x => x !== v) : [...selected, v]);
+        } else {
+            onChange(v);
+            setOpen(false);
+            setSearch('');
+        }
+    };
+
+    const removeChip = (v: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        onChange(multiple ? selected.filter(x => x !== v) : '');
+    };
+
+    const clearAll = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onChange(multiple ? [] : '');
+    };
+
+    const selectedOptions = options.filter(o => selected.includes(o.value));
 
     return (
-        <div className="space-y-1.5">
-            {searchable && (
-                <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
-                    className="w-full mb-2 px-2.5 py-1.5 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-[var(--larafusion-primary,#18181b)]/30 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400" />
+        <div className="relative" ref={containerRef}>
+            {/* Trigger */}
+            <div
+                onClick={() => (open ? (setOpen(false), setSearch('')) : setOpen(true))}
+                className={cn(
+                    'flex items-center gap-2 w-full min-h-[38px] px-3 py-2 rounded-lg border text-sm cursor-pointer transition-colors',
+                    open
+                        ? 'border-[var(--larafusion-primary,#18181b)] ring-2 ring-[var(--larafusion-primary,#18181b)]/20 bg-white dark:bg-zinc-800'
+                        : 'border-zinc-300 bg-white dark:bg-zinc-800 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600',
+                )}
+            >
+                <div className="flex-1 flex flex-wrap gap-1 min-w-0">
+                    {selectedOptions.length > 0
+                        ? selectedOptions.map(o => {
+                            const meta = metaOf(o.value);
+                            const ChipIcon = meta?.icon ? resolveIcon(meta.icon) : null;
+                            const cc = meta?.color ? colorClass(meta.color) : null;
+                            return (
+                                <span
+                                    key={o.value}
+                                    className={cn(
+                                        'inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-full text-xs font-medium',
+                                        cc ? cn(cc.bg, cc.text) : 'bg-[var(--larafusion-primary,#18181b)]/10 text-[var(--larafusion-primary,#18181b)] dark:text-white',
+                                    )}
+                                >
+                                    {ChipIcon && <ChipIcon className="w-3 h-3 shrink-0" />}
+                                    {o.label}
+                                    <button type="button" onClick={e => removeChip(o.value, e)} className="hover:opacity-70 transition-opacity">
+                                        <X className="w-3 h-3" />
+                                    </button>
+                                </span>
+                            );
+                        })
+                        : <span className="text-zinc-400 dark:text-zinc-500 truncate">{placeholder}</span>}
+                </div>
+
+                <div className="flex items-center gap-1 shrink-0">
+                    {selected.length > 0 && (
+                        <button
+                            type="button"
+                            onClick={clearAll}
+                            aria-label="Clear"
+                            className="p-0.5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+                        >
+                            <X className="w-3.5 h-3.5" />
+                        </button>
+                    )}
+                    <ChevronDown className={cn('w-4 h-4 text-zinc-400 transition-transform duration-150', open && 'rotate-180')} />
+                </div>
+            </div>
+
+            {/* Dropdown — portaled to <body> with fixed positioning so it floats
+                above the filter panel instead of being clipped by its scroll area. */}
+            {open && coords && createPortal(
+                <div
+                    ref={popoverRef}
+                    data-lf-portal=""
+                    style={{
+                        position: 'fixed',
+                        left: coords.left,
+                        width: coords.width,
+                        top: coords.top,
+                        bottom: coords.bottom,
+                        zIndex: 9999,
+                    }}
+                    className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-xl overflow-hidden animate-larafusion-drop-in"
+                >
+                    {searchable && (
+                        <div className="p-2 border-b border-zinc-100 dark:border-zinc-800">
+                            <div className="relative">
+                                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400" />
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    value={search}
+                                    onChange={e => setSearch(e.target.value)}
+                                    placeholder="Search…"
+                                    className="w-full pl-8 pr-3 py-1.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 outline-none focus:border-[var(--larafusion-primary,#18181b)] focus:ring-1 focus:ring-[var(--larafusion-primary,#18181b)]/20"
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="overflow-y-auto py-1" style={{ maxHeight: coords.listMax }}>
+                        {visible.length === 0 ? (
+                            <p className="text-center py-6 text-sm text-zinc-400 dark:text-zinc-500">
+                                {search ? `No results for "${search}"` : 'No options available'}
+                            </p>
+                        ) : (
+                            visible.map(opt => {
+                                const meta = metaOf(opt.value);
+                                const OptIcon = meta?.icon ? resolveIcon(meta.icon) : null;
+                                const cc = meta?.color ? colorClass(meta.color) : null;
+                                return (
+                                    <button
+                                        key={opt.value}
+                                        type="button"
+                                        onClick={() => toggle(opt.value)}
+                                        className={cn(
+                                            'flex items-center justify-between gap-2 w-full px-3 py-2 text-sm text-left transition-colors',
+                                            isSelected(opt.value)
+                                                ? 'bg-[var(--larafusion-primary,#18181b)]/5 text-[var(--larafusion-primary,#18181b)] dark:bg-[var(--larafusion-primary,#18181b)]/10 dark:text-white font-medium'
+                                                : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700',
+                                        )}
+                                    >
+                                        <span className="flex items-start gap-2 min-w-0">
+                                            {OptIcon && (
+                                                <OptIcon className={cn('w-4 h-4 shrink-0 mt-0.5', cc?.text ?? 'text-zinc-400 dark:text-zinc-500')} />
+                                            )}
+                                            <span className="flex flex-col min-w-0">
+                                                <span className="break-words">{opt.label}</span>
+                                                {meta?.description && (
+                                                    <span className="text-xs font-normal text-zinc-400 dark:text-zinc-500 break-words">{meta.description}</span>
+                                                )}
+                                            </span>
+                                        </span>
+                                        {isSelected(opt.value) && (
+                                            <Check className="w-3.5 h-3.5 text-[var(--larafusion-primary,#18181b)] shrink-0 mt-0.5" />
+                                        )}
+                                    </button>
+                                );
+                            })
+                        )}
+                    </div>
+                </div>,
+                document.body,
             )}
-            {visible.map(opt => (
-                <label key={opt.value} className="flex items-center gap-2 cursor-pointer group">
-                    <input type="checkbox" checked={value.includes(opt.value)} onChange={() => toggle(opt.value)}
-                        className="w-4 h-4 rounded border-zinc-300 text-[var(--larafusion-primary,#18181b)] focus:ring-[var(--larafusion-primary,#18181b)]" />
-                    <span className="text-sm text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-100">{opt.label}</span>
-                </label>
-            ))}
-            {visible.length === 0 && <p className="text-xs text-zinc-400 dark:text-zinc-500">No options found</p>}
         </div>
     );
 }
@@ -371,20 +616,26 @@ function StandaloneFilterControl({
     }
     if (filter.type === 'select') {
         const opts = Object.entries(filter.options ?? {}).map(([v, l]) => ({ value: v, label: l }));
+        const optionMeta = buildOptionMeta(filter.optionColors, filter.optionIcons, filter.optionDescriptions);
+        const hasMeta = optionMeta !== undefined;
 
-        if (filter.multiple) {
-            // Multi-select → checkbox checklist
+        // Multi-select, or a single select that is searchable / carries enum
+        // metadata → rich dropdown (mirrors the form Select field, shows chips,
+        // per-option icons/colors/descriptions).
+        if (filter.multiple || filter.searchable || hasMeta) {
             return (
-                <ChecklistOptions
+                <SearchableSelect
                     options={opts}
-                    value={value as string[]}
-                    onChange={onChange as (v: string[]) => void}
+                    value={filter.multiple ? (value as string[]) : (value as string)}
+                    onChange={onChange as (v: string[] | string) => void}
                     searchable={filter.searchable}
+                    multiple={!!filter.multiple}
+                    optionMeta={optionMeta}
                 />
             );
         }
 
-        // Single select → native dropdown (cleaner in the filter panel)
+        // Plain single select → native dropdown (simple + fast).
         return (
             <select
                 value={(value as string) ?? ''}
@@ -418,7 +669,17 @@ function ColumnFilterControl({ col, value, onChange }: {
     if (type === 'boolean') return <BooleanButtons value={value as string} onChange={onChange as (v: string) => void} />;
     if (type === 'select') {
         const opts = (col.filterOptions ?? []).map(o => ({ value: String(o.value), label: String(o.label) }));
-        return <ChecklistOptions options={opts} value={value as string[]} onChange={onChange as (v: string[]) => void} />;
+        const optionMeta = buildOptionMeta(col.colors, col.icons);
+        return (
+            <SearchableSelect
+                options={opts}
+                value={value as string[]}
+                onChange={onChange as (v: string[] | string) => void}
+                searchable={opts.length > 8}
+                multiple
+                optionMeta={optionMeta}
+            />
+        );
     }
     if (type === 'date') return <DateRangeInputs value={value as { from?: string; to?: string }} onChange={onChange as (v: { from?: string; to?: string }) => void} />;
     if (type === 'number') return <NumberRangeInputs value={value as { from?: string; to?: string }} onChange={onChange as (v: { from?: string; to?: string }) => void} />;
@@ -757,11 +1018,15 @@ function DropdownFilterPanel({
     const ref = useRef<HTMLDivElement>(null);
     const activeCount = countActive(filters);
 
-    // Close when clicking outside
+    // Close when clicking outside — but ignore clicks inside a portaled popover
+    // (e.g. a SearchableSelect option list rendered to <body>), which lives
+    // outside this panel's DOM subtree yet is logically part of it.
     useEffect(() => {
         if (!open) return;
         const handler = (e: MouseEvent) => {
-            if (ref.current && !ref.current.contains(e.target as Node)) {
+            const target = e.target as HTMLElement;
+            if (target.closest('[data-lf-portal]')) return;
+            if (ref.current && !ref.current.contains(target)) {
                 setOpen(false);
             }
         };
