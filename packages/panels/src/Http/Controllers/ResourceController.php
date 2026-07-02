@@ -23,6 +23,32 @@ class ResourceController extends Controller
         abort_unless($resourceClass::canViewAny(), 403);
         $model         = $resourceClass::getModelInstance();
         $query         = $model->newQuery();
+        $table         = $resourceClass::table(Table::make());
+
+        // ── Session-persisted filters (->persistFiltersInSession()) ─────────────
+        // Store/restore the applied filter set in the user's session, scoped per
+        // resource. The URL stays the single source of truth for the frontend
+        // (indicator chips and count badges parse it), so restoring is done via
+        // redirect on fresh full-page visits rather than by silently merging the
+        // stored filters into the query.
+        if ($table->persistsFiltersInSession()) {
+            $filtersSessionKey = "larafusion.tables.{$resource}.filters";
+
+            if ($request->boolean('filters_cleared')) {
+                // Explicit Reset from the filter UI — forget the stored set.
+                $request->session()->forget($filtersSessionKey);
+            } elseif ($request->has('filter')) {
+                $request->session()->put($filtersSessionKey, $request->query('filter'));
+            } elseif (!$request->headers->has('X-Inertia-Partial-Data')) {
+                // Fresh (non-partial) visit with no filters in the URL — restore.
+                // Partial reloads (sort / paginate / poll) are left alone so they
+                // never clobber or resurrect filter state mid-session.
+                $storedFilters = $request->session()->get($filtersSessionKey);
+                if (is_array($storedFilters) && $storedFilters !== []) {
+                    return redirect()->to($request->fullUrlWithQuery(['filter' => $storedFilters]));
+                }
+            }
+        }
 
         // ── Columns → eager loads + narrowed SELECT ─────────────────────────────
         // The configured table columns drive exactly what leaves the database.
@@ -35,7 +61,7 @@ class ResourceController extends Controller
         // that isn't one of the displayed columns, it'll be null here — add that
         // attribute to the resource's table columns (even ->hidden()) to keep it
         // in the SELECT.
-        $tableColumns  = $resourceClass::table(Table::make())->getColumns();
+        $tableColumns  = $table->getColumns();
         $columnNames   = array_map(fn ($c) => $c->getName(), $tableColumns);
         $localColumns  = array_values(array_filter($columnNames, fn ($n) => !str_contains($n, '.')));
         $relationCols  = array_values(array_filter($columnNames, fn ($n) => str_contains($n, '.')));
@@ -120,7 +146,7 @@ class ResourceController extends Controller
 
         // Build a map of standalone Filter objects so their query closures + attribute() are respected
         $standaloneFilters = [];
-        foreach ($resourceClass::table(Table::make())->getFilters() as $f) {
+        foreach ($table->getFilters() as $f) {
             $standaloneFilters[$f->getName()] = $f;
         }
 

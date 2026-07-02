@@ -528,6 +528,43 @@ was missing for relationship filters.
   (was `bg-black/30 dark:bg-black/50 backdrop-blur-sm`) so the page behind stays
   readable. Drawer overlay (no blur) untouched.
 
+**Follow-up 3 (same session): AboveContent layouts, red Reset, persistFiltersInSession.**
+
+- **`FiltersLayout::AboveContent` / `AboveContentCollapsible`** (`'above_content'`,
+  `'above_content_collapsible'`) — inline panel ABOVE the toolbar/search bar
+  (existing `Above` sits between toolbar and rows). BasicTable renders it at the
+  top of the Card via `isAboveContentLayout`; FilterPanel's inline branch +
+  collapsible check include both. TS union updated in support types + local.
+- **Red conditional Reset everywhere** (was grey + disabled): drawer/modal, inline,
+  and side-sidebar Reset now matches the dropdown header Reset — red, rendered ONLY
+  when `activeCount > 0` (applied), and clears + applies immediately. ⚠️ Behaviour
+  change: DrawerPanel Reset used to only blank the draft; now it fires the clear
+  request too. `canReset` logic deleted.
+- **`Table::persistFiltersInSession(bool $condition = true)`** + getter
+  `persistsFiltersInSession()`; serialized as `persistFilters: true` in tableConfig
+  (omitted when false). Server logic at the TOP of `ResourceController::index()`
+  (also hoisted `$table = $resourceClass::table(Table::make())` — reused for
+  columns + filter map, one less rebuild):
+  - session key `larafusion.tables.{$resource}.filters` (session = per user);
+  - `?filters_cleared=1` → forget; `has('filter')` → put; else on NON-partial
+    requests (`!X-Inertia-Partial-Data` header) with a stored set → **redirect**
+    to `fullUrlWithQuery(['filter' => $stored])`. Redirect keeps the URL the
+    single source of truth (chips/badges parse the URL). Partial reloads
+    (sort/paginate/poll) never store, clear, or restore.
+  - Frontend: `applyFilters(slug, filters, persist)` — strips `filters_cleared`,
+    and when persist && built params empty, sets `filters_cleared=1` so an
+    intentional clear is distinguishable from a fresh unfiltered visit. `persist`
+    threaded from `tableConfig.persistFilters` through FilterPanel/
+    ActiveFilterIndicators/SideFilterSidebar into every applyFilters call site.
+- **Fixed: `handleSort` dropped filters.** It rebuilt the query with only
+  sort/direction/search — now it preserves the full existing query string
+  (filter[...], per_page, trashed) via URLSearchParams. This was a pre-existing
+  bug; it would have made persisted filters diverge from the URL on sort.
+- php -l clean on Table/Enum/ResourceController; mock test covers new enum cases,
+  filters(layout:) with them, persist getter/serialization on/off. Controller
+  session branch verified by inspection only (no Laravel runtime in sandbox).
+  ⚠️ Still no node — run typecheck/build for tables + support locally.
+
 ---
 
 ## 9. Session: delayed table loading indicator (2026-07-01)

@@ -247,6 +247,7 @@ namespace Larafusion\Tables {
      * @method filtersFormWidth(string $width)
      * @method filtersFormMaxHeight(string $height)
      * @method hiddenFilterIndicators(bool $hidden = true)
+     * @method persistFiltersInSession(bool $condition = true)
      */
     class Table {}
 }

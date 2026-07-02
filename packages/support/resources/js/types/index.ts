@@ -497,6 +497,7 @@ export type FiltersLayout =
     | 'dropdown'
     | 'drawer' | 'modal'
     | 'above' | 'above_collapsible' | 'below'
+    | 'above_content' | 'above_content_collapsible'
     | 'before_content' | 'before_content_collapsible'
     | 'after_content'  | 'after_content_collapsible';
 
@@ -520,7 +521,7 @@ export interface TableConfig {
     toolbarActions?: ToolbarAction[];
     /** Override the initial sort applied by the controller. */
     defaultSort?: { field: string; dir: 'asc' | 'desc' };
-    /** Where/how to render the filter panel. Default: 'drawer'. */
+    /** Where/how to render the filter panel. Default: 'dropdown'. */
     filtersLayout?: FiltersLayout;
     /** Number of grid columns in the filter panel (for above/below layouts). Default: 1. */
     filtersFormColumns?: number;
@@ -530,6 +531,9 @@ export interface TableConfig {
     filtersFormMaxHeight?: string;
     /** When true, the active-filter indicator chips row is hidden. */
     hideFilterIndicators?: boolean;
+    /** When true, applied filters are persisted in the user's session (per table,
+     *  per user) — resets send an explicit `filters_cleared` marker. */
+    persistFilters?: boolean;
     /** When set to 'full', removes the default max-w-7xl constraint on the index page. */
     contentWidth?: 'full';
     /**

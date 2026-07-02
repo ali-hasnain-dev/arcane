@@ -852,6 +852,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
     const filtersLayout = tableConfig?.filtersLayout ?? 'dropdown';
     const isDrawerOrModal = filtersLayout === 'drawer' || filtersLayout === 'modal' || filtersLayout === 'dropdown';
     const isAboveLayout = filtersLayout === 'above' || filtersLayout === 'above_collapsible';
+    const isAboveContentLayout = filtersLayout === 'above_content' || filtersLayout === 'above_content_collapsible';
     const isBelowLayout = filtersLayout === 'below';
     const isBeforeSide = filtersLayout === 'before_content' || filtersLayout === 'before_content_collapsible';
     const isAfterSide = filtersLayout === 'after_content' || filtersLayout === 'after_content_collapsible';
@@ -875,6 +876,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
         formWidth: tableConfig?.filtersFormWidth,
         formMaxHeight: tableConfig?.filtersFormMaxHeight,
         hideIndicators: tableConfig?.hideFilterIndicators,
+        persistFilters: tableConfig?.persistFilters ?? false,
     };
 
     const fireSearch = (value: string) => {
@@ -919,7 +921,14 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
         const dir = sortField === field && sortDir === 'asc' ? 'desc' : 'asc';
         setSelectedIds(new Set());
         setSelectAllPages(false);
-        router.get(`/admin/${resource.slug}`, { sort: field, direction: dir, search }, {
+        // Preserve the rest of the query string (filter[...], per_page, trashed…)
+        // — previously sorting silently dropped applied filters.
+        const params = new URLSearchParams(window.location.search);
+        params.set('sort', field);
+        params.set('direction', dir);
+        if (search) params.set('search', search); else params.delete('search');
+        params.delete('page');
+        router.get(`/admin/${resource.slug}`, Object.fromEntries(params), {
             preserveState: true, replace: true,
             only: ['records'],
         });
@@ -999,10 +1008,14 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                         formColumns={1}
                         formMaxHeight={tableConfig?.filtersFormMaxHeight}
                         collapsible={isSideCollapsible}
+                        persist={tableConfig?.persistFilters ?? false}
                     />
                 )}
 
                 <Card className={hasSideFilters ? 'flex-1 min-w-0 rounded-none border-0 shadow-none' : undefined}>
+                    {/* Above-content inline filter panel — sits ABOVE the toolbar/search bar */}
+                    {!isTrulyEmpty && isAboveContentLayout && <FilterPanel {...filterPanelProps} />}
+
                     {/* ── Smart toolbar: bulk mode when rows selected, normal otherwise ── */}
                     <div className="px-4 py-2.5 border-b border-zinc-100 dark:border-zinc-800 flex items-center gap-3 h-[55px]">
                         {selectedIds.size > 0 ? (
@@ -1241,6 +1254,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                                                 filterableColumns={sideFilterableColumns}
                                                 standaloneFilters={sideStandaloneFilters}
                                                 tableColSpan={totalCols}
+                                                persistFilters={tableConfig?.persistFilters ?? false}
                                             />
                                         )}
                                     </thead>
@@ -1382,6 +1396,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                         formColumns={1}
                         formMaxHeight={tableConfig?.filtersFormMaxHeight}
                         collapsible={isSideCollapsible}
+                        persist={tableConfig?.persistFilters ?? false}
                     />
                 )}
 

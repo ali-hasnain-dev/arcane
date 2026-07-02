@@ -60,6 +60,7 @@ export type FiltersLayout =
     | 'dropdown'
     | 'drawer' | 'modal'
     | 'above' | 'above_collapsible' | 'below'
+    | 'above_content' | 'above_content_collapsible'
     | 'before_content' | 'before_content_collapsible'
     | 'after_content'  | 'after_content_collapsible';
 
@@ -76,6 +77,9 @@ interface FilterPanelProps {
     formWidth?: string;
     formMaxHeight?: string;
     hideIndicators?: boolean;
+    /** ->persistFiltersInSession(): resets send a `filters_cleared` marker so the
+     *  server can forget the stored filter set. */
+    persistFilters?: boolean;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -146,13 +150,21 @@ function parseFiltersFromUrl(
     return out;
 }
 
-function applyFilters(resourceSlug: string, filters: FilterValues) {
+function applyFilters(resourceSlug: string, filters: FilterValues, persist = false) {
     const params = new URLSearchParams(window.location.search);
     for (const key of [...params.keys()]) {
         if (key.startsWith('filter[')) params.delete(key);
     }
-    for (const [k, v] of Object.entries(buildFilterParams(filters))) {
+    params.delete('filters_cleared');
+    const built = buildFilterParams(filters);
+    for (const [k, v] of Object.entries(built)) {
         params.set(k, v);
+    }
+    // With ->persistFiltersInSession(), an apply that clears every filter must be
+    // distinguishable from a plain unfiltered visit — mark it so the server
+    // forgets the stored set instead of restoring it on the next full visit.
+    if (persist && Object.keys(built).length === 0) {
+        params.set('filters_cleared', '1');
     }
     params.delete('page');
     router.get(`/admin/${resourceSlug}`, Object.fromEntries(params), {
@@ -249,11 +261,13 @@ export function ActiveFilterIndicators({
     filterableColumns,
     standaloneFilters,
     tableColSpan,
+    persistFilters = false,
 }: {
     resourceSlug: string;
     filterableColumns: Column[];
     standaloneFilters: StandaloneFilter[];
     tableColSpan?: number;
+    persistFilters?: boolean;
 }) {
     const applied = useAppliedFilters(filterableColumns, standaloneFilters);
     const chips: { key: string; label: string; value: string }[] = [];
@@ -277,11 +291,11 @@ export function ActiveFilterIndicators({
     // applied filters once the visit finishes (see draft-sync effects).
     const removeOne = (key: string) => {
         const blank = blankFilters(filterableColumns, standaloneFilters);
-        applyFilters(resourceSlug, { ...applied, [key]: blank[key] ?? '' });
+        applyFilters(resourceSlug, { ...applied, [key]: blank[key] ?? '' }, persistFilters);
     };
 
     const removeAll = () => {
-        applyFilters(resourceSlug, blankFilters(filterableColumns, standaloneFilters));
+        applyFilters(resourceSlug, blankFilters(filterableColumns, standaloneFilters), persistFilters);
     };
 
     const row = (
@@ -775,7 +789,7 @@ function FilterForm({
 // ─── Above / Below inline layout ─────────────────────────────────────────────
 
 function InlineFiltersPanel({
-    resourceSlug, filterableColumns, standaloneFilters, filters, setFilters, formColumns, collapsible, activeCount, canApply,
+    resourceSlug, filterableColumns, standaloneFilters, filters, setFilters, formColumns, collapsible, activeCount, canApply, persist,
 }: {
     resourceSlug: string;
     filterableColumns: Column[];
@@ -788,16 +802,16 @@ function InlineFiltersPanel({
     activeCount: number;
     /** False when the draft equals the applied filters — Apply would be a no-op request. */
     canApply: boolean;
+    persist: boolean;
 }) {
     const [collapsed, setCollapsed] = useState(false);
-    const canReset = countActive(filters) > 0 || activeCount > 0;
 
-    const apply = () => { if (canApply) applyFilters(resourceSlug, filters); };
+    const apply = () => { if (canApply) applyFilters(resourceSlug, filters, persist); };
+    // Reset is only rendered when filters are applied, so this always clears something.
     const reset = () => {
         const blank = blankFilters(filterableColumns, standaloneFilters);
         setFilters(blank);
-        // Only hit the backend when there's something applied to clear.
-        if (activeCount > 0) applyFilters(resourceSlug, blank);
+        applyFilters(resourceSlug, blank, persist);
     };
 
     return (
@@ -835,12 +849,16 @@ function InlineFiltersPanel({
                         setFilters={setFilters}
                         columns={formColumns}
                     />
-                    {/* Actions right-aligned; Apply is a normal-width button. */}
+                    {/* Actions right-aligned; Apply is a normal-width button. Reset
+                        mirrors the dropdown layout: red, and only rendered when
+                        filters are actually applied. */}
                     <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800">
-                        <button type="button" onClick={reset} disabled={!canReset}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500 dark:text-zinc-400 enabled:hover:bg-zinc-100 dark:enabled:hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-                            <RotateCcw className="w-3.5 h-3.5" /> Reset
-                        </button>
+                        {activeCount > 0 && (
+                            <button type="button" onClick={reset}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                                <RotateCcw className="w-3.5 h-3.5" /> Reset
+                            </button>
+                        )}
                         <button type="button" onClick={apply} disabled={!canApply}
                             className="px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] enabled:hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors">
                             Apply Filters
@@ -872,7 +890,7 @@ function useModalAnimation(open: boolean, exitMs = 160) {
 // ─── Drawer / Modal panel ─────────────────────────────────────────────────────
 
 function DrawerPanel({
-    open, onClose, resourceSlug, filterableColumns, standaloneFilters, filters, setFilters, formColumns, formWidth, formMaxHeight, isModal, canApply,
+    open, onClose, resourceSlug, filterableColumns, standaloneFilters, filters, setFilters, formColumns, formWidth, formMaxHeight, isModal, canApply, activeCount, persist,
 }: {
     open: boolean;
     onClose: () => void;
@@ -888,18 +906,25 @@ function DrawerPanel({
     isModal: boolean;
     /** False when the draft equals the applied filters — Apply would be a no-op request. */
     canApply: boolean;
+    /** Count of APPLIED filters — the red Reset only renders when > 0. */
+    activeCount: number;
+    persist: boolean;
 }) {
     const { rendered, exiting } = useModalAnimation(open, isModal ? 160 : 200);
     if (!rendered) return null;
 
     const apply = () => {
         if (!canApply) return;
-        applyFilters(resourceSlug, filters);
+        applyFilters(resourceSlug, filters, persist);
         onClose();
     };
-    // Reset only blanks the local draft (no request until Apply).
-    const canReset = countActive(filters) > 0;
-    const reset = () => { const b = blankFilters(filterableColumns, standaloneFilters); setFilters(b); };
+    // Reset mirrors the dropdown layout: clears the draft AND applies immediately.
+    // Only rendered when filters are applied, so it always clears something.
+    const reset = () => {
+        const blank = blankFilters(filterableColumns, standaloneFilters);
+        setFilters(blank);
+        applyFilters(resourceSlug, blank, persist);
+    };
 
     const body = (
         <>
@@ -920,10 +945,12 @@ function DrawerPanel({
                 />
             </div>
             <div className="px-5 py-4 border-t border-zinc-100 dark:border-zinc-800 flex gap-2">
-                <button type="button" onClick={reset} disabled={!canReset}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-zinc-500 dark:text-zinc-400 enabled:hover:bg-zinc-100 dark:enabled:hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-                    <RotateCcw className="w-3.5 h-3.5" /> Reset
-                </button>
+                {activeCount > 0 && (
+                    <button type="button" onClick={reset}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                        <RotateCcw className="w-3.5 h-3.5" /> Reset
+                    </button>
+                )}
                 <button type="button" onClick={apply} disabled={!canApply}
                     className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] enabled:hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors">
                     Apply Filters
@@ -982,6 +1009,7 @@ export function SideFilterSidebar({
     formColumns = 1,
     formMaxHeight,
     collapsible,
+    persist = false,
 }: {
     resourceSlug: string;
     filterableColumns: Column[];
@@ -989,6 +1017,7 @@ export function SideFilterSidebar({
     formColumns?: number;
     formMaxHeight?: string;
     collapsible: boolean;
+    persist?: boolean;
 }) {
     const [collapsed, setCollapsed] = useState(false);
     const applied = useAppliedFilters(filterableColumns, standaloneFilters);
@@ -1005,14 +1034,13 @@ export function SideFilterSidebar({
 
     // Apply is a no-op (and stays disabled) while the draft matches what's applied.
     const canApply = JSON.stringify(filters) !== JSON.stringify(applied);
-    const canReset = countActive(filters) > 0 || activeCount > 0;
 
-    const apply = () => { if (canApply) applyFilters(resourceSlug, filters); };
+    const apply = () => { if (canApply) applyFilters(resourceSlug, filters, persist); };
+    // Reset is only rendered when filters are applied, so this always clears something.
     const reset = () => {
         const blank = blankFilters(filterableColumns, standaloneFilters);
         setFilters(blank);
-        // Only hit the backend when there's something applied to clear.
-        if (activeCount > 0) applyFilters(resourceSlug, blank);
+        applyFilters(resourceSlug, blank, persist);
     };
 
     return (
@@ -1071,10 +1099,12 @@ export function SideFilterSidebar({
                         />
                     </div>
                     <div className="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800 flex gap-2">
-                        <button type="button" onClick={reset} disabled={!canReset}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500 dark:text-zinc-400 enabled:hover:bg-zinc-100 dark:enabled:hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-                            <RotateCcw className="w-3.5 h-3.5" /> Reset
-                        </button>
+                        {activeCount > 0 && (
+                            <button type="button" onClick={reset}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                                <RotateCcw className="w-3.5 h-3.5" /> Reset
+                            </button>
+                        )}
                         <button type="button" onClick={apply} disabled={!canApply}
                             className="flex-1 px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] enabled:hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors">
                             Apply
@@ -1100,6 +1130,7 @@ function DropdownFilterPanel({
     formMaxHeight,
     activeCount,
     canApply,
+    persist,
 }: {
     resourceSlug: string;
     filterableColumns: Column[];
@@ -1113,6 +1144,7 @@ function DropdownFilterPanel({
     activeCount: number;
     /** False when the draft equals the applied filters — Apply would be a no-op request. */
     canApply: boolean;
+    persist: boolean;
 }) {
     const [open, setOpen] = useState(false);
     const { rendered: dropRendered, exiting: dropExiting } = useModalAnimation(open, 100);
@@ -1136,7 +1168,7 @@ function DropdownFilterPanel({
 
     const apply = () => {
         if (!canApply) return;
-        applyFilters(resourceSlug, filters);
+        applyFilters(resourceSlug, filters, persist);
         setOpen(false);
     };
     // Header Reset link is only rendered when activeCount > 0, so this request
@@ -1144,7 +1176,7 @@ function DropdownFilterPanel({
     const reset = () => {
         const blank = blankFilters(filterableColumns, standaloneFilters);
         setFilters(blank);
-        applyFilters(resourceSlug, blank);
+        applyFilters(resourceSlug, blank, persist);
     };
 
     return (
@@ -1263,6 +1295,7 @@ export default function FilterPanel({
     formColumns = 1,
     formWidth,
     formMaxHeight,
+    persistFilters = false,
     // Note: `hideIndicators` stays in FilterPanelProps but is consumed by
     // BasicTable (it gates the chips row under the column headers), not here.
 }: FilterPanelProps) {
@@ -1292,27 +1325,29 @@ export default function FilterPanel({
         return null;
     }
 
-    // Inline layouts render differently — no trigger button needed
-    if (layout === 'above' || layout === 'above_collapsible' || layout === 'below') {
+    // Inline layouts render differently — no trigger button needed.
+    // 'above'/'below' sit between the toolbar and the rows; 'above_content'
+    // renders ABOVE the toolbar/search bar (BasicTable picks the placement).
+    if (layout === 'above' || layout === 'above_collapsible' || layout === 'below' ||
+        layout === 'above_content' || layout === 'above_content_collapsible') {
         if (!hasAnyFilters) return null;
         // No indicator chips for inline layouts — the filter form itself is
         // visible, so chips would duplicate it. Chips are exclusive to the
         // trigger-based layouts (dropdown/drawer/modal), rendered by BasicTable
         // directly below the column-header row.
         return (
-            <>
-                <InlineFiltersPanel
-                    resourceSlug={resourceSlug}
-                    filterableColumns={filterableColumns}
-                    standaloneFilters={standaloneFilters}
-                    filters={filters}
-                    setFilters={setFilters}
-                    formColumns={formColumns}
-                    collapsible={layout === 'above_collapsible'}
-                    activeCount={activeCount}
-                    canApply={canApply}
-                />
-            </>
+            <InlineFiltersPanel
+                resourceSlug={resourceSlug}
+                filterableColumns={filterableColumns}
+                standaloneFilters={standaloneFilters}
+                filters={filters}
+                setFilters={setFilters}
+                formColumns={formColumns}
+                collapsible={layout === 'above_collapsible' || layout === 'above_content_collapsible'}
+                activeCount={activeCount}
+                canApply={canApply}
+                persist={persistFilters}
+            />
         );
     }
 
@@ -1332,6 +1367,7 @@ export default function FilterPanel({
                 formMaxHeight={formMaxHeight}
                 activeCount={activeCount}
                 canApply={canApply}
+                persist={persistFilters}
             />
         );
     }
@@ -1353,6 +1389,8 @@ export default function FilterPanel({
                 formMaxHeight={formMaxHeight}
                 isModal={layout === 'modal'}
                 canApply={canApply}
+                activeCount={activeCount}
+                persist={persistFilters}
             />
         </>
     );

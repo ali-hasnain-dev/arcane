@@ -20,6 +20,7 @@ class Table
     protected ?string $filtersFormWidth     = null;
     protected ?string $filtersFormMaxHeight = null;
     protected bool    $hideFilterIndicators = false;
+    protected bool    $persistFiltersInSession = false;
 
     protected bool    $striped              = false;
     protected ?bool   $simplePagination     = null;
@@ -131,6 +132,22 @@ class Table
     {
         $this->hideFilterIndicators = $v;
         return $this;
+    }
+
+    /**
+     * Persist the applied filters in the user's session, scoped to this table.
+     * Navigating away and back restores the last applied filter set; an explicit
+     * Reset clears it. Storage is per resource and per user (Laravel session).
+     */
+    public function persistFiltersInSession(bool $condition = true): static
+    {
+        $this->persistFiltersInSession = $condition;
+        return $this;
+    }
+
+    public function persistsFiltersInSession(): bool
+    {
+        return $this->persistFiltersInSession;
     }
 
     // ── Record / Toolbar Actions ──────────────────────────────────────────────
@@ -333,6 +350,7 @@ class Table
         $config['filtersLayout']          = $this->filtersLayout;
         $config['filtersFormColumns']     = $layout?->isSideLayout() ? 1 : $this->filtersFormColumns;
         $config['hideFilterIndicators']   = $this->hideFilterIndicators;
+        if ($this->persistFiltersInSession) $config['persistFilters'] = true;
         if ($this->filtersFormWidth)      $config['filtersFormWidth']     = $this->filtersFormWidth;
         if ($this->filtersFormMaxHeight)  $config['filtersFormMaxHeight'] = $this->filtersFormMaxHeight;
 

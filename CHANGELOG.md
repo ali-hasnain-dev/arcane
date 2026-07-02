@@ -18,10 +18,25 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) conventions
   ], layout: FiltersLayout::Modal)
   ```
   Cases: `Dropdown` (default) · `Drawer` · `Modal` · `Above` · `AboveCollapsible` ·
-  `Below` · `BeforeContent` · `BeforeContentCollapsible` · `AfterContent` ·
-  `AfterContentCollapsible`. `->filtersLayout()` accepts the enum too; the old string
-  values remain accepted for backwards compatibility. The default layout is unchanged
-  (`dropdown`).
+  `AboveContent` · `AboveContentCollapsible` · `Below` · `BeforeContent` ·
+  `BeforeContentCollapsible` · `AfterContent` · `AfterContentCollapsible`.
+  `->filtersLayout()` accepts the enum too; the old string values remain accepted
+  for backwards compatibility. The default layout is unchanged (`dropdown`).
+
+#### New filter layouts: AboveContent / AboveContentCollapsible
+- `FiltersLayout::AboveContent` and `FiltersLayout::AboveContentCollapsible` render
+  the inline filter panel **above the toolbar/search bar**, at the very top of the
+  table card (the existing `Above` variants sit between the toolbar and the rows).
+
+#### Persist filters in the user's session
+- **`->persistFiltersInSession()`** on the `Table` builder — stores the applied
+  filter set in the Laravel session, scoped per resource (and per user). Fresh
+  visits to the index page restore the stored filters via redirect, so the URL
+  stays the single source of truth for chips/badges/exports. Applying overwrites
+  the stored set; Reset (or removing the last indicator chip) clears it — the
+  frontend sends an explicit `filters_cleared=1` marker so an intentional clear
+  is never mistaken for a plain unfiltered visit. Partial reloads (sort, paginate,
+  poll) never touch the stored set.
 
 ### Changed
 
@@ -48,6 +63,12 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) conventions
   lighter tint (was `backdrop-blur-sm` + `bg-black/30`), so the page behind stays
   recognisable.
 
+- **Reset is red and conditional in every filter layout.** Matching the dropdown
+  layout's header Reset: the drawer/modal, inline (above/below), and side-sidebar
+  Reset buttons are now red, only rendered while filters are applied, and clear +
+  re-query immediately when clicked (the drawer's Reset previously only blanked the
+  draft without applying).
+
 ### Fixed
 
 - **Apply/Reset filter buttons are disabled when they would do nothing.** Apply is
@@ -55,6 +76,10 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) conventions
   disabled when there's nothing to clear. Neither fires a backend request in the
   no-op case (previously an empty filter panel still let users spam Apply/Reset,
   each click reloading the records).
+- **Sorting no longer drops applied filters.** Clicking a column header used to
+  rebuild the query string with only `sort`/`direction`/`search`, silently
+  discarding `filter[...]`, `per_page`, and `trashed` params. The sort handler now
+  preserves the full query string.
 - **Filter badges/chips reflect applied filters only.** The filter count badge and
   the active-filter chips now derive from the filters actually applied in the URL —
   editing the filter form no longer updates them live; they change only when the user

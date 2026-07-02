@@ -132,6 +132,7 @@ public static function table(Table $table): Table
 | `->filtersFormWidth('28rem')`                 | Width of the filter panel — dropdown popover width, drawer width, or modal max-width |
 | `->filtersFormMaxHeight('400px')`             | Max-height before filter panel scrolls                               |
 | `->hiddenFilterIndicators()`                  | Hide the active-filter indicator chips row                           |
+| `->persistFiltersInSession()`                 | Persist applied filters in the user's session (per table, per user) and restore them on the next visit |
 
 ---
 
@@ -783,8 +784,10 @@ use Larafusion\Tables\Table;
 ->filtersLayout(FiltersLayout::Dropdown)                  // Filament-style popover below the filter button (default)
 ->filtersLayout(FiltersLayout::Drawer)                    // slide-in panel from the right
 ->filtersLayout(FiltersLayout::Modal)                     // centred modal dialog
-->filtersLayout(FiltersLayout::Above)                     // inline panel above the table rows
+->filtersLayout(FiltersLayout::Above)                     // inline panel between the toolbar and the table rows
 ->filtersLayout(FiltersLayout::AboveCollapsible)          // above, with collapse/expand toggle
+->filtersLayout(FiltersLayout::AboveContent)              // inline panel ABOVE the toolbar/search bar
+->filtersLayout(FiltersLayout::AboveContentCollapsible)   // above content, with collapse/expand toggle
 ->filtersLayout(FiltersLayout::Below)                     // inline panel below the table rows
 ->filtersLayout(FiltersLayout::BeforeContent)             // fixed sidebar to the LEFT of the table
 ->filtersLayout(FiltersLayout::BeforeContentCollapsible)  // left sidebar with collapse toggle
@@ -820,8 +823,10 @@ Additional layout options:
 | `FiltersLayout::Dropdown` | Popover below the filter icon button (default) | Icon-only button + badge | — |
 | `FiltersLayout::Drawer` | Slide-in panel from right | Button with label + badge | — |
 | `FiltersLayout::Modal` | Centred dialog | Button with label + badge | — |
-| `FiltersLayout::Above` | Inline — above table rows | None | No |
-| `FiltersLayout::AboveCollapsible` | Inline — above table rows | None | Yes |
+| `FiltersLayout::Above` | Inline — between toolbar and table rows | None | No |
+| `FiltersLayout::AboveCollapsible` | Inline — between toolbar and table rows | None | Yes |
+| `FiltersLayout::AboveContent` | Inline — above the toolbar/search bar | None | No |
+| `FiltersLayout::AboveContentCollapsible` | Inline — above the toolbar/search bar | None | Yes |
 | `FiltersLayout::Below` | Inline — below table rows | None | No |
 | `FiltersLayout::BeforeContent` | Sticky sidebar, left of table | None | No |
 | `FiltersLayout::BeforeContentCollapsible` | Sticky sidebar, left of table | None | Yes |
@@ -842,7 +847,17 @@ Table::make()
     ->filtersFormMaxHeight('600px')
 ```
 
-> **Active-filter indicators:** Active-filter chips are shown **only** for the trigger-based layouts (`Dropdown` / `Modal` / `Drawer`), rendered in a full-width row directly below the table's column-header row; the trigger button also shows a badge count. Inline (`Above` / `AboveCollapsible` / `Below`) and side layouts show no chips — their filter form is visible on the page, with a funnel-icon header and a count badge instead. Chips and badge counts reflect **applied** filters only — editing the filter form doesn't change them until the user clicks Apply (or Reset). `->hiddenFilterIndicators()` hides the chips row.
+> **Active-filter indicators:** Active-filter chips are shown **only** for the trigger-based layouts (`Dropdown` / `Modal` / `Drawer`), rendered in a full-width row directly below the table's column-header row; the trigger button also shows a badge count. Inline (`Above` / `AboveCollapsible` / `AboveContent` / `AboveContentCollapsible` / `Below`) and side layouts show no chips — their filter form is visible on the page, with a funnel-icon header and a count badge instead. Chips and badge counts reflect **applied** filters only — editing the filter form doesn't change them until the user clicks Apply (or Reset). In every layout the **Reset** action is red and only appears while filters are applied; clicking it clears and re-queries immediately. `->hiddenFilterIndicators()` hides the chips row.
+
+#### Persisting filters in the user's session
+
+```php
+Table::make()
+    ->filters([...])
+    ->persistFiltersInSession()
+```
+
+With `->persistFiltersInSession()`, the applied filter set is stored in the Laravel session — scoped to the current table (resource) and, since sessions are per user, to the current user. Navigating away and returning to the index page restores the last applied filters automatically (via redirect, so the URL — and therefore chips, badges, export links — always reflects the active filters). Applying a different set overwrites the stored one; pressing **Reset** (or removing the last chip) clears it. Partial reloads (sorting, pagination, polling) never alter the stored set.
 
 ---
 

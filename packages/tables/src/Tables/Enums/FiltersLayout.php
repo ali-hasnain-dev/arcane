@@ -20,11 +20,17 @@ enum FiltersLayout: string
     /** Centred modal dialog. */
     case Modal = 'modal';
 
-    /** Inline panel above the table rows. */
+    /** Inline panel between the toolbar (search bar) and the table rows. */
     case Above = 'above';
 
-    /** Inline panel above the table rows, with a collapse/expand toggle. */
+    /** Same as Above, with a collapse/expand toggle. */
     case AboveCollapsible = 'above_collapsible';
+
+    /** Inline panel ABOVE the toolbar/search bar, at the very top of the table card. */
+    case AboveContent = 'above_content';
+
+    /** Same as AboveContent, with a collapse/expand toggle. */
+    case AboveContentCollapsible = 'above_content_collapsible';
 
     /** Inline panel below the table rows. */
     case Below = 'below';
