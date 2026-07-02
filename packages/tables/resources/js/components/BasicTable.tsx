@@ -450,7 +450,7 @@ function RecordActionsCell({
         }
 
         if (!node) return null;
-        return node;
+        return <React.Fragment key={act.key}>{node}</React.Fragment>;
     });
 
     return (

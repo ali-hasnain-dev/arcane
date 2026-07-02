@@ -272,8 +272,11 @@ export function ActiveFilterIndicators({
     const applied = useAppliedFilters(filterableColumns, standaloneFilters);
     const chips: { key: string; label: string; value: string }[] = [];
 
+    // Deduplicate: skip column-level filters that already have a standalone filter for the same
+    // field (mirrors FilterForm's dedup — see its comment for why this can otherwise double up).
+    const standaloneNames = new Set(standaloneFilters.map(f => f.name));
     const allDefs = [
-        ...filterableColumns.map(c => ({ name: c.name, label: c.label, indicator: null as string | null | undefined })),
+        ...filterableColumns.filter(c => !standaloneNames.has(c.name)).map(c => ({ name: c.name, label: c.label, indicator: null as string | null | undefined })),
         ...standaloneFilters.map(f => ({ name: f.name, label: f.indicator ?? f.label, indicator: f.indicator })),
     ];
 
