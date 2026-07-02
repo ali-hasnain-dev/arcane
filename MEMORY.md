@@ -507,6 +507,27 @@ was missing for relationship filters.
   BasicTable reads `tableConfig.hideFilterIndicators` directly for the chips row).
   Side layouts still show no chips.
 
+**Follow-up 2 (same session): no-op button guards, panel width, modal blur.**
+
+- **Apply/Reset disabled when no-op, zero redundant requests.** Every filter
+  footer (Inline, Drawer/Modal, Dropdown, SideSidebar) now: Apply
+  `disabled={!canApply}` where `canApply = JSON.stringify(draft) !==
+  JSON.stringify(applied)` (computed in FilterPanel and passed down; SideSidebar
+  computes its own); Reset `disabled` when nothing to clear
+  (`countActive(draft) > 0 || appliedCount > 0`; DrawerPanel's reset only blanks
+  the draft so it just checks the draft). Handlers also guard (`if (canApply)`)
+  and inline/side reset skips the backend call when `appliedCount === 0`.
+  Disabled styling via `enabled:hover:* disabled:opacity-40
+  disabled:cursor-not-allowed`.
+- **`->filtersFormWidth()` finally works for drawer/modal**: drawer gets
+  `style={{width: formWidth ?? '20rem'}}` (was hardcoded `w-80`), modal gets
+  `style={{maxWidth: formWidth ?? '32rem'}}` (was `max-w-lg`) — same defaults as
+  before. Removed the bogus `minWidth` it used to set on `FilterTriggerButton`
+  (prop deleted from that component). Dropdown popover already used it.
+- **Modal backdrop softened**: `bg-black/20 dark:bg-black/40 backdrop-blur-[2px]`
+  (was `bg-black/30 dark:bg-black/50 backdrop-blur-sm`) so the page behind stays
+  readable. Drawer overlay (no blur) untouched.
+
 ---
 
 ## 9. Session: delayed table loading indicator (2026-07-01)

@@ -40,6 +40,21 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) conventions
   show the funnel-icon header (previously the bare form had no icon/heading), and
   the Reset / Apply Filters actions are right-aligned normal-width buttons instead
   of a full-width Apply bar.
+- **`->filtersFormWidth()` now sizes the drawer and modal panels** (drawer width /
+  modal max-width) in addition to the dropdown popover. Previously it was silently
+  ignored for drawer/modal and instead (incorrectly) set a min-width on the trigger
+  button. Defaults unchanged: dropdown/drawer `20rem`, modal `32rem`.
+- **Softer modal backdrop:** the filters modal overlay uses a light 2px blur and a
+  lighter tint (was `backdrop-blur-sm` + `bg-black/30`), so the page behind stays
+  recognisable.
+
+### Fixed
+
+- **Apply/Reset filter buttons are disabled when they would do nothing.** Apply is
+  disabled until the draft differs from the currently applied filters; Reset is
+  disabled when there's nothing to clear. Neither fires a backend request in the
+  no-op case (previously an empty filter panel still let users spam Apply/Reset,
+  each click reloading the records).
 - **Filter badges/chips reflect applied filters only.** The filter count badge and
   the active-filter chips now derive from the filters actually applied in the URL —
   editing the filter form no longer updates them live; they change only when the user

@@ -129,7 +129,7 @@ public static function table(Table $table): Table
 | `->pagination(false)`                         | Disable pagination — all records returned on one page                |
 | `->filtersLayout(FiltersLayout::Modal)`       | Where/how the filter panel appears — `FiltersLayout` enum case or string value (`Dropdown` (default) · `Drawer` · `Modal` · `Above` · `AboveCollapsible` · `Below` · `BeforeContent` · `BeforeContentCollapsible` · `AfterContent` · `AfterContentCollapsible`); also settable via `->filters([...], layout: ...)` |
 | `->filtersFormColumns(2)`                     | Grid columns inside the filter form (default: 1; side layouts are always 1) |
-| `->filtersFormWidth('24rem')`                 | Max-width of the drawer/modal panel                                  |
+| `->filtersFormWidth('28rem')`                 | Width of the filter panel — dropdown popover width, drawer width, or modal max-width |
 | `->filtersFormMaxHeight('400px')`             | Max-height before filter panel scrolls                               |
 | `->hiddenFilterIndicators()`                  | Hide the active-filter indicator chips row                           |
 
@@ -802,8 +802,9 @@ Additional layout options:
 // collapsible variants) — sidebars are always single-column.
 ->filtersFormColumns(2)
 
-// Max-width of the drawer / modal panel
-->filtersFormWidth('24rem')
+// Panel width — dropdown popover width, drawer width, or modal max-width.
+// Increase it when the table has many filters.
+->filtersFormWidth('28rem')
 
 // Max-height before the filter list scrolls (drawer / modal)
 ->filtersFormMaxHeight('400px')

@@ -775,7 +775,7 @@ function FilterForm({
 // ─── Above / Below inline layout ─────────────────────────────────────────────
 
 function InlineFiltersPanel({
-    resourceSlug, filterableColumns, standaloneFilters, filters, setFilters, formColumns, collapsible, activeCount,
+    resourceSlug, filterableColumns, standaloneFilters, filters, setFilters, formColumns, collapsible, activeCount, canApply,
 }: {
     resourceSlug: string;
     filterableColumns: Column[];
@@ -786,14 +786,18 @@ function InlineFiltersPanel({
     collapsible: boolean;
     /** Count of APPLIED filters (from the URL) — badge only updates on Apply/Reset. */
     activeCount: number;
+    /** False when the draft equals the applied filters — Apply would be a no-op request. */
+    canApply: boolean;
 }) {
     const [collapsed, setCollapsed] = useState(false);
+    const canReset = countActive(filters) > 0 || activeCount > 0;
 
-    const apply = () => applyFilters(resourceSlug, filters);
+    const apply = () => { if (canApply) applyFilters(resourceSlug, filters); };
     const reset = () => {
         const blank = blankFilters(filterableColumns, standaloneFilters);
         setFilters(blank);
-        applyFilters(resourceSlug, blank);
+        // Only hit the backend when there's something applied to clear.
+        if (activeCount > 0) applyFilters(resourceSlug, blank);
     };
 
     return (
@@ -833,12 +837,12 @@ function InlineFiltersPanel({
                     />
                     {/* Actions right-aligned; Apply is a normal-width button. */}
                     <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800">
-                        <button type="button" onClick={reset}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                        <button type="button" onClick={reset} disabled={!canReset}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500 dark:text-zinc-400 enabled:hover:bg-zinc-100 dark:enabled:hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                             <RotateCcw className="w-3.5 h-3.5" /> Reset
                         </button>
-                        <button type="button" onClick={apply}
-                            className="px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors">
+                        <button type="button" onClick={apply} disabled={!canApply}
+                            className="px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] enabled:hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors">
                             Apply Filters
                         </button>
                     </div>
@@ -868,7 +872,7 @@ function useModalAnimation(open: boolean, exitMs = 160) {
 // ─── Drawer / Modal panel ─────────────────────────────────────────────────────
 
 function DrawerPanel({
-    open, onClose, resourceSlug, filterableColumns, standaloneFilters, filters, setFilters, formColumns, formMaxHeight, isModal,
+    open, onClose, resourceSlug, filterableColumns, standaloneFilters, filters, setFilters, formColumns, formWidth, formMaxHeight, isModal, canApply,
 }: {
     open: boolean;
     onClose: () => void;
@@ -878,13 +882,23 @@ function DrawerPanel({
     filters: FilterValues;
     setFilters: (f: FilterValues) => void;
     formColumns: number;
+    /** Panel width — drawer width / modal max-width. From ->filtersFormWidth(). */
+    formWidth?: string;
     formMaxHeight?: string;
     isModal: boolean;
+    /** False when the draft equals the applied filters — Apply would be a no-op request. */
+    canApply: boolean;
 }) {
     const { rendered, exiting } = useModalAnimation(open, isModal ? 160 : 200);
     if (!rendered) return null;
 
-    const apply = () => { applyFilters(resourceSlug, filters); onClose(); };
+    const apply = () => {
+        if (!canApply) return;
+        applyFilters(resourceSlug, filters);
+        onClose();
+    };
+    // Reset only blanks the local draft (no request until Apply).
+    const canReset = countActive(filters) > 0;
     const reset = () => { const b = blankFilters(filterableColumns, standaloneFilters); setFilters(b); };
 
     const body = (
@@ -906,12 +920,12 @@ function DrawerPanel({
                 />
             </div>
             <div className="px-5 py-4 border-t border-zinc-100 dark:border-zinc-800 flex gap-2">
-                <button type="button" onClick={reset}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                <button type="button" onClick={reset} disabled={!canReset}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-zinc-500 dark:text-zinc-400 enabled:hover:bg-zinc-100 dark:enabled:hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                     <RotateCcw className="w-3.5 h-3.5" /> Reset
                 </button>
-                <button type="button" onClick={apply}
-                    className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors">
+                <button type="button" onClick={apply} disabled={!canApply}
+                    className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] enabled:hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors">
                     Apply Filters
                 </button>
             </div>
@@ -924,11 +938,15 @@ function DrawerPanel({
                 'fixed inset-0 z-40 flex items-center justify-center p-4',
                 exiting ? 'animate-larafusion-overlay-out' : 'animate-larafusion-overlay-in',
             )}>
-                <div className="absolute inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm" onClick={onClose} />
-                <div className={cn(
-                    'relative w-full max-w-lg bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl flex flex-col max-h-[85vh]',
-                    exiting ? 'animate-larafusion-modal-out' : 'animate-larafusion-modal-in',
-                )}>
+                {/* Subtle backdrop — a light 2px blur keeps the page behind readable. */}
+                <div className="absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-[2px]" onClick={onClose} />
+                <div
+                    className={cn(
+                        'relative w-full bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl flex flex-col max-h-[85vh]',
+                        exiting ? 'animate-larafusion-modal-out' : 'animate-larafusion-modal-in',
+                    )}
+                    style={{ maxWidth: formWidth ?? '32rem' }}
+                >
                     {body}
                 </div>
             </div>
@@ -942,10 +960,13 @@ function DrawerPanel({
             exiting ? 'animate-larafusion-overlay-out' : 'animate-larafusion-overlay-in',
         )}>
             <div className="absolute inset-0 bg-black/20 dark:bg-black/40" onClick={onClose} />
-            <div className={cn(
-                'relative ml-auto w-80 bg-white dark:bg-zinc-900 h-full shadow-2xl flex flex-col',
-                exiting ? 'animate-larafusion-drawer-out' : 'animate-larafusion-drawer-in',
-            )}>
+            <div
+                className={cn(
+                    'relative ml-auto max-w-full bg-white dark:bg-zinc-900 h-full shadow-2xl flex flex-col',
+                    exiting ? 'animate-larafusion-drawer-out' : 'animate-larafusion-drawer-in',
+                )}
+                style={{ width: formWidth ?? '20rem' }}
+            >
                 {body}
             </div>
         </div>
@@ -982,11 +1003,16 @@ export function SideFilterSidebar({
 
     if (filterableColumns.length + standaloneFilters.length === 0) return null;
 
-    const apply = () => applyFilters(resourceSlug, filters);
+    // Apply is a no-op (and stays disabled) while the draft matches what's applied.
+    const canApply = JSON.stringify(filters) !== JSON.stringify(applied);
+    const canReset = countActive(filters) > 0 || activeCount > 0;
+
+    const apply = () => { if (canApply) applyFilters(resourceSlug, filters); };
     const reset = () => {
         const blank = blankFilters(filterableColumns, standaloneFilters);
         setFilters(blank);
-        applyFilters(resourceSlug, blank);
+        // Only hit the backend when there's something applied to clear.
+        if (activeCount > 0) applyFilters(resourceSlug, blank);
     };
 
     return (
@@ -1045,12 +1071,12 @@ export function SideFilterSidebar({
                         />
                     </div>
                     <div className="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800 flex gap-2">
-                        <button type="button" onClick={reset}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                        <button type="button" onClick={reset} disabled={!canReset}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500 dark:text-zinc-400 enabled:hover:bg-zinc-100 dark:enabled:hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
                             <RotateCcw className="w-3.5 h-3.5" /> Reset
                         </button>
-                        <button type="button" onClick={apply}
-                            className="flex-1 px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors">
+                        <button type="button" onClick={apply} disabled={!canApply}
+                            className="flex-1 px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] enabled:hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors">
                             Apply
                         </button>
                     </div>
@@ -1073,6 +1099,7 @@ function DropdownFilterPanel({
     formWidth,
     formMaxHeight,
     activeCount,
+    canApply,
 }: {
     resourceSlug: string;
     filterableColumns: Column[];
@@ -1084,6 +1111,8 @@ function DropdownFilterPanel({
     formMaxHeight?: string;
     /** Count of APPLIED filters (from the URL) — badge only updates on Apply/Reset. */
     activeCount: number;
+    /** False when the draft equals the applied filters — Apply would be a no-op request. */
+    canApply: boolean;
 }) {
     const [open, setOpen] = useState(false);
     const { rendered: dropRendered, exiting: dropExiting } = useModalAnimation(open, 100);
@@ -1105,7 +1134,13 @@ function DropdownFilterPanel({
         return () => document.removeEventListener('mousedown', handler);
     }, [open]);
 
-    const apply = () => { applyFilters(resourceSlug, filters); setOpen(false); };
+    const apply = () => {
+        if (!canApply) return;
+        applyFilters(resourceSlug, filters);
+        setOpen(false);
+    };
+    // Header Reset link is only rendered when activeCount > 0, so this request
+    // always clears something.
     const reset = () => {
         const blank = blankFilters(filterableColumns, standaloneFilters);
         setFilters(blank);
@@ -1177,7 +1212,8 @@ function DropdownFilterPanel({
                         <button
                             type="button"
                             onClick={apply}
-                            className="w-full py-2 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors"
+                            disabled={!canApply}
+                            className="w-full py-2 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] enabled:hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
                         >
                             Apply filters
                         </button>
@@ -1191,15 +1227,15 @@ function DropdownFilterPanel({
 // ─── Trigger button ───────────────────────────────────────────────────────────
 
 export function FilterTriggerButton({
-    activeCount, onClick, formWidth,
+    activeCount, onClick,
 }: {
     activeCount: number;
     onClick: () => void;
-    formWidth?: string;
 }) {
+    // Note: ->filtersFormWidth() sizes the drawer/modal/dropdown PANEL, not this
+    // trigger button.
     return (
         <button type="button" onClick={onClick}
-            style={formWidth ? { minWidth: formWidth } : {}}
             className={cn(
                 'relative inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors',
                 activeCount > 0
@@ -1246,6 +1282,10 @@ export default function FilterPanel({
     // when nothing changed, so in-progress drafts survive sorts/pagination.
     useEffect(() => { setFilters(applied); }, [applied]);
 
+    // Apply is a no-op (and stays disabled) while the draft matches what's applied
+    // — including the "everything empty" case, so no pointless backend requests.
+    const canApply = JSON.stringify(filters) !== JSON.stringify(applied);
+
     // Side layouts are handled by SideFilterSidebar rendered directly in the table layout
     if (layout === 'before_content' || layout === 'before_content_collapsible' ||
         layout === 'after_content'  || layout === 'after_content_collapsible') {
@@ -1270,6 +1310,7 @@ export default function FilterPanel({
                     formColumns={formColumns}
                     collapsible={layout === 'above_collapsible'}
                     activeCount={activeCount}
+                    canApply={canApply}
                 />
             </>
         );
@@ -1290,6 +1331,7 @@ export default function FilterPanel({
                 formWidth={formWidth}
                 formMaxHeight={formMaxHeight}
                 activeCount={activeCount}
+                canApply={canApply}
             />
         );
     }
@@ -1297,7 +1339,7 @@ export default function FilterPanel({
     // Drawer / Modal layouts
     return (
         <>
-            <FilterTriggerButton activeCount={activeCount} onClick={() => setOpen(true)} formWidth={formWidth} />
+            <FilterTriggerButton activeCount={activeCount} onClick={() => setOpen(true)} />
             <DrawerPanel
                 open={open}
                 onClose={() => setOpen(false)}
@@ -1307,8 +1349,10 @@ export default function FilterPanel({
                 filters={filters}
                 setFilters={setFilters}
                 formColumns={formColumns}
+                formWidth={formWidth}
                 formMaxHeight={formMaxHeight}
                 isModal={layout === 'modal'}
+                canApply={canApply}
             />
         </>
     );

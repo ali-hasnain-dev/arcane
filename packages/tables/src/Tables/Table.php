@@ -108,7 +108,11 @@ class Table
         return $this;
     }
 
-    /** Max-width of the dropdown/modal filter panel (CSS value, e.g. '20rem'). */
+    /**
+     * Width of the filter panel (CSS value, e.g. '28rem'): dropdown popover
+     * width, drawer width, or modal max-width. Useful when a table has many
+     * filters and the default panel feels cramped.
+     */
     public function filtersFormWidth(string $width): static
     {
         $this->filtersFormWidth = $width;
