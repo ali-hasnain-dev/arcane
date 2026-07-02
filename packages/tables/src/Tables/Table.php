@@ -15,7 +15,7 @@ class Table
     protected ?string $defaultSortField     = null;
     protected string  $defaultSortDir       = 'asc';
     // ── Filter layout ─────────────────────────────────────────────────────────
-    protected string  $filtersLayout        = 'drawer'; // see Enums\FiltersLayout — drawer (default) | dropdown | modal | above | above_collapsible | below | before_content(_collapsible) | after_content(_collapsible)
+    protected string  $filtersLayout        = 'dropdown'; // see Enums\FiltersLayout — dropdown (default) | drawer | modal | above | above_collapsible | below | before_content(_collapsible) | after_content(_collapsible)
     protected int     $filtersFormColumns   = 1;
     protected ?string $filtersFormWidth     = null;
     protected ?string $filtersFormMaxHeight = null;
@@ -61,7 +61,7 @@ class Table
      *
      *     ->filters([...], layout: FiltersLayout::Modal)
      *
-     * Omitting $layout keeps the current layout (drawer by default).
+     * Omitting $layout keeps the current layout (dropdown by default).
      */
     public function filters(array $filters, FiltersLayout|string|null $layout = null): static
     {
@@ -89,9 +89,9 @@ class Table
     /**
      * Control where/how the filter panel is shown. Accepts a FiltersLayout
      * enum case (FiltersLayout::Modal) or its string value ('modal').
-     * Default is FiltersLayout::Drawer (slide-in panel from the right).
+     * Default is FiltersLayout::Dropdown (funnel-icon popover).
      */
-    public function filtersLayout(FiltersLayout|string $layout = FiltersLayout::Drawer): static
+    public function filtersLayout(FiltersLayout|string $layout = FiltersLayout::Dropdown): static
     {
         $this->filtersLayout = $layout instanceof FiltersLayout ? $layout->value : $layout;
         return $this;

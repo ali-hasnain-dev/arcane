@@ -798,7 +798,7 @@ function InlineFiltersPanel({
 
     return (
         <div className="border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
-            {collapsible && (
+            {collapsible ? (
                 <button type="button" onClick={() => setCollapsed(c => !c)}
                     className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors">
                     <span className="flex items-center gap-2">
@@ -810,6 +810,16 @@ function InlineFiltersPanel({
                     </span>
                     {collapsed ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronUp className="w-4 h-4 text-zinc-400" />}
                 </button>
+            ) : (
+                /* Static header — mirrors the collapsible one (minus the toggle) so
+                   the plain 'above'/'below' layouts also show the funnel icon. */
+                <div className="flex items-center gap-2 px-4 py-2.5 border-b border-zinc-100 dark:border-zinc-800 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                    <Filter className="w-4 h-4" />
+                    Filters
+                    {activeCount > 0 && (
+                        <span className="px-1.5 py-0.5 text-xs font-bold rounded-full bg-[var(--larafusion-primary,#18181b)] text-white">{activeCount}</span>
+                    )}
+                </div>
             )}
 
             {!collapsed && (
@@ -821,13 +831,14 @@ function InlineFiltersPanel({
                         setFilters={setFilters}
                         columns={formColumns}
                     />
-                    <div className="flex gap-2 mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+                    {/* Actions right-aligned; Apply is a normal-width button. */}
+                    <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800">
                         <button type="button" onClick={reset}
                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
                             <RotateCcw className="w-3.5 h-3.5" /> Reset
                         </button>
                         <button type="button" onClick={apply}
-                            className="flex-1 px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors">
+                            className="px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--larafusion-primary,#18181b)] hover:opacity-90 text-white transition-colors">
                             Apply Filters
                         </button>
                     </div>
@@ -1212,11 +1223,12 @@ export default function FilterPanel({
     resourceSlug,
     columns,
     standaloneFilters = [],
-    layout = 'drawer',
+    layout = 'dropdown',
     formColumns = 1,
     formWidth,
     formMaxHeight,
-    hideIndicators = false,
+    // Note: `hideIndicators` stays in FilterPanelProps but is consumed by
+    // BasicTable (it gates the chips row under the column headers), not here.
 }: FilterPanelProps) {
     const filterableColumns = columns.filter(c => c.filterable);
     const hasAnyFilters = filterableColumns.length > 0 || standaloneFilters.length > 0;
@@ -1243,16 +1255,12 @@ export default function FilterPanel({
     // Inline layouts render differently — no trigger button needed
     if (layout === 'above' || layout === 'above_collapsible' || layout === 'below') {
         if (!hasAnyFilters) return null;
+        // No indicator chips for inline layouts — the filter form itself is
+        // visible, so chips would duplicate it. Chips are exclusive to the
+        // trigger-based layouts (dropdown/drawer/modal), rendered by BasicTable
+        // directly below the column-header row.
         return (
             <>
-                {/* Active indicator chips (shown before inline filters for 'above' layout) */}
-                {!hideIndicators && (
-                    <ActiveFilterIndicators
-                        resourceSlug={resourceSlug}
-                        filterableColumns={filterableColumns}
-                        standaloneFilters={standaloneFilters}
-                    />
-                )}
                 <InlineFiltersPanel
                     resourceSlug={resourceSlug}
                     filterableColumns={filterableColumns}

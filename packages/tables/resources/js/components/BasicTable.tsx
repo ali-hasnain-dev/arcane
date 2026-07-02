@@ -849,7 +849,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
     const visibleFields = displayColumns;
 
     // ─── Filter layout ────────────────────────────────────────────────────────
-    const filtersLayout = tableConfig?.filtersLayout ?? 'drawer';
+    const filtersLayout = tableConfig?.filtersLayout ?? 'dropdown';
     const isDrawerOrModal = filtersLayout === 'drawer' || filtersLayout === 'modal' || filtersLayout === 'dropdown';
     const isAboveLayout = filtersLayout === 'above' || filtersLayout === 'above_collapsible';
     const isBelowLayout = filtersLayout === 'below';

@@ -127,7 +127,7 @@ public static function table(Table $table): Table
 | `->pagination()`                              | Full numbered pagination (default)                                   |
 | `->pagination('simple')`                      | Show only Prev/Next buttons instead of numbered page links; overrides the panel-level default |
 | `->pagination(false)`                         | Disable pagination — all records returned on one page                |
-| `->filtersLayout(FiltersLayout::Modal)`       | Where/how the filter panel appears — `FiltersLayout` enum case or string value (`Drawer` (default) · `Dropdown` · `Modal` · `Above` · `AboveCollapsible` · `Below` · `BeforeContent` · `BeforeContentCollapsible` · `AfterContent` · `AfterContentCollapsible`); also settable via `->filters([...], layout: ...)` |
+| `->filtersLayout(FiltersLayout::Modal)`       | Where/how the filter panel appears — `FiltersLayout` enum case or string value (`Dropdown` (default) · `Drawer` · `Modal` · `Above` · `AboveCollapsible` · `Below` · `BeforeContent` · `BeforeContentCollapsible` · `AfterContent` · `AfterContentCollapsible`); also settable via `->filters([...], layout: ...)` |
 | `->filtersFormColumns(2)`                     | Grid columns inside the filter form (default: 1; side layouts are always 1) |
 | `->filtersFormWidth('24rem')`                 | Max-width of the drawer/modal panel                                  |
 | `->filtersFormMaxHeight('400px')`             | Max-height before filter panel scrolls                               |
@@ -774,14 +774,14 @@ use Larafusion\Tables\Enums\FiltersLayout;
 ], layout: FiltersLayout::Modal)
 ```
 
-The default is `FiltersLayout::Drawer` — you don't need to pass anything for the slide-in drawer. `->filtersLayout()` is also available on the `Table` builder and accepts the same values. The filter trigger button uses the **funnel icon** (matching Filament's `heroicons:funnel` design).
+The default is `FiltersLayout::Dropdown` — you don't need to pass anything for the funnel-icon popover. `->filtersLayout()` is also available on the `Table` builder and accepts the same values. The filter trigger button uses the **funnel icon** (matching Filament's `heroicons:funnel` design).
 
 ```php
 use Larafusion\Tables\Enums\FiltersLayout;
 use Larafusion\Tables\Table;
 
-->filtersLayout(FiltersLayout::Drawer)                    // slide-in panel from the right (default)
-->filtersLayout(FiltersLayout::Dropdown)                  // Filament-style popover below the filter button
+->filtersLayout(FiltersLayout::Dropdown)                  // Filament-style popover below the filter button (default)
+->filtersLayout(FiltersLayout::Drawer)                    // slide-in panel from the right
 ->filtersLayout(FiltersLayout::Modal)                     // centred modal dialog
 ->filtersLayout(FiltersLayout::Above)                     // inline panel above the table rows
 ->filtersLayout(FiltersLayout::AboveCollapsible)          // above, with collapse/expand toggle
@@ -816,8 +816,8 @@ Additional layout options:
 
 | Layout | Where rendered | Trigger | Collapsible? |
 | ------ | -------------- | ------- | ------------ |
-| `FiltersLayout::Drawer` | Slide-in panel from right (default) | Button with label + badge | — |
-| `FiltersLayout::Dropdown` | Popover below the filter icon button | Icon-only button + badge | — |
+| `FiltersLayout::Dropdown` | Popover below the filter icon button (default) | Icon-only button + badge | — |
+| `FiltersLayout::Drawer` | Slide-in panel from right | Button with label + badge | — |
 | `FiltersLayout::Modal` | Centred dialog | Button with label + badge | — |
 | `FiltersLayout::Above` | Inline — above table rows | None | No |
 | `FiltersLayout::AboveCollapsible` | Inline — above table rows | None | Yes |
@@ -841,7 +841,7 @@ Table::make()
     ->filtersFormMaxHeight('600px')
 ```
 
-> **Active-filter indicators:** For the trigger-based layouts (`Drawer` / `Modal` / `Dropdown`) the trigger button shows a badge count, and active-filter chips render in a full-width row directly below the table's column-header row. For `Above` / `AboveCollapsible` / `Below` layouts the chips appear in a row above the inline form. For side layouts the filter form is always visible, so no separate indicators are needed. Chips and badge counts reflect **applied** filters only — editing the filter form doesn't change them until the user clicks Apply (or Reset). `->hiddenFilterIndicators()` hides the chips row in all layouts.
+> **Active-filter indicators:** Active-filter chips are shown **only** for the trigger-based layouts (`Dropdown` / `Modal` / `Drawer`), rendered in a full-width row directly below the table's column-header row; the trigger button also shows a badge count. Inline (`Above` / `AboveCollapsible` / `Below`) and side layouts show no chips — their filter form is visible on the page, with a funnel-icon header and a count badge instead. Chips and badge counts reflect **applied** filters only — editing the filter form doesn't change them until the user clicks Apply (or Reset). `->hiddenFilterIndicators()` hides the chips row.
 
 ---
 

@@ -131,8 +131,8 @@ Sets standalone `Filter` objects. These are PHP-side only (they carry query clos
 Controls where the filter UI appears and how it is styled.
 
 ```php
-->filtersLayout('dropdown')        // popover triggered by a filter button
-->filtersLayout('drawer')          // default: slide-in panel from the right
+->filtersLayout('dropdown')        // default: popover triggered by a filter button
+->filtersLayout('drawer')          // slide-in panel from the right
 ->filtersLayout('modal')           // centered modal
 ->filtersLayout('above')           // always-visible bar above the table
 ->filtersLayout('above_collapsible') // collapsible bar above

@@ -17,25 +17,29 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) conventions
       // ...
   ], layout: FiltersLayout::Modal)
   ```
-  Cases: `Drawer` (default) · `Dropdown` · `Modal` · `Above` · `AboveCollapsible` ·
+  Cases: `Dropdown` (default) · `Drawer` · `Modal` · `Above` · `AboveCollapsible` ·
   `Below` · `BeforeContent` · `BeforeContentCollapsible` · `AfterContent` ·
   `AfterContentCollapsible`. `->filtersLayout()` accepts the enum too; the old string
-  values remain accepted for backwards compatibility.
+  values remain accepted for backwards compatibility. The default layout is unchanged
+  (`dropdown`).
 
 ### Changed
 
-- **Default filter layout is now `drawer`** (was `dropdown`). Tables that never call
-  `->filtersLayout()` now open filters in the slide-in drawer; pass
-  `FiltersLayout::Dropdown` to restore the popover.
 - **Side filter layouts (`before_content` / `after_content` + collapsible variants):**
   the filter form is always single-column — `->filtersFormColumns()` is ignored for
   these layouts — and the sidebar panel is now sticky below the admin header, so the
   Reset/Apply buttons stay in view while scrolling long tables (previously they sat at
   the very bottom of the table, e.g. below 50 rows).
-- **Active-filter chips for trigger layouts (`drawer` / `modal` / `dropdown`):**
-  applied-filter indicator chips now render in a full-width row directly below the
-  table's column-header row (previously these layouts showed no chips at all).
-  Respects `->hiddenFilterIndicators()`.
+- **Active-filter chips are exclusive to the trigger layouts (`dropdown` / `modal` /
+  `drawer`):** they render in a full-width row directly below the table's
+  column-header row (previously these layouts showed no chips at all). The
+  `above` / `above_collapsible` / `below` layouts no longer show indicator chips —
+  their form is visible on the page and now carries a funnel-icon "Filters" header
+  with a count badge instead. Respects `->hiddenFilterIndicators()`.
+- **Inline filter panel (`above` / `below`) polish:** non-collapsible variants now
+  show the funnel-icon header (previously the bare form had no icon/heading), and
+  the Reset / Apply Filters actions are right-aligned normal-width buttons instead
+  of a full-width Apply bar.
 - **Filter badges/chips reflect applied filters only.** The filter count badge and
   the active-filter chips now derive from the filters actually applied in the URL —
   editing the filter form no longer updates them live; they change only when the user

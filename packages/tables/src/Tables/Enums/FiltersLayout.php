@@ -11,11 +11,11 @@ namespace Larafusion\Tables\Enums;
  */
 enum FiltersLayout: string
 {
-    /** Slide-in panel from the right (default). */
-    case Drawer = 'drawer';
-
-    /** Filament-style popover below the funnel icon button. */
+    /** Filament-style popover below the funnel icon button (default). */
     case Dropdown = 'dropdown';
+
+    /** Slide-in panel from the right. */
+    case Drawer = 'drawer';
 
     /** Centred modal dialog. */
     case Modal = 'modal';

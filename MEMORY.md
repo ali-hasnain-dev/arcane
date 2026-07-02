@@ -113,7 +113,7 @@ repo's root — it can't see packages living in subdirectories. So each
   only real lever to actually turn off the row-level View link/route.
 - Generated `{Plural}Table.php` no longer calls `->filtersLayout()`,
   `->defaultSort(...)`, `->heading(...)` — all three already have sensible
-  defaults elsewhere (`Table::$filtersLayout = 'drawer'` since the FiltersLayout-enum session,
+  defaults elsewhere (`Table::$filtersLayout = 'dropdown'`,
   `ResourceController::index()` falls back to `id` asc,
   `Index.tsx` does `tableConfig?.heading ?? resource.navigationLabel`), so
   calling them in the stub was redundant. A comment above `configure()`
@@ -455,9 +455,10 @@ was missing for relationship filters.
   $layout = null)` sets the layout via named arg (Filament-style);
   `filtersLayout(FiltersLayout|string)` accepts the enum too. Strings stay accepted
   (internal storage remains string).
-- **Default filter layout changed `'dropdown'` → `'drawer'`** (PHP `Table::$filtersLayout`,
-  `BasicTable.tsx` fallback, `FilterPanel` prop default). Behaviour change for tables
-  that never call filtersLayout — noted in CHANGELOG under Changed.
+- **Default filter layout: `'dropdown'` (unchanged).** It was briefly flipped to
+  `'drawer'` mid-session from an ambiguous request, then reverted after an explicit
+  AskUserQuestion — the user confirmed **dropdown stays the default**. If this comes
+  up again, ask; the user swaps the words "drawer"/"dropdown" loosely.
 - **Side layouts force `filtersFormColumns = 1`** — enforced in `Table::toConfig()`
   (via `FiltersLayout::tryFrom(...)?->isSideLayout()`) AND hardcoded `formColumns={1}`
   on both `SideFilterSidebar` call sites in BasicTable.
@@ -492,13 +493,19 @@ was missing for relationship filters.
   filters/setFilters props; it reads applied state itself and applies removals
   directly. Not part of the package's public index.ts exports, so the signature
   change is internal.
-- **Trigger layouts (drawer default / modal / dropdown) now show the chips row**
-  — rendered via `tableColSpan={totalCols}` as a `<tr><th colSpan>` inside
+- **Chips row is EXCLUSIVE to the trigger layouts (dropdown default / modal /
+  drawer)** — rendered via `tableColSpan={totalCols}` as a `<tr><th colSpan>` inside
   `<thead>`, directly below the column-header row in BasicTable (per user request
   "right below table header column row"). Gated on `!isTrulyEmpty`,
   `isDrawerOrModal`, `!hideFilterIndicators`, and having any filter defs. Returns
-  null (no empty row) when no filters are applied. above/below layouts keep their
-  chips above the inline form; side layouts still show none.
+  null (no empty row) when no filters are applied. **above/below layouts show NO
+  chips** (explicit user follow-up) — instead `InlineFiltersPanel` non-collapsible
+  variants got a static funnel-icon "Filters" header (+count badge, mirrors the
+  collapsible header minus the toggle), and the inline footer's Reset/Apply are
+  right-aligned normal-width buttons (Apply was full-width `flex-1` before).
+  `FilterPanel` no longer consumes `hideIndicators` (still in props type;
+  BasicTable reads `tableConfig.hideFilterIndicators` directly for the chips row).
+  Side layouts still show no chips.
 
 ---
 
