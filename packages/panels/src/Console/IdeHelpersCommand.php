@@ -234,7 +234,7 @@ namespace Larafusion\Tables {
     /**
      * @method static static make()
      * @method columns(array $columns)
-     * @method filters(array $filters)
+     * @method filters(array $filters, \Larafusion\Tables\Enums\FiltersLayout|string|null $layout = null)
      * @method recordActions(array $actions)
      * @method toolbarActions(array $actions)
      * @method striped(bool $striped = true)
@@ -242,7 +242,7 @@ namespace Larafusion\Tables {
      * @method description(string $description)
      * @method emptyState(string $message, ?string $description = null, ?string $icon = null)
      * @method defaultSort(string $field, string $dir = 'asc')
-     * @method filtersLayout(string $layout)
+     * @method filtersLayout(\Larafusion\Tables\Enums\FiltersLayout|string $layout)
      * @method filtersFormColumns(int $columns)
      * @method filtersFormWidth(string $width)
      * @method filtersFormMaxHeight(string $height)

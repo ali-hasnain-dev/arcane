@@ -9,6 +9,39 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) conventions
 
 ### Added
 
+#### FiltersLayout enum
+- **`Larafusion\Tables\Enums\FiltersLayout`** — typed filter-layout API. `->filters()`
+  accepts an optional named `layout` argument:
+  ```php
+  ->filters([
+      // ...
+  ], layout: FiltersLayout::Modal)
+  ```
+  Cases: `Drawer` (default) · `Dropdown` · `Modal` · `Above` · `AboveCollapsible` ·
+  `Below` · `BeforeContent` · `BeforeContentCollapsible` · `AfterContent` ·
+  `AfterContentCollapsible`. `->filtersLayout()` accepts the enum too; the old string
+  values remain accepted for backwards compatibility.
+
+### Changed
+
+- **Default filter layout is now `drawer`** (was `dropdown`). Tables that never call
+  `->filtersLayout()` now open filters in the slide-in drawer; pass
+  `FiltersLayout::Dropdown` to restore the popover.
+- **Side filter layouts (`before_content` / `after_content` + collapsible variants):**
+  the filter form is always single-column — `->filtersFormColumns()` is ignored for
+  these layouts — and the sidebar panel is now sticky below the admin header, so the
+  Reset/Apply buttons stay in view while scrolling long tables (previously they sat at
+  the very bottom of the table, e.g. below 50 rows).
+- **Active-filter chips for trigger layouts (`drawer` / `modal` / `dropdown`):**
+  applied-filter indicator chips now render in a full-width row directly below the
+  table's column-header row (previously these layouts showed no chips at all).
+  Respects `->hiddenFilterIndicators()`.
+- **Filter badges/chips reflect applied filters only.** The filter count badge and
+  the active-filter chips now derive from the filters actually applied in the URL —
+  editing the filter form no longer updates them live; they change only when the user
+  clicks Apply (or Reset / removes a chip). Open panels re-sync their draft when the
+  applied filters change externally (chip removal, back/forward navigation).
+
 #### Column-driven table configuration (Filament-style)
 - **`->searchable()` on columns** — mark any table column searchable and the resource
   collects them automatically; the `$searchable` array is no longer required.
@@ -50,6 +83,10 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) conventions
   the real search toolbar and only skeletonizes the rows below the table headers.
 - `Resource::getSearchable()` and `getInlineEditable()` are derived from `table()` columns
   (merged with the legacy arrays where present).
+- **Delayed table loading indicator.** Pagination / sort / filter / search now dim + disable
+  the table (with a centred spinner) only if the response runs past a short threshold
+  (`LOADING_INDICATOR_DELAY_MS`, ~120 ms). Fast responses resolve first and never flash a
+  loading state, so quick paginations no longer flicker.
 
 ### Removed
 

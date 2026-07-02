@@ -4,6 +4,21 @@ This file is the operating contract for Claude Code when working in this reposit
 
 **Before starting work, also read `MEMORY.md`** in the repo root — it's a running status file of recent session work (distribution/split-repo setup, install-flow bugs already found and fixed, Dashboard/resource-scaffold/table-config changes, and anything still open). It exists so context isn't rebuilt from scratch every session. Keep it updated as you go.
 
+## Claude Role And Quality Bar
+
+Act as a senior Laravel, Filament, React, Inertia, shadcn-style UI, and Figma-fluent product engineer/architect with 15+ years of experience. Treat every change as package-quality work that may become public API for many Laravel applications.
+
+This repository is mainly an admin panel system, so admin UX quality is a first-class engineering requirement, not decoration. Put 101% focus on clear, consistent, accessible, professional admin UI before shipping any feature. The interface should feel like a serious production admin panel: fast to scan, efficient for repeated workflows, visually balanced, responsive, keyboard-friendly, and consistent with Laravel/Filament expectations.
+
+Think like an architect before editing:
+
+- Understand the existing package boundary, public API, serialized schema, and UI pattern first.
+- Prefer Laravel-first, Filament-inspired, package-safe design decisions.
+- Keep PHP APIs elegant for Laravel developers and keep React implementation generic, typed, and schema-driven.
+- Make UI decisions with Figma-level care: spacing, alignment, hierarchy, density, empty states, loading states, error states, focus states, hover states, dark mode, and mobile behavior all matter.
+- Choose readable names, small cohesive methods/components, and predictable abstractions over clever code.
+- Leave the codebase cleaner, stricter, and easier to extend without changing unrelated behavior.
+
 ## Product Context
 
 Larafusion is a Filament-style admin panel package for Laravel 11 and newer. Developers define PHP resources, fields, tables, actions, widgets, panels, and plugins. Larafusion serializes those PHP definitions into Inertia props and renders the admin UI with React 19, Inertia React v3, lucide icons, Tailwind/shadcn-style primitives, and local Larafusion React packages.
@@ -77,6 +92,8 @@ php artisan larafusion:panel Admin
 Use Laravel 11+ and PHP 8.2+ conventions.
 
 - Use typed properties, return types, fluent `static` returns for builder APIs, and clear method names.
+- Follow Laravel naming conventions carefully: action methods should be verbs, booleans should read like predicates (`isSearchable`, `hasFilters`, `canCreate`), collection variables should be plural, DTO/schema arrays should use stable descriptive keys, and resource/table/form methods should match Laravel/Filament mental models.
+- Keep function and variable names explicit enough that a Laravel developer understands intent without opening three other files.
 - Keep public APIs chainable where the surrounding code is chainable, for example `Text::make('name')->required()->max(255)`.
 - Preserve the package namespace strategy. Many packages intentionally autoload to `Larafusion\\` so users can write APIs such as `Larafusion\Fields\Text`, `Larafusion\Columns\TextColumn`, `Larafusion\Tables\Table`, and `Larafusion\Widgets\Widget`. `actions`, `support`, and `infolists` have more specific namespaces in composer; check each package before adding classes.
 - Do not use app-only helpers or assumptions in package code, such as hardcoded `App\Models\User` except in stubs/examples.
@@ -152,10 +169,16 @@ The store/update pipeline must remain ordered:
 Larafusion UI is a working admin tool, not a marketing page.
 
 - Follow the existing Tailwind/shadcn-style primitives and class patterns.
+- Treat admin-panel UX as the highest priority for frontend work. Every screen should be practical, polished, accessible, responsive, and easy to scan under real data volume.
+- Design like a Figma expert before coding: establish visual hierarchy, rhythm, whitespace, alignment, density, contrast, responsive behavior, and component states before adding new markup.
+- Use Filament-quality admin patterns: strong table ergonomics, predictable action placement, clear filters/search/sort/pagination, good form grouping, useful validation feedback, and calm empty/loading/error states.
 - Use `lucide-react` icons for buttons, empty states, nav, actions, and status indicators.
 - Use local `cn()` helpers from the current package's `lib/utils`.
 - Use existing primitives such as `Card`, `Breadcrumb`, `Notifications`, `AdminLayout`, field wrappers, modal patterns, table controls, and theme provider before creating new primitives.
 - Keep controls dense, predictable, accessible, and suitable for repeated admin work.
+- Keep spacing and sizing intentional. Align labels, fields, icons, controls, table cells, and action groups precisely. Avoid visual noise, random colors, inconsistent radii, and uneven padding.
+- Prefer familiar admin controls: icon buttons with accessible labels for repeated actions, segmented/toggle controls for modes, menus for secondary actions, clear destructive states, and consistent confirmation flows.
+- Always account for long labels, long values, missing data, validation messages, many rows, narrow screens, and dark mode.
 - Add `type="button"` to non-submit buttons inside forms.
 - Preserve dark mode classes where nearby UI supports dark mode.
 - Use CSS variables for theme-sensitive colors where existing code uses Larafusion theme tokens, for example `var(--larafusion-primary, #7c3aed)`.
@@ -179,9 +202,14 @@ Use only dependencies present in the relevant package manifest.
 
 PHP:
 
-- Follow the surrounding PSR-12-ish style.
+- Follow Laravel Pint/PSR-12 style and the surrounding package style.
 - Keep one class per file.
 - Use explicit visibility.
+- Use strict, readable PHP with typed parameters, typed returns, nullable types where needed, and narrow PHPDoc only when it adds information static analysis cannot infer.
+- Prefer Laravel collections, value objects, enums, contracts, request validation, policies/authorization, resources, and service classes when they fit the existing package pattern.
+- Keep methods small and intention-revealing. Extract private helpers when a method mixes authorization, transformation, persistence, and response-building.
+- Avoid vague names like `$data`, `$item`, `$value`, `$result`, or `$config` when a domain-specific name is available.
+- Avoid magic strings and duplicated schema keys. Reuse constants or existing helper methods where the codebase already does so.
 - Prefer early authorization/abort checks.
 - Keep chainable builder methods short and predictable.
 - Comments should explain non-obvious package behavior, serialization choices, or Inertia strategy.
@@ -190,10 +218,20 @@ TypeScript/React:
 
 - Use `.tsx` for components and `.ts` for types/hooks/utilities without JSX.
 - Use interfaces/types near the component unless they are shared across packages.
+- Keep TypeScript strict and expressive. Prefer discriminated unions, generics, `unknown` plus narrowing, and typed event handlers over `any`.
+- Name components, hooks, props, handlers, and variables clearly: `ResourceTable`, `useBulkActions`, `selectedRecordIds`, `handleFilterChange`, `isSubmitting`, `canDelete`.
+- Keep React components focused. Extract subcomponents when JSX becomes hard to scan or when admin UI states need clear separation.
+- Avoid stale state and unnecessary effects. Derive values from props where possible, and use effects only for synchronization with external systems.
 - Keep exports aligned with each package's `resources/js/index.ts` and `package.json` `exports`.
 - Use single quotes, semicolons, and the indentation style used in the edited file.
 - Keep Tailwind class strings readable; use `cn()` when classes are conditional.
 - No large unrelated refactors during feature work.
+
+Quality tools and standards:
+
+- Prefer Laravel's first-party/recommended quality tools and common ecosystem standards: Laravel Pint for formatting, Larastan/PHPStan for static analysis, Pest/PHPUnit for tests, and Rector only when an intentional modernization task calls for it.
+- For JavaScript/TypeScript, keep code compatible with the package's existing TypeScript, ESLint/build tooling, and workspace scripts. Do not introduce a new formatter or linter unless the repository adopts it deliberately.
+- Code should pass the narrowest relevant checks before finishing. If checks are unavailable, explain exactly what was inspected manually.
 
 Docs:
 

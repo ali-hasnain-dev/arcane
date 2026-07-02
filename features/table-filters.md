@@ -271,8 +271,8 @@ See [Soft Deletes](soft-deletes.md) for the full integration.
 The visual presentation of filters is controlled by `Table::filtersLayout()`. This applies to all filters (both column-level and standalone) rendered in the filter panel.
 
 ```php
-->filtersLayout('dropdown')            // default — popover panel
-->filtersLayout('drawer')              // slide-in panel from the right
+->filtersLayout('dropdown')            // popover panel
+->filtersLayout('drawer')              // default — slide-in panel from the right
 ->filtersLayout('modal')               // centered modal dialog
 ->filtersLayout('above')               // always visible bar above the table
 ->filtersLayout('above_collapsible')   // collapsible bar above the table

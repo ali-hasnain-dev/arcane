@@ -173,6 +173,34 @@ function blankFilters(filterableColumns: Column[], standaloneFilters: Standalone
     return blank;
 }
 
+// ─── Applied filters (URL-driven) ─────────────────────────────────────────────
+
+// The APPLIED filters are whatever is currently in the URL — i.e. what the user
+// last hit Apply/Reset on. Draft edits inside a filter panel do NOT touch this;
+// indicator chips and count badges derive from it so they only update on Apply.
+// Re-parsed after every completed router visit (apply, reset, chip removal,
+// back/forward). Identity is preserved when nothing changed, so effects/badges
+// keyed on the returned object don't churn on unrelated reloads (sort, paginate).
+function useAppliedFilters(
+    filterableColumns: Column[],
+    standaloneFilters: StandaloneFilter[],
+): FilterValues {
+    const defsRef = useRef({ filterableColumns, standaloneFilters });
+    defsRef.current = { filterableColumns, standaloneFilters };
+    const [applied, setApplied] = useState<FilterValues>(() =>
+        parseFiltersFromUrl(filterableColumns, standaloneFilters));
+
+    useEffect(() => {
+        return router.on('finish', () => {
+            const { filterableColumns: cols, standaloneFilters: sfs } = defsRef.current;
+            const next = parseFiltersFromUrl(cols, sfs);
+            setApplied(prev => JSON.stringify(prev) === JSON.stringify(next) ? prev : next);
+        });
+    }, []);
+
+    return applied;
+}
+
 // ─── Active indicator chips ───────────────────────────────────────────────────
 
 function formatIndicatorValue(
@@ -212,19 +240,22 @@ function formatIndicatorValue(
     return val;
 }
 
+// Self-contained: derives its chips from the APPLIED filters in the URL, so it
+// only changes when the user actually applies/resets — never while drafting in a
+// panel. Pass `tableColSpan` to render as a full-width row that sits directly
+// below the table's column-header row (used by drawer/modal/dropdown layouts).
 export function ActiveFilterIndicators({
     resourceSlug,
-    filters,
-    setFilters,
     filterableColumns,
     standaloneFilters,
+    tableColSpan,
 }: {
     resourceSlug: string;
-    filters: FilterValues;
-    setFilters: (f: FilterValues) => void;
     filterableColumns: Column[];
     standaloneFilters: StandaloneFilter[];
+    tableColSpan?: number;
 }) {
+    const applied = useAppliedFilters(filterableColumns, standaloneFilters);
     const chips: { key: string; label: string; value: string }[] = [];
 
     const allDefs = [
@@ -233,7 +264,7 @@ export function ActiveFilterIndicators({
     ];
 
     for (const def of allDefs) {
-        const val = filters[def.name];
+        const val = applied[def.name];
         if (!val) continue;
         const displayVal = formatIndicatorValue(def.name, val, filterableColumns, standaloneFilters);
         if (!displayVal) continue;
@@ -242,20 +273,18 @@ export function ActiveFilterIndicators({
 
     if (chips.length === 0) return null;
 
+    // Removal applies immediately; open panels re-sync their drafts from the
+    // applied filters once the visit finishes (see draft-sync effects).
     const removeOne = (key: string) => {
         const blank = blankFilters(filterableColumns, standaloneFilters);
-        const next = { ...filters, [key]: blank[key] ?? '' };
-        setFilters(next);
-        applyFilters(resourceSlug, next);
+        applyFilters(resourceSlug, { ...applied, [key]: blank[key] ?? '' });
     };
 
     const removeAll = () => {
-        const blank = blankFilters(filterableColumns, standaloneFilters);
-        setFilters(blank);
-        applyFilters(resourceSlug, blank);
+        applyFilters(resourceSlug, blankFilters(filterableColumns, standaloneFilters));
     };
 
-    return (
+    const row = (
         <div className="px-4 py-2.5 border-b border-zinc-100 dark:border-zinc-800 flex items-center flex-wrap gap-2">
             <span className="text-xs font-medium text-zinc-400 dark:text-zinc-500 shrink-0">Active filters:</span>
             {chips.map(chip => (
@@ -283,6 +312,19 @@ export function ActiveFilterIndicators({
             </button>
         </div>
     );
+
+    // Table-row variant: spans all columns directly below the column-header row.
+    if (tableColSpan) {
+        return (
+            <tr>
+                <th colSpan={tableColSpan} className="p-0 text-left font-normal bg-white dark:bg-zinc-900">
+                    {row}
+                </th>
+            </tr>
+        );
+    }
+
+    return row;
 }
 
 // ─── Individual filter controls ───────────────────────────────────────────────
@@ -733,7 +775,7 @@ function FilterForm({
 // ─── Above / Below inline layout ─────────────────────────────────────────────
 
 function InlineFiltersPanel({
-    resourceSlug, filterableColumns, standaloneFilters, filters, setFilters, formColumns, collapsible,
+    resourceSlug, filterableColumns, standaloneFilters, filters, setFilters, formColumns, collapsible, activeCount,
 }: {
     resourceSlug: string;
     filterableColumns: Column[];
@@ -742,9 +784,10 @@ function InlineFiltersPanel({
     setFilters: (f: FilterValues) => void;
     formColumns: number;
     collapsible: boolean;
+    /** Count of APPLIED filters (from the URL) — badge only updates on Apply/Reset. */
+    activeCount: number;
 }) {
     const [collapsed, setCollapsed] = useState(false);
-    const activeCount = countActive(filters);
 
     const apply = () => applyFilters(resourceSlug, filters);
     const reset = () => {
@@ -916,9 +959,15 @@ export function SideFilterSidebar({
     collapsible: boolean;
 }) {
     const [collapsed, setCollapsed] = useState(false);
-    const [filters, setFilters] = useState<FilterValues>(() =>
-        parseFiltersFromUrl(filterableColumns, standaloneFilters));
-    const activeCount = countActive(filters);
+    const applied = useAppliedFilters(filterableColumns, standaloneFilters);
+    const [filters, setFilters] = useState<FilterValues>(applied);
+    // Badge reflects APPLIED filters only — drafting in the form doesn't bump it.
+    const activeCount = countActive(applied);
+
+    // Re-sync the draft whenever the applied filters actually change (apply,
+    // reset, indicator-chip removal, back/forward) — `applied` keeps identity
+    // when nothing changed, so in-progress drafts survive sorts/pagination.
+    useEffect(() => { setFilters(applied); }, [applied]);
 
     if (filterableColumns.length + standaloneFilters.length === 0) return null;
 
@@ -930,7 +979,13 @@ export function SideFilterSidebar({
     };
 
     return (
-        <div className="w-64 shrink-0 flex flex-col bg-zinc-50/50 dark:bg-zinc-800/20">
+        <div className="w-64 shrink-0 bg-zinc-50/50 dark:bg-zinc-800/20">
+            {/* Sticky wrapper: the sidebar column itself stretches to the full table
+                height (items-stretch flex parent), which would push the Apply/Reset
+                footer down to the table's end on long pages. Pinning the panel to the
+                viewport (below the fixed h-16 admin header) keeps the actions in view;
+                the form body scrolls internally when it outgrows the viewport. */}
+            <div className="sticky top-20 flex flex-col max-h-[calc(100vh-6rem)]">
             {collapsible ? (
                 <button
                     type="button"
@@ -964,8 +1019,10 @@ export function SideFilterSidebar({
             )}
             {!collapsed && (
                 <>
+                    {/* min-h-0 (not flex-1) so the footer sits directly below the last
+                        filter instead of being pushed to the bottom of the column. */}
                     <div
-                        className="flex-1 overflow-y-auto px-4 py-4"
+                        className="min-h-0 overflow-y-auto px-4 py-4"
                         style={formMaxHeight ? { maxHeight: formMaxHeight } : {}}
                     >
                         <FilterForm
@@ -988,6 +1045,7 @@ export function SideFilterSidebar({
                     </div>
                 </>
             )}
+            </div>{/* /sticky wrapper */}
         </div>
     );
 }
@@ -1003,6 +1061,7 @@ function DropdownFilterPanel({
     formColumns,
     formWidth,
     formMaxHeight,
+    activeCount,
 }: {
     resourceSlug: string;
     filterableColumns: Column[];
@@ -1012,11 +1071,12 @@ function DropdownFilterPanel({
     formColumns: number;
     formWidth?: string;
     formMaxHeight?: string;
+    /** Count of APPLIED filters (from the URL) — badge only updates on Apply/Reset. */
+    activeCount: number;
 }) {
     const [open, setOpen] = useState(false);
     const { rendered: dropRendered, exiting: dropExiting } = useModalAnimation(open, 100);
     const ref = useRef<HTMLDivElement>(null);
-    const activeCount = countActive(filters);
 
     // Close when clicking outside — but ignore clicks inside a portaled popover
     // (e.g. a SearchableSelect option list rendered to <body>), which lives
@@ -1152,7 +1212,7 @@ export default function FilterPanel({
     resourceSlug,
     columns,
     standaloneFilters = [],
-    layout = 'dropdown',
+    layout = 'drawer',
     formColumns = 1,
     formWidth,
     formMaxHeight,
@@ -1162,10 +1222,17 @@ export default function FilterPanel({
     const hasAnyFilters = filterableColumns.length > 0 || standaloneFilters.length > 0;
 
     const [open, setOpen]       = useState(false);
-    const [filters, setFilters] = useState<FilterValues>(() =>
-        parseFiltersFromUrl(filterableColumns, standaloneFilters));
+    const applied = useAppliedFilters(filterableColumns, standaloneFilters);
+    const [filters, setFilters] = useState<FilterValues>(applied);
 
-    const activeCount = countActive(filters);
+    // Count badges reflect APPLIED filters only — draft edits inside the panel
+    // don't bump the badge until the user hits Apply.
+    const activeCount = countActive(applied);
+
+    // Re-sync the draft whenever the applied filters actually change (apply,
+    // reset, indicator-chip removal, back/forward) — `applied` keeps identity
+    // when nothing changed, so in-progress drafts survive sorts/pagination.
+    useEffect(() => { setFilters(applied); }, [applied]);
 
     // Side layouts are handled by SideFilterSidebar rendered directly in the table layout
     if (layout === 'before_content' || layout === 'before_content_collapsible' ||
@@ -1182,8 +1249,6 @@ export default function FilterPanel({
                 {!hideIndicators && (
                     <ActiveFilterIndicators
                         resourceSlug={resourceSlug}
-                        filters={filters}
-                        setFilters={setFilters}
                         filterableColumns={filterableColumns}
                         standaloneFilters={standaloneFilters}
                     />
@@ -1196,6 +1261,7 @@ export default function FilterPanel({
                     setFilters={setFilters}
                     formColumns={formColumns}
                     collapsible={layout === 'above_collapsible'}
+                    activeCount={activeCount}
                 />
             </>
         );
@@ -1215,6 +1281,7 @@ export default function FilterPanel({
                 formColumns={formColumns}
                 formWidth={formWidth}
                 formMaxHeight={formMaxHeight}
+                activeCount={activeCount}
             />
         );
     }

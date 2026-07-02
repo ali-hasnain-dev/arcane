@@ -2,6 +2,7 @@
 
 namespace Larafusion\Tables;
 
+use Larafusion\Tables\Enums\FiltersLayout;
 use Larafusion\Tables\Filters\SelectFilter;
 
 class Table
@@ -14,7 +15,7 @@ class Table
     protected ?string $defaultSortField     = null;
     protected string  $defaultSortDir       = 'asc';
     // ── Filter layout ─────────────────────────────────────────────────────────
-    protected string  $filtersLayout        = 'dropdown'; // dropdown (default) | drawer | modal | above | above_collapsible | below
+    protected string  $filtersLayout        = 'drawer'; // see Enums\FiltersLayout — drawer (default) | dropdown | modal | above | above_collapsible | below | before_content(_collapsible) | after_content(_collapsible)
     protected int     $filtersFormColumns   = 1;
     protected ?string $filtersFormWidth     = null;
     protected ?string $filtersFormMaxHeight = null;
@@ -55,9 +56,19 @@ class Table
 
     // ── Filters ───────────────────────────────────────────────────────────────
 
-    public function filters(array $filters): static
+    /**
+     * Define standalone filters, optionally with the panel layout:
+     *
+     *     ->filters([...], layout: FiltersLayout::Modal)
+     *
+     * Omitting $layout keeps the current layout (drawer by default).
+     */
+    public function filters(array $filters, FiltersLayout|string|null $layout = null): static
     {
         $this->filters = $filters;
+        if ($layout !== null) {
+            $this->filtersLayout($layout);
+        }
         return $this;
     }
 
@@ -76,19 +87,21 @@ class Table
     // ── Filter layout ─────────────────────────────────────────────────────────
 
     /**
-     * Control where/how the filter panel is shown.
-     * Options: 'dropdown' (Filament-style popover) | 'drawer' (slide-in panel, default)
-     *          | 'modal' | 'above' | 'above_collapsible' | 'below'
-     *          | 'before_content' | 'before_content_collapsible'
-     *          | 'after_content'  | 'after_content_collapsible'
+     * Control where/how the filter panel is shown. Accepts a FiltersLayout
+     * enum case (FiltersLayout::Modal) or its string value ('modal').
+     * Default is FiltersLayout::Drawer (slide-in panel from the right).
      */
-    public function filtersLayout(string $layout = 'dropdown'): static
+    public function filtersLayout(FiltersLayout|string $layout = FiltersLayout::Drawer): static
     {
-        $this->filtersLayout = $layout;
+        $this->filtersLayout = $layout instanceof FiltersLayout ? $layout->value : $layout;
         return $this;
     }
 
-    /** Number of grid columns when rendering filters (useful for 'above' / 'below' layouts). */
+    /**
+     * Number of grid columns when rendering filters (useful for 'above' / 'below'
+     * layouts). Ignored for side layouts (before_content / after_content and
+     * their collapsible variants), which are always single-column.
+     */
     public function filtersFormColumns(int $columns): static
     {
         $this->filtersFormColumns = $columns;
@@ -310,9 +323,11 @@ class Table
             }, $this->filters);
         }
 
-        // Filter layout config
+        // Filter layout config. Side layouts render in a narrow sidebar, so the
+        // filters form is forced to a single column regardless of ->filtersFormColumns().
+        $layout = FiltersLayout::tryFrom($this->filtersLayout);
         $config['filtersLayout']          = $this->filtersLayout;
-        $config['filtersFormColumns']     = $this->filtersFormColumns;
+        $config['filtersFormColumns']     = $layout?->isSideLayout() ? 1 : $this->filtersFormColumns;
         $config['hideFilterIndicators']   = $this->hideFilterIndicators;
         if ($this->filtersFormWidth)      $config['filtersFormWidth']     = $this->filtersFormWidth;
         if ($this->filtersFormMaxHeight)  $config['filtersFormMaxHeight'] = $this->filtersFormMaxHeight;

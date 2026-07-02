@@ -127,8 +127,8 @@ public static function table(Table $table): Table
 | `->pagination()`                              | Full numbered pagination (default)                                   |
 | `->pagination('simple')`                      | Show only Prev/Next buttons instead of numbered page links; overrides the panel-level default |
 | `->pagination(false)`                         | Disable pagination — all records returned on one page                |
-| `->filtersLayout('dropdown')`                 | Where/how the filter panel appears (`dropdown` · `drawer` · `modal` · `above` · `above_collapsible` · `below` · `before_content` · `before_content_collapsible` · `after_content` · `after_content_collapsible`) |
-| `->filtersFormColumns(2)`                     | Grid columns inside the filter form (default: 1)                     |
+| `->filtersLayout(FiltersLayout::Modal)`       | Where/how the filter panel appears — `FiltersLayout` enum case or string value (`Drawer` (default) · `Dropdown` · `Modal` · `Above` · `AboveCollapsible` · `Below` · `BeforeContent` · `BeforeContentCollapsible` · `AfterContent` · `AfterContentCollapsible`); also settable via `->filters([...], layout: ...)` |
+| `->filtersFormColumns(2)`                     | Grid columns inside the filter form (default: 1; side layouts are always 1) |
 | `->filtersFormWidth('24rem')`                 | Max-width of the drawer/modal panel                                  |
 | `->filtersFormMaxHeight('400px')`             | Max-height before filter panel scrolls                               |
 | `->hiddenFilterIndicators()`                  | Hide the active-filter indicator chips row                           |
@@ -523,7 +523,7 @@ protected static array $sortable = ['name', 'created_at', 'price'];
 
 ### Standalone Filters
 
-Define filters independently of columns using the Filter classes. All standalone filters are shown together in the filter panel alongside any column-level filters. The panel position is controlled by `->filtersLayout()` — see [Filter Layout](#filter-layout) for all options.
+Define filters independently of columns using the Filter classes. All standalone filters are shown together in the filter panel alongside any column-level filters. The panel position is controlled by the `layout` argument of `->filters()` (or `->filtersLayout()`) — see [Filter Layout](#filter-layout) for all options.
 
 ```php
 use Larafusion\Tables\Filters\Filter;
@@ -764,27 +764,42 @@ DateRangeFilter::make('created_at')
 
 ### Filter Layout
 
-Control where and how the filter panel appears using `->filtersLayout()` on the `Table` builder. The filter trigger button uses the **funnel icon** (matching Filament's `heroicons:funnel` design).
+Control where and how the filter panel appears with the `FiltersLayout` enum. The easiest way is the `layout` argument of `->filters()`:
 
 ```php
+use Larafusion\Tables\Enums\FiltersLayout;
+
+->filters([
+    // ...
+], layout: FiltersLayout::Modal)
+```
+
+The default is `FiltersLayout::Drawer` — you don't need to pass anything for the slide-in drawer. `->filtersLayout()` is also available on the `Table` builder and accepts the same values. The filter trigger button uses the **funnel icon** (matching Filament's `heroicons:funnel` design).
+
+```php
+use Larafusion\Tables\Enums\FiltersLayout;
 use Larafusion\Tables\Table;
 
-->filtersLayout('dropdown')           // Filament-style popover below the filter button
-->filtersLayout('drawer')             // slide-in panel from the right (default)
-->filtersLayout('modal')              // centred modal dialog
-->filtersLayout('above')              // inline panel above the table rows
-->filtersLayout('above_collapsible')  // above, with collapse/expand toggle
-->filtersLayout('below')              // inline panel below the table rows
-->filtersLayout('before_content')     // fixed sidebar to the LEFT of the table
-->filtersLayout('before_content_collapsible')  // left sidebar with collapse toggle
-->filtersLayout('after_content')      // fixed sidebar to the RIGHT of the table
-->filtersLayout('after_content_collapsible')   // right sidebar with collapse toggle
+->filtersLayout(FiltersLayout::Drawer)                    // slide-in panel from the right (default)
+->filtersLayout(FiltersLayout::Dropdown)                  // Filament-style popover below the filter button
+->filtersLayout(FiltersLayout::Modal)                     // centred modal dialog
+->filtersLayout(FiltersLayout::Above)                     // inline panel above the table rows
+->filtersLayout(FiltersLayout::AboveCollapsible)          // above, with collapse/expand toggle
+->filtersLayout(FiltersLayout::Below)                     // inline panel below the table rows
+->filtersLayout(FiltersLayout::BeforeContent)             // fixed sidebar to the LEFT of the table
+->filtersLayout(FiltersLayout::BeforeContentCollapsible)  // left sidebar with collapse toggle
+->filtersLayout(FiltersLayout::AfterContent)              // fixed sidebar to the RIGHT of the table
+->filtersLayout(FiltersLayout::AfterContentCollapsible)   // right sidebar with collapse toggle
 ```
+
+The enum's string values (`'drawer'`, `'modal'`, `'before_content'`, …) are still accepted for backwards compatibility.
 
 Additional layout options:
 
 ```php
-// Number of grid columns in the filter form (useful for above/below layouts)
+// Number of grid columns in the filter form (useful for above/below layouts).
+// Ignored for the side layouts (before_content / after_content and their
+// collapsible variants) — sidebars are always single-column.
 ->filtersFormColumns(2)
 
 // Max-width of the drawer / modal panel
@@ -799,18 +814,20 @@ Additional layout options:
 
 **Layout behaviour summary:**
 
-| Layout value | Where rendered | Trigger | Collapsible? |
-| ------------ | -------------- | ------- | ------------ |
-| `dropdown` | Popover below the filter icon button | Icon-only button + badge | — |
-| `drawer` | Slide-in panel from right (default) | Button with label + badge | — |
-| `modal` | Centred dialog | Button with label + badge | — |
-| `above` | Inline — above table rows | None | No |
-| `above_collapsible` | Inline — above table rows | None | Yes |
-| `below` | Inline — below table rows | None | No |
-| `before_content` | Fixed sidebar, left of table | None | No |
-| `before_content_collapsible` | Fixed sidebar, left of table | None | Yes |
-| `after_content` | Fixed sidebar, right of table | None | No |
-| `after_content_collapsible` | Fixed sidebar, right of table | None | Yes |
+| Layout | Where rendered | Trigger | Collapsible? |
+| ------ | -------------- | ------- | ------------ |
+| `FiltersLayout::Drawer` | Slide-in panel from right (default) | Button with label + badge | — |
+| `FiltersLayout::Dropdown` | Popover below the filter icon button | Icon-only button + badge | — |
+| `FiltersLayout::Modal` | Centred dialog | Button with label + badge | — |
+| `FiltersLayout::Above` | Inline — above table rows | None | No |
+| `FiltersLayout::AboveCollapsible` | Inline — above table rows | None | Yes |
+| `FiltersLayout::Below` | Inline — below table rows | None | No |
+| `FiltersLayout::BeforeContent` | Sticky sidebar, left of table | None | No |
+| `FiltersLayout::BeforeContentCollapsible` | Sticky sidebar, left of table | None | Yes |
+| `FiltersLayout::AfterContent` | Sticky sidebar, right of table | None | No |
+| `FiltersLayout::AfterContentCollapsible` | Sticky sidebar, right of table | None | Yes |
+
+Side-layout sidebars stick to the viewport while the table scrolls, so the Reset / Apply buttons stay visible even on long pages (e.g. 50 rows per page); the filter list scrolls internally when it outgrows the viewport.
 
 **Full example:**
 
@@ -820,13 +837,11 @@ Table::make()
     ->filters([
         SelectFilter::make('role')->options([...]),
         TernaryFilter::make('is_active')->label('Active'),
-    ])
-    ->filtersLayout('before_content')   // sidebar to the left
-    ->filtersFormColumns(1)
+    ], layout: FiltersLayout::BeforeContent)   // sidebar to the left
     ->filtersFormMaxHeight('600px')
 ```
 
-> **Active-filter indicators:** For `drawer` and `modal` layouts the trigger button shows a badge count when filters are active. For `above` / `above_collapsible` / `below` layouts, active-filter indicator chips appear in a row above the inline form. For side layouts the filter form is always visible, so no separate indicators are needed.
+> **Active-filter indicators:** For the trigger-based layouts (`Drawer` / `Modal` / `Dropdown`) the trigger button shows a badge count, and active-filter chips render in a full-width row directly below the table's column-header row. For `Above` / `AboveCollapsible` / `Below` layouts the chips appear in a row above the inline form. For side layouts the filter form is always visible, so no separate indicators are needed. Chips and badge counts reflect **applied** filters only — editing the filter form doesn't change them until the user clicks Apply (or Reset). `->hiddenFilterIndicators()` hides the chips row in all layouts.
 
 ---
 

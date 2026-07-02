@@ -17,6 +17,11 @@ import { cn } from '../lib/utils';
 
 type LinkProps = React.ComponentProps<typeof Link>;
 
+// How long a partial reload (paginate / sort / filter / search) may run before
+// the table shows its loading state. Responses faster than this never flash a
+// skeleton/dim — only genuinely slow ones do. Tune to taste.
+const LOADING_INDICATOR_DELAY_MS = 120;
+
 /** Parse '30s' / '1m' / '2h' / '500ms' (bare numbers default to seconds) into milliseconds. */
 function parsePollingInterval(value: string): number {
     const match = /^(\d+(?:\.\d+)?)(ms|s|m|h)?$/.exec(value.trim());
@@ -38,7 +43,7 @@ function usePrefetchProps(): Partial<LinkProps> {
 // Shared palette lives in ../lib/colors so table badges and filter option chips
 // stay perfectly in sync.
 import { COLOR_CLASSES, badgeClasses } from '../lib/colors';
-import FilterPanel, { SideFilterSidebar } from './BasicFilterPanel';
+import FilterPanel, { ActiveFilterIndicators, SideFilterSidebar } from './BasicFilterPanel';
 import type { StandaloneFilter } from './BasicFilterPanel';
 
 // ─── Read a (possibly dotted) column value from a record ───────────────────────
@@ -725,16 +730,30 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
     const [searchLoading, setSearchLoading] = useState(false);
 
     // Table overlay fires for any partial reload; search spinner is separate.
+    //
+    // The overlay is *delayed*: we only dim + disable the table if the response
+    // takes longer than LOADING_INDICATOR_DELAY_MS. Fast paginations/sorts
+    // (typically < 100 ms) resolve before the timer fires, so they never flash a
+    // loading state — only genuinely slow responses show it.
+    const loadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     useEffect(() => {
+        const clearLoadingTimer = () => {
+            if (loadingTimer.current) { clearTimeout(loadingTimer.current); loadingTimer.current = null; }
+        };
         const offStart = router.on('start', (event) => {
             const visit = (event as CustomEvent<{ visit?: { only?: string[] } }>).detail?.visit;
-            if ((visit?.only?.length ?? 0) > 0) setTableLoading(true);
+            // Only partial table reloads (sort / filter / paginate / search / refresh).
+            if ((visit?.only?.length ?? 0) === 0) return;
+            clearLoadingTimer();
+            loadingTimer.current = setTimeout(() => setTableLoading(true), LOADING_INDICATOR_DELAY_MS);
         });
         const offFinish = router.on('finish', () => {
+            clearLoadingTimer();
             setTableLoading(false);
             setSearchLoading(false);
         });
-        return () => { offStart(); offFinish(); };
+        return () => { clearLoadingTimer(); offStart(); offFinish(); };
     }, []);
 
     const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -830,7 +849,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
     const visibleFields = displayColumns;
 
     // ─── Filter layout ────────────────────────────────────────────────────────
-    const filtersLayout = tableConfig?.filtersLayout ?? 'dropdown';
+    const filtersLayout = tableConfig?.filtersLayout ?? 'drawer';
     const isDrawerOrModal = filtersLayout === 'drawer' || filtersLayout === 'modal' || filtersLayout === 'dropdown';
     const isAboveLayout = filtersLayout === 'above' || filtersLayout === 'above_collapsible';
     const isBelowLayout = filtersLayout === 'below';
@@ -874,15 +893,15 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
 
     const handleSearchChange = (value: string) => {
         setSearch(value);
-        setTableLoading(true);    // overlay the table immediately on keypress
-        setSearchLoading(true);   // spinner inside the search input
+        setSearchLoading(true);   // spinner inside the search input (instant feedback)
+        // The table overlay is handled by the delayed router 'start' listener, so
+        // it won't dim during the debounce window or for fast search responses.
         if (searchTimer.current) clearTimeout(searchTimer.current);
         searchTimer.current = setTimeout(() => fireSearch(value), 400);
     };
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setTableLoading(true);
         setSearchLoading(true);
         if (searchTimer.current) clearTimeout(searchTimer.current);
         fireSearch(search);
@@ -966,8 +985,10 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                 onCancel={closeConfirm}
             />
 
-            {/* Side-layout wrapper — only adds flex container when before/after_content */}
-            <div className={hasSideFilters ? 'flex items-stretch rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden' : undefined}>
+            {/* Side-layout wrapper — only adds flex container when before/after_content.
+                overflow-clip (not overflow-hidden): hidden would establish a scroll
+                container and break the sidebar's position:sticky panel. */}
+            <div className={hasSideFilters ? 'flex items-stretch rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-clip' : undefined}>
 
                 {/* Before-content filter sidebar */}
                 {hasSideFilters && isBeforeSide && (
@@ -975,7 +996,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                         resourceSlug={resource.slug}
                         filterableColumns={sideFilterableColumns}
                         standaloneFilters={sideStandaloneFilters}
-                        formColumns={tableConfig?.filtersFormColumns ?? 1}
+                        formColumns={1}
                         formMaxHeight={tableConfig?.filtersFormMaxHeight}
                         collapsible={isSideCollapsible}
                     />
@@ -1155,6 +1176,13 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
 
                     <Deferred data="records" fallback={<Skeleton cols={visibleFields.length} />}>
                         <div className="relative">
+                            {/* Delayed loading spinner — only appears once tableLoading
+                                flips true (i.e. the response ran past the delay). */}
+                            {tableLoading && (
+                                <div className="absolute inset-0 z-10 flex items-start justify-center pt-24 pointer-events-none">
+                                    <Loader2 className="w-6 h-6 text-[var(--larafusion-primary,#18181b)] animate-spin" />
+                                </div>
+                            )}
                             <div className={cn('overflow-x-auto transition-opacity duration-150 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-zinc-100 dark:[&::-webkit-scrollbar-track]:bg-zinc-800 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-600', tableLoading && 'opacity-50 pointer-events-none select-none')}>
                                 <table className="w-full text-sm">
                                     <thead>
@@ -1203,6 +1231,18 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                                             <th className="text-right px-4 py-3.5 text-xs font-semibold text-zinc-500 dark:text-zinc-400" />
                                         </tr>
 
+                                        {/* Active-filter chips for trigger-based layouts (drawer/modal/dropdown):
+                                            rendered as a full-width row directly below the column-header row.
+                                            URL-driven — only updates when filters are actually applied. */}
+                                        {!isTrulyEmpty && isDrawerOrModal && !tableConfig?.hideFilterIndicators &&
+                                            (sideFilterableColumns.length > 0 || sideStandaloneFilters.length > 0) && (
+                                            <ActiveFilterIndicators
+                                                resourceSlug={resource.slug}
+                                                filterableColumns={sideFilterableColumns}
+                                                standaloneFilters={sideStandaloneFilters}
+                                                tableColSpan={totalCols}
+                                            />
+                                        )}
                                     </thead>
 
                                     <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -1301,8 +1341,12 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                             </div>
 
                             {/* Footer: results left | per-page centre | pagination right */}
-                            {/* Hidden when empty, pagination disabled, or no search/filter and everything fits on one page */}
-                            {!isTrulyEmpty && !disablePagination && (hasActiveSearch || hasActiveFilters || records.last_page > 1) && <div className="px-6 py-3.5 border-t border-zinc-100 dark:border-zinc-800 grid grid-cols-3 items-center gap-4 bg-zinc-50/50 dark:bg-zinc-800/30">
+                            {/* Shown whenever there's an active search/filter, more than one
+                                page, OR the total exceeds the smallest per-page option — the
+                                last case keeps the per-page selector reachable even after the
+                                user picks a size that collapses everything onto one page
+                                (e.g. 50 rows at 50/page), so they can switch back. */}
+                            {!isTrulyEmpty && !disablePagination && (hasActiveSearch || hasActiveFilters || records.last_page > 1 || records.total > PER_PAGE_OPTIONS[0]) && <div className="px-6 py-3.5 border-t border-zinc-100 dark:border-zinc-800 grid grid-cols-3 items-center gap-4 bg-zinc-50/50 dark:bg-zinc-800/30">
                                 {/* Left — result count */}
                                 <div>
                                     {records.total > 0 && (
@@ -1335,7 +1379,7 @@ export default function BasicTable({ resource, schema: rawSchema, records, actio
                         resourceSlug={resource.slug}
                         filterableColumns={sideFilterableColumns}
                         standaloneFilters={sideStandaloneFilters}
-                        formColumns={tableConfig?.filtersFormColumns ?? 1}
+                        formColumns={1}
                         formMaxHeight={tableConfig?.filtersFormMaxHeight}
                         collapsible={isSideCollapsible}
                     />

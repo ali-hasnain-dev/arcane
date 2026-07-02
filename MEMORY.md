@@ -113,7 +113,7 @@ repo's root — it can't see packages living in subdirectories. So each
   only real lever to actually turn off the row-level View link/route.
 - Generated `{Plural}Table.php` no longer calls `->filtersLayout()`,
   `->defaultSort(...)`, `->heading(...)` — all three already have sensible
-  defaults elsewhere (`Table::$filtersLayout = 'dropdown'`,
+  defaults elsewhere (`Table::$filtersLayout = 'drawer'` since the FiltersLayout-enum session,
   `ResourceController::index()` falls back to `id` asc,
   `Index.tsx` does `tableConfig?.heading ?? resource.navigationLabel`), so
   calling them in the stub was redundant. A comment above `configure()`
@@ -443,3 +443,73 @@ was missing for relationship filters.
   is enough (and `plain()` on a non-searchable single select → native `<select>`).
   Verified via static-php mock (full / withoutIcons / withoutColors / plain /
   plain-before-options / withoutDescriptions(false)). Docs updated.
+
+---
+
+## 9a. Session: FiltersLayout enum + side-layout fixes (2026-07-02)
+
+- **`Larafusion\Tables\Enums\FiltersLayout`** (new, `packages/tables/src/Tables/Enums/`)
+  — string-backed enum (Drawer/Dropdown/Modal/Above/AboveCollapsible/Below/
+  BeforeContent/BeforeContentCollapsible/AfterContent/AfterContentCollapsible) with
+  `isSideLayout()` helper. `Table::filters(array $filters, FiltersLayout|string|null
+  $layout = null)` sets the layout via named arg (Filament-style);
+  `filtersLayout(FiltersLayout|string)` accepts the enum too. Strings stay accepted
+  (internal storage remains string).
+- **Default filter layout changed `'dropdown'` → `'drawer'`** (PHP `Table::$filtersLayout`,
+  `BasicTable.tsx` fallback, `FilterPanel` prop default). Behaviour change for tables
+  that never call filtersLayout — noted in CHANGELOG under Changed.
+- **Side layouts force `filtersFormColumns = 1`** — enforced in `Table::toConfig()`
+  (via `FiltersLayout::tryFrom(...)?->isSideLayout()`) AND hardcoded `formColumns={1}`
+  on both `SideFilterSidebar` call sites in BasicTable.
+- **Side-sidebar Apply/Reset no longer at table end.** `SideFilterSidebar` content is
+  wrapped in `sticky top-20 max-h-[calc(100vh-6rem)] flex flex-col` (below the fixed
+  h-16 admin header); form body is `min-h-0 overflow-y-auto` (was `flex-1`) so the
+  footer hugs the last filter and stays in view; form scrolls internally when tall.
+  ⚠️ Required changing the side-layout wrapper in BasicTable from `overflow-hidden`
+  to `overflow-clip` — overflow-hidden establishes a scroll container and silently
+  kills position:sticky inside it.
+- Docs (`docs/tables.md` quick-ref row + Filter Layout section), `features/*.md`
+  default markers, `IdeHelpersCommand` docblocks, CHANGELOG updated.
+- Verified: `php -l` clean; isolated autoload mock test of Table::toConfig() covering
+  enum/string args, default drawer, side-layout column forcing (order-independent).
+  ⚠️ No node in sandbox this session — run `npm run typecheck --workspace=packages/tables`
+  + `npm run build:tables` locally.
+
+**Follow-up (same session): applied-only filter indicators + chips under column headers.**
+
+- **`useAppliedFilters(cols, standalone)` hook** (BasicFilterPanel.tsx) — parses
+  `filter[...]` params from the URL into `FilterValues`; re-parses on every router
+  `finish` event; preserves object identity when nothing changed (JSON compare) so
+  dependents don't churn on sort/pagination reloads.
+- **All filter count badges + "Active filters" chips now derive from APPLIED (URL)
+  filters, not the draft form state** — they only update on Apply / Reset / chip
+  removal. `InlineFiltersPanel` and `DropdownFilterPanel` take `activeCount` as a
+  prop; `FilterPanel` + `SideFilterSidebar` compute it from `applied` and re-sync
+  their draft via `useEffect(..., [applied])` (identity-stable, so live drafts
+  survive unrelated partial reloads).
+- **`ActiveFilterIndicators` is now self-contained** (props: resourceSlug,
+  filterableColumns, standaloneFilters, optional `tableColSpan`) — no more
+  filters/setFilters props; it reads applied state itself and applies removals
+  directly. Not part of the package's public index.ts exports, so the signature
+  change is internal.
+- **Trigger layouts (drawer default / modal / dropdown) now show the chips row**
+  — rendered via `tableColSpan={totalCols}` as a `<tr><th colSpan>` inside
+  `<thead>`, directly below the column-header row in BasicTable (per user request
+  "right below table header column row"). Gated on `!isTrulyEmpty`,
+  `isDrawerOrModal`, `!hideFilterIndicators`, and having any filter defs. Returns
+  null (no empty row) when no filters are applied. above/below layouts keep their
+  chips above the inline form; side layouts still show none.
+
+---
+
+## 9. Session: delayed table loading indicator (2026-07-01)
+
+`BasicTable.tsx` — the table overlay (dim + `pointer-events-none` + centred
+`Loader2` spinner) is now **delayed**. Constant `LOADING_INDICATOR_DELAY_MS`
+(120ms). On the router `start` event (only for partial reloads, visit.only>0) we
+start a timer via `loadingTimer` ref; `setTableLoading(true)` only fires if it
+elapses. `finish` clears the timer + resets loading. Fast paginations/sorts
+(< threshold) never flash the overlay. Removed the immediate
+`setTableLoading(true)` from the search handlers (the search input keeps its own
+`searchLoading` spinner for instant feedback; the table dim now goes through the
+delayed path). CHANGELOG updated under [Unreleased] › Changed.
